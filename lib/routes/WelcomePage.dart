@@ -1,5 +1,5 @@
-import 'package:exchangeit/routes/loginpage.dart';
-import 'package:exchangeit/routes/signuppage.dart';
+import 'package:exchangeit/routes/LoginPage.dart';
+import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:flutter/material.dart';
 
 class WelcomePage extends StatelessWidget {
