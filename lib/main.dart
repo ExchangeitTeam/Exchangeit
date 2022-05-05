@@ -1,6 +1,6 @@
-import 'package:exchangeit/routes/signuppage.dart';
+import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:flutter/material.dart';
-import 'package:exchangeit/routes/welcomepage.dart';
+import 'package:exchangeit/routes/WelcomePage.dart';
 
 void main() {
   runApp(MaterialApp(
