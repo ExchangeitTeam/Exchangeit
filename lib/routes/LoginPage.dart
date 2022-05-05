@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               return 'Cannot leave e-mail empty';
                             }
                             if (!EmailValidator.validate(value)) {
-                              return 'Please enter a yyyy valid e-mail address';
+                              return 'Please enter a valid e-mail address';
                             }
                           }
                         },
