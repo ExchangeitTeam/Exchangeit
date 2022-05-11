@@ -169,9 +169,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         }*/
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        padding: const EdgeInsets.all(12.0),
                         child: Text(
-                          '                    Login: $loginCounter                    ',
+                          'Login: $loginCounter',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -180,8 +180,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                      ),
+                          backgroundColor: Colors.orange,
+                          fixedSize: Size(sizeapp.width * 0.75, 50)),
                     ),
                   ),
                   SizedBox(height: 20),
