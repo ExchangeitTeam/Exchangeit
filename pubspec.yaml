@@ -31,6 +31,8 @@ dependencies:
     sdk: flutter
   email_validator: ^2.0.1
   sign_button: ^2.0.2
+  simple_gradient_text: ^1.2.3
+  shared_preferences: ^2.0.14
 
 
   # The following adds the Cupertino Icons font to your application.
