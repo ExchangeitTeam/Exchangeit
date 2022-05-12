@@ -29,7 +29,7 @@ class _WalkthroughState extends State<Walkthrough> {
   void initState() {
     super.initState();
     if (_currentPage != 0 &&
-        _currentPage < 1) //sayfa saysına göre güncelleme olacak
+        _currentPage < 2) //sayfa saysına göre güncelleme olacak
     {
       _currentPage++;
     } else {
@@ -51,47 +51,44 @@ class _WalkthroughState extends State<Walkthrough> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Padding(
-          padding: EdgeInsets.all(30),
-          child: Column(
+    return Container(
+      color: Colors.grey,
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        children: [
+          Expanded(
+              child: Stack(
+            alignment: AlignmentDirectional.bottomCenter,
             children: [
-              Expanded(
-                  child: Stack(
-                alignment: AlignmentDirectional.bottomCenter,
+              PageView.builder(
+                itemBuilder: (context, index) => WalkItem(index),
+                itemCount: WalkPagesList.length,
+                scrollDirection: Axis.horizontal,
+                controller: _pageController,
+                onPageChanged: _PageChanged,
+              ),
+              Stack(
                 children: [
-                  PageView.builder(
-                    itemBuilder: (context, index) => WalkItem(index),
-                    itemCount: WalkPagesList.length,
-                    scrollDirection: Axis.horizontal,
-                    controller: _pageController,
-                    onPageChanged: _PageChanged,
-                  ),
-                  Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 40),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            for (int i = 0; i < WalkPagesList.length; i++)
-                              if (i == _currentPage)
-                                WalkDots(true)
-                              else
-                                WalkDots(false)
-                          ],
-                        ),
-                      ),
-                    ],
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        for (int i = 0; i < WalkPagesList.length; i++)
+                          if (i == _currentPage)
+                            WalkDots(true)
+                          else
+                            WalkDots(false)
+                      ],
+                    ),
                   ),
                 ],
-              )),
+              ),
             ],
-          ),
-        ),
+          )),
+        ],
       ),
     );
   }
