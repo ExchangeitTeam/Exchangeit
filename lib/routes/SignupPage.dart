@@ -21,8 +21,8 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Color(0xF3F3F3F3),
       body: SafeArea(
         child: Container(
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 25),
-          padding: EdgeInsets.fromLTRB(25, 105, 25, 40),
+          //margin: EdgeInsets.fromLTRB(0, 10, 0, 25),
+          padding: EdgeInsets.fromLTRB(0, 75, 0, 0),
           child: Container(
             margin: EdgeInsets.fromLTRB(0, 0, 0, 110),
             child: SingleChildScrollView(

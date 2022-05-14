@@ -1,3 +1,4 @@
+import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
@@ -12,6 +13,7 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Settings"),
         centerTitle: true,
@@ -22,7 +24,10 @@ class _SettingsState extends State<Settings> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => EditProfile()));
+            },
             icon: Icon(
               Icons.edit,
               size: 30,

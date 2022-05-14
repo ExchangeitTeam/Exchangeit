@@ -44,6 +44,8 @@ class WalkItem extends StatelessWidget {
   void setSeenTrue() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seen', true);
+    bool _seen = prefs.getBool('seen') ?? false;
+    print("ılk ${_seen}");
     print("girdi");
   }
 
@@ -56,9 +58,12 @@ class WalkItem extends StatelessWidget {
           Text(
             WalkPagesList[index].header,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.deepOrangeAccent, fontSize: 25),
+            style: TextStyle(
+                color: Colors.blueAccent,
+                fontSize: 25,
+                fontStyle: FontStyle.italic),
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 50),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -74,11 +79,11 @@ class WalkItem extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 50),
           Text(
             WalkPagesList[index].bottom,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.deepOrangeAccent, fontSize: 18),
+            style: TextStyle(color: Colors.black, fontSize: 18),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

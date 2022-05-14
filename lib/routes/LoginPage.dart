@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
               top: 0,
               left: 0,
               child: Image.asset(
-                "images/uppergradi.png",
+                "images/upper.png",
                 width: sizeapp.width * 0.8,
               ),
             ),
@@ -49,12 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         Colors.blueAccent,
                         Colors.deepPurpleAccent
                       ]),
-                  Divider(
-                    thickness: 3,
-                    color: Colors.black,
-                    indent: 30,
-                    endIndent: 30,
-                  ),
                   SizedBox(
                     height: 20,
                   ),
@@ -169,18 +163,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         }*/
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 5),
                         child: Text(
                           'Login: $loginCounter',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 20,
                           ),
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.orange,
+                          backgroundColor: Colors.green,
                           fixedSize: Size(sizeapp.width * 0.75, 50)),
                     ),
                   ),

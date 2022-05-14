@@ -36,7 +36,7 @@ class WelcomePage extends StatelessWidget {
                       style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 35,
-                          color: Colors.deepOrange,
+                          color: Colors.green,
                           fontStyle: FontStyle.italic),
                       textAlign: TextAlign.center,
                     ),
@@ -71,7 +71,7 @@ class WelcomePage extends StatelessWidget {
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: Colors.green,
                               primary: Colors.black,
                             ),
                           ),
@@ -97,7 +97,7 @@ class WelcomePage extends StatelessWidget {
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: Colors.green,
                               primary: Colors.black,
                             ),
                           ),

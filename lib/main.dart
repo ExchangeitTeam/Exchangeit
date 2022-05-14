@@ -19,9 +19,9 @@ class _MyAppState extends State<MyApp> {
   bool _isSeen = false;
   Future FirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool _seen = prefs.getBool('seen') ?? false;
-    print("TRIAL ${_seen}");
-    if (_seen) {
+    bool _seen = await prefs.getBool('seen') ?? false;
+    print("ılk ${_seen},${_isSeen}");
+    if (_seen == true) {
       setState(() {
         _isSeen = true;
       });
@@ -30,19 +30,19 @@ class _MyAppState extends State<MyApp> {
         _isSeen = false;
       });
     }
+    print("SONRA ${_seen},${_isSeen}");
   }
 
   @override
   void initState() {
     FirstSeen();
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: _isSeen ? "/welcome" : "/walkthrough",
+      home: _isSeen ? WelcomePage() : Walkthrough(),
       routes: {
         '/welcome': (context) => const WelcomePage(),
         '/walkthrough': (context) => const Walkthrough(),
