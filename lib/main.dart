@@ -1,3 +1,4 @@
+import 'package:exchangeit/routes/LoginPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +47,8 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/welcome': (context) => const WelcomePage(),
         '/walkthrough': (context) => const Walkthrough(),
-        //SignUp.routeName: (context) => SignUp(),
-        //Login.routeName: (context) => Login(),
+        'SignUp': (context) => SignUp(),
+        'Login': (context) => LoginScreen(),
       },
     );
   }

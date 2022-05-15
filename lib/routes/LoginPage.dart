@@ -1,8 +1,11 @@
 import 'dart:ui';
+import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+
+import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -143,7 +146,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text("Forgot Password?",
                           style: TextStyle(color: Colors.black)),
                       onPressed: () {
-                        print("Forgot pressed");
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgetPass()));
                       },
                     ),
                   ),
@@ -219,6 +225,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             print('Facebook Pressed');
                           })),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Need an Account? "),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "SignUp");
+                          },
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 2,
+                            ),
+                          ))
+                    ],
+                  )
                 ],
               ),
             ),
