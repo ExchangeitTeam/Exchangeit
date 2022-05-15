@@ -44,11 +44,14 @@ class WalkItem extends StatelessWidget {
   void setSeenTrue() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seen', true);
+    bool _seen = prefs.getBool('seen') ?? false;
+    print("ılk ${_seen}");
     print("girdi");
   }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -56,15 +59,18 @@ class WalkItem extends StatelessWidget {
           Text(
             WalkPagesList[index].header,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.deepOrangeAccent, fontSize: 25),
+            style: TextStyle(
+                color: Colors.blueAccent,
+                fontSize: 25,
+                fontStyle: FontStyle.italic),
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 50),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 300,
-                height: 300,
+                width: size.width * 0.5,
+                height: size.height * 0.5,
                 padding: EdgeInsets.all(150),
                 decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
@@ -74,11 +80,11 @@ class WalkItem extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 50),
           Text(
             WalkPagesList[index].bottom,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.deepOrangeAccent, fontSize: 18),
+            style: TextStyle(color: Colors.black, fontSize: 18),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,8 +1,11 @@
 import 'dart:ui';
+import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+
+import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -31,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
               top: 0,
               left: 0,
               child: Image.asset(
-                "images/uppergradi.png",
+                "images/upper.png",
                 width: sizeapp.width * 0.8,
               ),
             ),
@@ -49,12 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         Colors.blueAccent,
                         Colors.deepPurpleAccent
                       ]),
-                  Divider(
-                    thickness: 3,
-                    color: Colors.black,
-                    indent: 30,
-                    endIndent: 30,
-                  ),
                   SizedBox(
                     height: 20,
                   ),
@@ -149,7 +146,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text("Forgot Password?",
                           style: TextStyle(color: Colors.black)),
                       onPressed: () {
-                        print("Forgot pressed");
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgetPass()));
                       },
                     ),
                   ),
@@ -169,18 +169,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         }*/
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 5),
                         child: Text(
                           'Login: $loginCounter',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 20,
                           ),
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.orange,
+                          backgroundColor: Colors.green,
                           fixedSize: Size(sizeapp.width * 0.75, 50)),
                     ),
                   ),
@@ -224,6 +225,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             print('Facebook Pressed');
                           })),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Need an Account? "),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "SignUp");
+                          },
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 2,
+                            ),
+                          ))
+                    ],
+                  )
                 ],
               ),
             ),

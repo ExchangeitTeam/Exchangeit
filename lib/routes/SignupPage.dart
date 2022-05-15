@@ -3,6 +3,8 @@ import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+import 'LoginPage.dart';
+
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
 
@@ -21,8 +23,8 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Color(0xF3F3F3F3),
       body: SafeArea(
         child: Container(
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 25),
-          padding: EdgeInsets.fromLTRB(25, 105, 25, 40),
+          //margin: EdgeInsets.fromLTRB(0, 10, 0, 25),
+          padding: EdgeInsets.fromLTRB(0, 75, 0, 0),
           child: Container(
             margin: EdgeInsets.fromLTRB(0, 0, 0, 110),
             child: SingleChildScrollView(
@@ -289,7 +291,24 @@ class _SignUpState extends State<SignUp> {
                               fixedSize: Size(sizeapp.width * 0.75, 70)),
                         ),
                       ),
-                      SizedBox(height: 50),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Already a user? "),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.popAndPushNamed(context, "Login");
+                              },
+                              child: Text(
+                                "Login",
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.blueAccent,
+                                ),
+                              ))
+                        ],
+                      )
                     ],
                   ),
                 )
