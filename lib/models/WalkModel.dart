@@ -51,6 +51,7 @@ class WalkItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -68,8 +69,8 @@ class WalkItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 300,
-                height: 300,
+                width: size.width * 0.5,
+                height: size.height * 0.5,
                 padding: EdgeInsets.all(150),
                 decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
