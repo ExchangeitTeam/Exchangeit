@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Objects/UserClass.dart';
@@ -11,45 +14,29 @@ class EditProfile extends StatefulWidget {
   State<EditProfile> createState() => _EditProfileState();
 }
 
-Future setPreferences(User currentUser) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setBool('settingsChanged', true);
-  await prefs.setString('name', currentUser.name ?? "");
-  await prefs.setString('userName', currentUser.userName ?? "");
-  await prefs.setString('email', currentUser.email ?? "");
-  await prefs.setString('biography', currentUser.biography ?? "");
-  await prefs.setBool('private', currentUser.private);
-}
-
-Future<User> _getPreferences() async {
-  var currentUser =
-      User(name: "", userName: "", email: "", biography: "", private: false);
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  currentUser.name = prefs.getString('name');
-  currentUser.userName = prefs.getString('userName');
-  currentUser.email = prefs.getString('email');
-  currentUser.biography = prefs.getString('biography');
-  currentUser.private = prefs.getBool('private')!;
-  return currentUser;
-}
-
 class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
-  var _currentUserSettings =
-      User(name: "", userName: "Enis", email: "", private: false);
-  var _newUserSettings =
-      User(name: "", userName: "", email: "", private: false);
-  @override
-  void initState() {
+  String university = '';
+  String username = '';
+  String age = '';
+  String bio = '';
+  String profile_image = '';
+  final _impicker = ImagePicker();
+  File? _imageFile = null;
+  SettingUser curruser_profile = SettingUser('', '', '', '', '');
+  //TO DO:image picker backend
+  Future pickImage() async {
+    // ignore: deprecated_member_use
+    final pickedFile = await _impicker.pickImage(source: ImageSource.gallery);
+
     setState(() {
-      _getPreferences().then((User currentUser) {
-        setState(() {
-          _currentUserSettings = currentUser;
-        });
-      });
-      super.initState();
+      pickedFile != null
+          ? _imageFile = File(pickedFile.path)
+          : _imageFile = null;
     });
   }
+  //TO DO:image upload backend
+  //TO D0:profile update
 
   @override
   Widget build(BuildContext context) {
@@ -72,12 +59,31 @@ class _EditProfileState extends State<EditProfile> {
                 children: [
                   SizedBox(height: 20),
                   Center(
+                    child: InkWell(
+                      onTap: () {
+                        //TO DO:İmage picker function
+                        pickImage();
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Colors.blueGrey, // !!change later
+                        child: ClipOval(
+                          child: _imageFile == null
+                              ? Image.asset(
+                                  'images/addphoto.png',
+                                  fit: BoxFit.fitHeight,
+                                ) //değişecek
+                              : Image.file(_imageFile!),
+                        ),
+                        radius: 50,
+                      ),
+                    ),
+                  ),
+                  Center(
                     child: Container(
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       width: sizeapp.width * 0.8,
                       child: TextFormField(
-                        initialValue: _currentUserSettings.userName,
                         keyboardType: TextInputType.text,
                         obscureText: false,
                         enableSuggestions: true,
@@ -100,18 +106,15 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
                         ),
-                        validator: (value) {
-                          if (value != null) {
+                        validator: (String? value) {
+                          if (value!.isEmpty || value == '') {
+                            username = ''; //değişmediğini belirtmek için
+                          } else {
                             if (value.length < 4) {
                               return 'new username too short';
                             }
+                            username = value;
                           }
-                        },
-                        onSaved: (value) {
-                          if (value == null || value == "") {
-                            value = _currentUserSettings.name;
-                          }
-                          _newUserSettings.name = value;
                         },
                       ),
                     ),
@@ -119,16 +122,18 @@ class _EditProfileState extends State<EditProfile> {
                   Center(
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       width: sizeapp.width * 0.8,
                       child: TextFormField(
-                        initialValue: _currentUserSettings.email,
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.text,
+                        obscureText: false,
+                        enableSuggestions: true,
+                        autocorrect: false,
                         decoration: InputDecoration(
-                          label: Text("Email"),
+                          label: Text("University"),
                           fillColor: Colors.grey[200],
                           filled: true,
-                          hintText: "Email",
+                          hintText: "New university",
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.blue),
                               borderRadius:
@@ -142,18 +147,47 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
                         ),
-                        validator: (value) {
-                          if (value != null) {
-                            if (!EmailValidator.validate(value)) {
-                              return 'Please enter a valid e-mail address';
-                            }
+                        validator: (String? value) {
+                          if (value!.isEmpty || value == '') {
+                            university = ''; //değişmediğini belirtmek için
+                          } else {
+                            university = value;
                           }
                         },
-                        onSaved: (value) {
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      width: sizeapp.width * 0.8,
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          label: Text("Age"),
+                          fillColor: Colors.grey[200],
+                          filled: true,
+                          hintText: " New Age",
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                        ),
+                        validator: (String? value) {
                           if (value == null || value == "") {
-                            value = _currentUserSettings.email;
+                            age = "";
+                          } else {
+                            age = value;
                           }
-                          _newUserSettings.email = value;
                         },
                       ),
                     ),
@@ -165,8 +199,7 @@ class _EditProfileState extends State<EditProfile> {
                       width: sizeapp.width * 0.8,
                       child: TextFormField(
                         maxLines: 5,
-                        initialValue: _currentUserSettings.email,
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           label: Text("Bio"),
                           fillColor: Colors.grey[200],
@@ -184,34 +217,64 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
                         ),
-                        onSaved: (value) {
+                        onSaved: (String? value) {
                           if (value == null || value == "") {
-                            value = _currentUserSettings.biography;
+                            bio = "";
+                          } else {
+                            bio = value;
                           }
-                          _newUserSettings.biography = value;
                         },
                       ),
                     ),
                   ),
+                  SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      OutlinedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            setPreferences(_newUserSettings);
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 0),
-                          child: Text(
-                            'Save Changes',
-                            //TO DO:style,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: OutlinedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              if (false) {
+                              } //To Do: username already exist check
+                              else {
+                                if (_imageFile == null) {
+                                  //TO DO:profile update function
+                                  Navigator.pop(context);
+                                } else {
+                                  //TO DO:update profile  image function
+                                  Navigator.pop(context);
+                                }
+                                setState(() {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: Colors.green,
+                                      elevation: 10,
+                                      content: Text('Profile Updated'),
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 12),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                });
+                              }
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              'Save Changes',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
                           ),
+                          style: OutlinedButton.styleFrom(
+                              backgroundColor: Colors.green),
                         ),
-                        style: OutlinedButton.styleFrom(),
                       ),
                     ],
                   ),
