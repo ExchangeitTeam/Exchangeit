@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:exchangeit/routes/searchpage_location.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
@@ -157,6 +158,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           print('Email: $email');
                           setState(() {
                             loginCounter++;
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SearchMain()));
                           });
                         } /*else {
                           _showDialog('Form Error', 'Your form is invalid');
