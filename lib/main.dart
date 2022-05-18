@@ -4,6 +4,7 @@ import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/WelcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:exchangeit/routes/NotificationPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -43,7 +44,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: _isSeen ? WelcomePage() : Walkthrough(),
+      home: _isSeen ? NotificationView() : Walkthrough(),
       routes: {
         '/welcome': (context) => const WelcomePage(),
         '/walkthrough': (context) => const Walkthrough(),
