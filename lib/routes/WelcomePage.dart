@@ -1,4 +1,5 @@
-import 'package:exchangeit/routes/loginpage.dart';
+import 'package:exchangeit/routes/LoginPage.dart';
+import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:flutter/material.dart';
 
 class WelcomePage extends StatelessWidget {
@@ -8,6 +9,7 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xF3F3F3F3),
       body: SafeArea(
         child: Container(
@@ -16,14 +18,6 @@ class WelcomePage extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: <Widget>[
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Image.asset(
-                  "images/lineartop.png",
-                  width: size.width,
-                ),
-              ),
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -34,16 +28,15 @@ class WelcomePage extends StatelessWidget {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(height: 20),
+                  SizedBox(height: 70),
                   Center(
                     child: Text(
                       "Welcome Exchangeit!",
                       style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 35,
-                          color: Colors.deepOrange,
+                          color: Colors.green,
                           fontStyle: FontStyle.italic),
                       textAlign: TextAlign.center,
                     ),
@@ -60,21 +53,26 @@ class WelcomePage extends StatelessWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(25),
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignUp()));
+                            },
                             child: Padding(
                               padding: EdgeInsets.all(20),
                               child: Text(
-                                "Signup",
+                                "Sign Up",
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontStyle: FontStyle.italic,
+                                  fontSize: 22,
+                                  fontStyle: FontStyle.normal,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: Colors.green,
                               primary: Colors.black,
-                              elevation: 20,
                             ),
                           ),
                         ),
@@ -90,15 +88,16 @@ class WelcomePage extends StatelessWidget {
                             child: Padding(
                               padding: EdgeInsets.all(20),
                               child: Text(
-                                "Login",
+                                " Login ",
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontStyle: FontStyle.italic,
+                                  fontSize: 22,
+                                  fontStyle: FontStyle.normal,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: Colors.green,
                               primary: Colors.black,
                             ),
                           ),

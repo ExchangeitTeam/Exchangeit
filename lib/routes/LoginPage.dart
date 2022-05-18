@@ -1,7 +1,13 @@
 import 'dart:ui';
+import 'package:exchangeit/routes/ForgotPassPage.dart';
+import 'package:exchangeit/routes/LoggedIn.dart';
+import 'package:exchangeit/routes/home.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
+
+import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,6 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Color(0xF3F3F3F3),
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -28,15 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
               top: 0,
               left: 0,
               child: Image.asset(
-                "images/lineartop.png",
-                width: sizeapp.width,
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Image.asset(
-                "images/bottom.png",
+                "images/upper.png",
                 width: sizeapp.width * 0.8,
               ),
             ),
@@ -45,13 +45,15 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "LOGIN",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                  ),
+                  GradientText("LOGIN",
+                      style:
+                          TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                      colors: [
+                        Colors.blue,
+                        Colors.deepPurpleAccent,
+                        Colors.blueAccent,
+                        Colors.deepPurpleAccent
+                      ]),
                   SizedBox(
                     height: 20,
                   ),
@@ -85,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               return 'Cannot leave e-mail empty';
                             }
                             if (!EmailValidator.validate(value)) {
-                              return 'Please enter a yyyy valid e-mail address';
+                              return 'Please enter a valid e-mail address';
                             }
                           }
                         },
@@ -139,42 +141,54 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 15),
                     width: sizeapp.width * 0.8,
                     alignment: Alignment.topRight,
                     child: TextButton(
-                      child: Text("Forgot Password?"),
+                      child: Text("Forgot Password?",
+                          style: TextStyle(color: Colors.black)),
                       onPressed: () {
-                        print("Forgot pressed");
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgetPass()));
                       },
                     ),
                   ),
-                  OutlinedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        print('Email: $email');
-                        _formKey.currentState!.save();
-                        print('Email: $email');
-                        setState(() {
-                          loginCounter++;
-                        });
-                      } /*else {
-                        _showDialog('Form Error', 'Your form is invalid');
-                      }*/
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: Text(
-                        'Login: $loginCounter',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontSize: 20,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            "/LoggedIn", (Route<dynamic> route) => false);
+                        /* if (_formKey.currentState!.validate()) {
+                          print('Email: $email');
+                          _formKey.currentState!.save();
+                          print('Email: $email');
+                          setState(() {
+                            loginCounter++;
+                          });
+
+                        } */
+                        /*else {
+                          _showDialog('Form Error', 'Your form is invalid');
+                        }*/
+                      },
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 5),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          fixedSize: Size(sizeapp.width * 0.75, 50)),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -185,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       indent: 20.0,
                       endIndent: 10.0,
                     )),
-                    Text("OR"),
+                    Text("OR", style: TextStyle(fontSize: 15)),
                     Expanded(
                         child: Divider(
                       thickness: 2,
@@ -193,13 +207,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       endIndent: 20.0,
                     )),
                   ]),
+                  SizedBox(height: 20),
                   Container(
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: SignInButton(
                           imagePosition: ImagePosition.left, // left or right
                           buttonType: ButtonType.google,
-                          buttonSize: ButtonSize.medium,
+                          buttonSize: ButtonSize.large,
                           btnText: "Login with Google",
+                          elevation: 10,
                           onPressed: () {
                             print('Google Pressed');
                           })),
@@ -209,11 +225,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: SignInButton(
                           imagePosition: ImagePosition.left, // left or right
                           buttonType: ButtonType.facebook,
-                          buttonSize: ButtonSize.medium,
+                          buttonSize: ButtonSize.large,
                           btnText: "Login with Facebook",
+                          elevation: 10,
                           onPressed: () {
                             print('Facebook Pressed');
                           })),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Need an Account? "),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.popAndPushNamed(context, "SignUp");
+                          },
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 2,
+                            ),
+                          ))
+                    ],
+                  )
                 ],
               ),
             ),
