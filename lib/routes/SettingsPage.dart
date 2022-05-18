@@ -44,21 +44,6 @@ class _SettingsState extends State<Settings> {
           TextButton.icon(
             onPressed: () {},
             icon: Icon(
-              Icons.photo_camera,
-              size: 30,
-            ),
-            label: Text(
-              "Change profile photo",
-              style: TextStyle(fontSize: 20),
-            ),
-            style: TextButton.styleFrom(
-                alignment: Alignment.centerLeft,
-                primary: Colors.black,
-                fixedSize: Size(size.width, size.height * 0.1)),
-          ),
-          TextButton.icon(
-            onPressed: () {},
-            icon: Icon(
               Icons.visibility_off,
               size: 30,
             ),
