@@ -57,7 +57,9 @@ class _SettingsState extends State<Settings> {
                 fixedSize: Size(size.width, size.height * 0.1)),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, 'PassChange');
+            },
             icon: Icon(
               Icons.password,
               size: 30,
