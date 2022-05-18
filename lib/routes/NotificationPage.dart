@@ -10,51 +10,67 @@ class NotificationView extends StatefulWidget {
 }
 
 class _NotificationViewState extends State<NotificationView> {
-  static String actionHolder = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi lorem, volutpat non molestie ac, condimentum sit amet mauris.";
+  static String actionHolder =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi lorem, volutpat non molestie ac, condimentum sit amet mauris.";
 
   List<NotificationObj> notifications = [
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
-    NotificationObj(profilePic: Image.network(
-        "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"
-    ),
-        action: actionHolder, timestamp: "2hrs ago", user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
+    NotificationObj(
+        profilePic: Image.network(
+            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
+        action: actionHolder,
+        timestamp: "2hrs ago",
+        user: "Ahmet"),
   ];
 
-  void deleteNotification(NotificationObj curr){
+  void deleteNotification(NotificationObj curr) {
     setState(() {
       notifications.remove(curr);
     });
@@ -65,28 +81,28 @@ class _NotificationViewState extends State<NotificationView> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 0, 170, 229),
         title: const Text(
-          "Activities",
+          "Notifications",
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            children: notifications.map((notification) => NotificationTile(
-              notificationObj: notification,
-              remove: () {
-                deleteNotification(notification);
-              }
-            )).toList(),
+            children: notifications
+                .map((notification) => NotificationTile(
+                    notificationObj: notification,
+                    remove: () {
+                      deleteNotification(notification);
+                    }))
+                .toList(),
           ),
         ),
       ),
     );
   }
 }
-

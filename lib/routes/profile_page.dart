@@ -18,7 +18,7 @@ class _ProfileViewState extends State<ProfileView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 0, 170, 229),
         elevation: 0.0,
         title: Text(
           "Ayşe Aydemir",
@@ -33,7 +33,9 @@ class _ProfileViewState extends State<ProfileView> {
               Icons.settings,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, 'Settings');
+            },
           ),
         ],
       ),

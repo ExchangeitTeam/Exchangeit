@@ -159,10 +159,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(25),
                     child: OutlinedButton(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoggedIn()));
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            "/LoggedIn", (Route<dynamic> route) => false);
                         /* if (_formKey.currentState!.validate()) {
                           print('Email: $email');
                           _formKey.currentState!.save();
