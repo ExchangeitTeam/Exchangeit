@@ -10,8 +10,13 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [Text("Add Post Page")],
-    );
+    return Scaffold(
+        appBar: AppBar(
+      title: Text('Exchangeit'),
+      elevation: 0,
+      foregroundColor: Colors.white,
+      backgroundColor: Color.fromARGB(255, 0, 170, 229),
+      centerTitle: true,
+    ));
   }
 }
