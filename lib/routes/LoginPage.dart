@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
+import 'package:exchangeit/routes/home.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
@@ -157,14 +158,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(25),
                     child: OutlinedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomeScreen()));
+                        /* if (_formKey.currentState!.validate()) {
                           print('Email: $email');
                           _formKey.currentState!.save();
                           print('Email: $email');
                           setState(() {
                             loginCounter++;
                           });
-                        } /*else {
+
+                        } */
+                        /*else {
                           _showDialog('Form Error', 'Your form is invalid');
                         }*/
                       },
@@ -172,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 50, vertical: 5),
                         child: Text(
-                          'Login: $loginCounter',
+                          'Login',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,

@@ -1,4 +1,9 @@
+import 'package:exchangeit/routes/SettingsPage.dart';
+import 'package:exchangeit/routes/profile_page.dart';
+import 'package:exchangeit/routes/searchpage_location.dart';
 import 'package:flutter/material.dart';
+
+import 'NotificationPage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,11 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   PageController pageController = PageController();
 
-  void onTapped(int index){
+  void onTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    pageController.animateToPage(index, duration: Duration(milliseconds: 1000), curve: Curves.ease);
+    pageController.animateToPage(index,
+        duration: Duration(milliseconds: 1000), curve: Curves.ease);
   }
 
   @override
@@ -37,30 +43,31 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-
       body: PageView(
         controller: pageController,
         children: [
-          Container(color: Colors.red),
-          Container(color: Colors.orange),
-          Container(color: Colors.yellow),
-          Container(color: Colors.green),
-          Container(color: Colors.purple),
+          Settings(),
+          SearchMain(),
+          Settings(),
+          NotificationView(),
+          ProfileView()
         ],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-            BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Add'),
-            BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-            BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue.shade600,
-          unselectedItemColor: Colors.black,
-          onTap: onTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline), label: 'Add'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications), label: 'Notifications'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle), label: 'Account'),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue.shade600,
+        unselectedItemColor: Colors.black,
+        onTap: onTapped,
       ),
     );
   }

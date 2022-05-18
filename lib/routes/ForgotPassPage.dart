@@ -1,6 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 
 class ForgetPass extends StatefulWidget {
   const ForgetPass({Key? key}) : super(key: key);
@@ -119,7 +119,7 @@ class _ForgetPassState extends State<ForgetPass> {
     );
   }
 
-  Future _resetPass() async {
+  /*Future _resetPass() async {
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: email)
@@ -127,5 +127,5 @@ class _ForgetPassState extends State<ForgetPass> {
     } on FirebaseAuthException catch (mes) {
       print(mes);
     }
-  }
+  } */
 }

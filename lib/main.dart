@@ -1,4 +1,5 @@
 import 'package:exchangeit/routes/LoginPage.dart';
+import 'package:exchangeit/routes/OpeningPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:flutter/material.dart';
@@ -18,36 +19,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isSeen = false;
-  Future FirstSeen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool _seen = await prefs.getBool('seen') ?? false;
-    print("ılk ${_seen},${_isSeen}");
-    if (_seen == true) {
-      setState(() {
-        _isSeen = true;
-      });
-    } else {
-      setState(() {
-        _isSeen = false;
-      });
-    }
-    print("SONRA ${_seen},${_isSeen}");
-  }
-
-  @override
-  void initState() {
-    FirstSeen();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: _isSeen ? NotificationView() : Walkthrough(),
+      home: Opening(),
       routes: {
-        '/welcome': (context) => const WelcomePage(),
-        '/walkthrough': (context) => const Walkthrough(),
+        '/Welcome': (context) => const WelcomePage(),
+        '/Walkthrough': (context) => const Walkthrough(),
         'SignUp': (context) => SignUp(),
         'Login': (context) => LoginScreen(),
       },
