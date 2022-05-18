@@ -1,6 +1,6 @@
 import 'package:exchangeit/routes/NotificationPage.dart';
 import 'package:exchangeit/routes/profile_page.dart';
-import 'package:exchangeit/routes/searchpage_location.dart';
+import 'package:exchangeit/routes/SearchPage.dart';
 import 'package:flutter/material.dart';
 
 import 'AddPostPage.dart';
@@ -15,7 +15,8 @@ class LoggedIn extends StatefulWidget {
 
 class _LoggedInState extends State<LoggedIn> {
   int _selectedIndex = 0;
-  static List _BarOptions = [
+  PageController _PageController = PageController();
+  List<Widget> _BarOptions = [
     FeedPage(),
     SearchMain(),
     AddPost(),
@@ -30,6 +31,10 @@ class _LoggedInState extends State<LoggedIn> {
     "Profile"
   ];
   void _BarTapped(int index) {
+    _PageController.jumpToPage(index);
+  }
+
+  void _PageChanged(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -38,23 +43,11 @@ class _LoggedInState extends State<LoggedIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Exchangeit'),
-        elevation: 0,
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blue.shade600,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.send,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Center(
-        child: _BarOptions.elementAt(_selectedIndex),
+      body: PageView(
+        controller: _PageController,
+        children: _BarOptions,
+        onPageChanged: _PageChanged,
+        physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -67,10 +60,10 @@ class _LoggedInState extends State<LoggedIn> {
           BottomNavigationBarItem(
               icon: Icon(Icons.account_circle), label: 'Account'),
         ],
-        currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue.shade600,
         unselectedItemColor: Colors.black,
         onTap: _BarTapped,
+        currentIndex: _selectedIndex,
       ),
     );
   }
