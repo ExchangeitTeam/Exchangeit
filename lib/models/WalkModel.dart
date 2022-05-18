@@ -93,7 +93,7 @@ class WalkItem extends StatelessWidget {
                   ? OutlinedButton(
                       onPressed: () {
                         setSeenTrue();
-                        Navigator.popAndPushNamed(context, "/welcome");
+                        Navigator.popAndPushNamed(context, "/Welcome");
                       },
                       child: Text(
                         "Get Started",

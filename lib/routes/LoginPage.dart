@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
+import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/home.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -161,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
+                                builder: (context) => LoggedIn()));
                         /* if (_formKey.currentState!.validate()) {
                           print('Email: $email');
                           _formKey.currentState!.save();
