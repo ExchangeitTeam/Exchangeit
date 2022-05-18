@@ -1,3 +1,4 @@
+import 'package:exchangeit/routes/ChangePassword.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/LoginPage.dart';
 import 'package:exchangeit/routes/OpeningPage.dart';
@@ -32,6 +33,7 @@ class _MyAppState extends State<MyApp> {
         '/Login': (context) => LoginScreen(),
         '/LoggedIn': (context) => LoggedIn(),
         'Settings': (context) => Settings(),
+        'PassChange': (context) => PassChange(),
       },
     );
   }
