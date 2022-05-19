@@ -9,21 +9,3 @@ class SettingUser {
   SettingUser(
       this.username, this.university, this.age, this.bio, this.profile_image);
 }
-
-class Post {
-  String? postID;
-  String? text;
-  var date;
-  List<String?>? comments;
-  int? likeCount;
-  int? commentCount;
-
-  Post({
-    this.postID,
-    this.text,
-    this.comments,
-    this.date,
-    this.likeCount,
-    this.commentCount,
-  });
-}

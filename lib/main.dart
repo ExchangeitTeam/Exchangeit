@@ -5,6 +5,8 @@ import 'package:exchangeit/routes/OpeningPage.dart';
 import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
+import 'package:exchangeit/routes/post_photo.dart';
+import 'package:exchangeit/routes/share_post.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/WelcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,6 +36,8 @@ class _MyAppState extends State<MyApp> {
         '/LoggedIn': (context) => LoggedIn(),
         'Settings': (context) => Settings(),
         'PassChange': (context) => PassChange(),
+        'SharePost': (context) => SharePostScreen(),
+        'SharePhoto': (context) => SharePhoto(),
       },
     );
   }

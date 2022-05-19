@@ -20,6 +20,11 @@ class _PassChangeState extends State<PassChange> {
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Text("Change Password"),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
       body: Container(
         decoration: BoxDecoration(color: Color(0xF3F3F3F3)),
         child: Container(

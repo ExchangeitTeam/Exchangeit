@@ -1,3 +1,4 @@
+import 'package:exchangeit/Objects/PostClass.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -135,34 +136,25 @@ class PostInfo extends StatelessWidget {
 }
 
 class _PostState extends State<Post> {
-  final List<PostInfo> posts = [
-    PostInfo(
-      avatar:
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-      name: 'Ayşe Aydemir',
-      timeAgo: '5m',
-      text: 'Hello World.',
-      likes: '23K',
-      comments: '243',
+  final List<TextPost> posts = [
+    TextPost(
+      text: "Munich is beautiful",
+      isMine: true,
+      profileImage: NetworkImage(
+          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
+      Location: "Munich",
+      username: "Ayşe Aydemir",
+      postId: '10',
     ),
-    PostInfo(
-      avatar:
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-      name: 'Ayşe Aydemir',
-      timeAgo: '12m',
-      text: 'Hello World',
-      likes: '4K',
-      comments: '46',
-    ),
-    PostInfo(
-      avatar:
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-      name: 'Ayşe Aydemir',
-      timeAgo: '20m',
-      text: 'Hello World',
-      likes: '20K',
-      comments: '305',
-    ),
+    TextPost(
+      text: "Sabancı is the best university",
+      isMine: true,
+      profileImage: NetworkImage(
+          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
+      Location: "Istanbul",
+      username: "Ayşe Aydemir",
+      postId: '10',
+    )
   ];
 
   @override

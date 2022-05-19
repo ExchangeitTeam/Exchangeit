@@ -1,6 +1,7 @@
 import 'package:exchangeit/routes/NotificationPage.dart';
 import 'package:exchangeit/routes/profile_page.dart';
 import 'package:exchangeit/routes/SearchPage.dart';
+import 'package:exchangeit/routes/share_post.dart';
 import 'package:flutter/material.dart';
 
 import 'AddPostPage.dart';
@@ -19,7 +20,7 @@ class _LoggedInState extends State<LoggedIn> {
   List<Widget> _BarOptions = [
     FeedPage(),
     SearchMain(),
-    AddPost(),
+    SharePostScreen(),
     NotificationView(),
     ProfileView(),
   ];
@@ -27,7 +28,7 @@ class _LoggedInState extends State<LoggedIn> {
     "Home",
     "Search",
     "Add Post",
-    "Noticications",
+    "Notifications",
     "Profile"
   ];
   void _BarTapped(int index) {

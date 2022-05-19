@@ -11,7 +11,7 @@ class NotificationView extends StatefulWidget {
 
 class _NotificationViewState extends State<NotificationView> {
   static String actionHolder =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi lorem, volutpat non molestie ac, condimentum sit amet mauris.";
+      "Ahmet liked your photo,Lorem ipsum dolor sit amet,";
 
   List<NotificationObj> notifications = [
     NotificationObj(
@@ -19,55 +19,37 @@ class _NotificationViewState extends State<NotificationView> {
             "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
         action: actionHolder,
         timestamp: "2hrs ago",
-        user: "Ahmet"),
+        user: "Ayşe"),
     NotificationObj(
         profilePic: Image.network(
             "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
         action: actionHolder,
         timestamp: "2hrs ago",
-        user: "Ahmet"),
+        user: "Ayşe"),
     NotificationObj(
         profilePic: Image.network(
             "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
         action: actionHolder,
         timestamp: "2hrs ago",
-        user: "Ahmet"),
+        user: "Ayşe"),
     NotificationObj(
         profilePic: Image.network(
             "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
         action: actionHolder,
         timestamp: "2hrs ago",
-        user: "Ahmet"),
+        user: "Ayşe"),
     NotificationObj(
         profilePic: Image.network(
             "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
         action: actionHolder,
         timestamp: "2hrs ago",
-        user: "Ahmet"),
+        user: "Ayşe"),
     NotificationObj(
         profilePic: Image.network(
             "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
         action: actionHolder,
         timestamp: "2hrs ago",
-        user: "Ahmet"),
-    NotificationObj(
-        profilePic: Image.network(
-            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
-        action: actionHolder,
-        timestamp: "2hrs ago",
-        user: "Ahmet"),
-    NotificationObj(
-        profilePic: Image.network(
-            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
-        action: actionHolder,
-        timestamp: "2hrs ago",
-        user: "Ahmet"),
-    NotificationObj(
-        profilePic: Image.network(
-            "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg"),
-        action: actionHolder,
-        timestamp: "2hrs ago",
-        user: "Ahmet"),
+        user: "Ayşe"),
   ];
 
   void deleteNotification(NotificationObj curr) {

@@ -34,14 +34,16 @@ class NotificationTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                CircleAvatar(
-                  child: ClipOval(
-                      child: Image.network(
-                    "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg",
-                    fit: BoxFit.cover,
-                  )),
-                  backgroundColor: Colors.white,
-                  radius: 39,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                  child: CircleAvatar(
+                    child: Image.network(
+                      "https://muze.gen.tr/img/maiden_tower_home.jpg",
+                      fit: BoxFit.cover,
+                    ),
+                    backgroundColor: Colors.white,
+                    radius: 30,
+                  ),
                 ),
                 IconButton(
                     onPressed: remove,
