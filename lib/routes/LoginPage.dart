@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/home.dart';
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xF3F3F3F3),
+      backgroundColor: AppColors.appBackColor,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -65,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          fillColor: Colors.grey[200],
+                          fillColor: AppColors.textFormColor,
                           filled: true,
                           hintText: "Email",
                           enabledBorder: OutlineInputBorder(
@@ -108,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          fillColor: Colors.grey[200],
+                          fillColor: AppColors.textFormColor,
                           filled: true,
                           hintText: "Password",
                           enabledBorder: OutlineInputBorder(
@@ -187,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColors.buttonColor,
                           fixedSize: Size(sizeapp.width * 0.75, 50)),
                     ),
                   ),

@@ -7,6 +7,7 @@ import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:exchangeit/routes/post_photo.dart';
+import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/WelcomePage.dart';
@@ -39,7 +40,8 @@ class _MyAppState extends State<MyApp> {
         'PassChange': (context) => PassChange(),
         'SharePost': (context) => SharePostScreen(),
         'SharePhoto': (context) => SharePhoto(),
-        'DM': (context) => DMPage()
+        'DM': (context) => DMPage(),
+        'PrivProfile': (context) => privateProfileView(),
       },
     );
   }

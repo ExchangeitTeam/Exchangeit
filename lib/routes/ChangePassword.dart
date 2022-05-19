@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 
 class PassChange extends StatefulWidget {
@@ -23,7 +24,7 @@ class _PassChangeState extends State<PassChange> {
       appBar: AppBar(
         title: Text("Change Password"),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.appBarColor,
       ),
       body: Container(
         decoration: BoxDecoration(color: Color(0xF3F3F3F3)),
@@ -56,7 +57,7 @@ class _PassChangeState extends State<PassChange> {
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 hintText: "Enter email",
-                                fillColor: Colors.grey[200],
+                                fillColor: AppColors.textFormColor,
                                 enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.blue),
                                     borderRadius:
@@ -94,7 +95,7 @@ class _PassChangeState extends State<PassChange> {
                                 enableSuggestions: true,
                                 autocorrect: false,
                                 decoration: InputDecoration(
-                                  fillColor: Colors.grey[200],
+                                  fillColor: AppColors.textFormColor,
                                   filled: true,
                                   hintText: "Current Password",
                                   enabledBorder: OutlineInputBorder(
@@ -134,7 +135,7 @@ class _PassChangeState extends State<PassChange> {
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 hintText: "Enter new password",
-                                fillColor: Colors.grey[200],
+                                fillColor: AppColors.textFormColor,
                                 enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.blue),
                                     borderRadius:
@@ -168,7 +169,7 @@ class _PassChangeState extends State<PassChange> {
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 hintText: "Enter new password again",
-                                fillColor: Colors.grey[200],
+                                fillColor: AppColors.textFormColor,
                                 enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.blue),
                                     borderRadius:

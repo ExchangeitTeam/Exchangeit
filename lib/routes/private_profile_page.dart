@@ -1,3 +1,4 @@
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/private_profile_page_base_screen.dart';
 import 'package:flutter/rendering.dart';
@@ -15,10 +16,10 @@ class _privateProfileViewState extends State<privateProfileView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.appBackColor,
         elevation: 0.0,
         title: Text(
-          "Ayşe Aydemir",
+          "Mehmet Sürünen",
           style: TextStyle(
             color: Colors.white,
           ),

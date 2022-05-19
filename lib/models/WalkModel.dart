@@ -1,5 +1,7 @@
+import 'package:exchangeit/models/Styles.dart';
 import 'package:exchangeit/routes/WelcomePage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WalkthroughScreen {
@@ -96,9 +98,7 @@ class WalkItem extends StatelessWidget {
                         setSeenTrue();
                         Navigator.popAndPushNamed(context, "/Welcome");
                       },
-                      child: Text(
-                        "Get Started",
-                      ),
+                      child: Text("Get Started", style: AppStyles.buttonText),
                     )
                   : SizedBox(height: 48)
             ],

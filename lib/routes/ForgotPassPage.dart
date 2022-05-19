@@ -1,5 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+
+import '../models/Colors.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
 class ForgetPass extends StatefulWidget {
@@ -25,6 +27,7 @@ class _ForgetPassState extends State<ForgetPass> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Reset Password'),
+        backgroundColor: AppColors.appBarColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

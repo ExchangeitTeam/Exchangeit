@@ -1,3 +1,4 @@
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 
 import '../Objects/PostClass.dart';
@@ -57,7 +58,7 @@ class _FeedPageState extends State<FeedPage> {
         title: Text('Exchangeit'),
         elevation: 0,
         foregroundColor: Colors.white,
-        backgroundColor: Color.fromARGB(255, 0, 170, 229),
+        backgroundColor: AppColors.appBarColor,
         centerTitle: true,
         actions: [
           IconButton(

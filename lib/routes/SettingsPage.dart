@@ -1,4 +1,5 @@
 import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SettingsState extends State<Settings> {
       appBar: AppBar(
         title: Text("Settings"),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.appBarColor,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

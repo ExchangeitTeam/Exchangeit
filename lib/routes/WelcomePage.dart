@@ -1,3 +1,5 @@
+import 'package:exchangeit/models/Colors.dart';
+import 'package:exchangeit/models/Styles.dart';
 import 'package:exchangeit/routes/LoginPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,7 @@ class WelcomePage extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xF3F3F3F3),
+      backgroundColor: AppColors.appBackColor,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -33,11 +35,7 @@ class WelcomePage extends StatelessWidget {
                   Center(
                     child: Text(
                       "Welcome Exchangeit!",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 35,
-                          color: Colors.green,
-                          fontStyle: FontStyle.italic),
+                      style: AppStyles.WelcomeText,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -71,7 +69,7 @@ class WelcomePage extends StatelessWidget {
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: AppColors.buttonColor,
                               primary: Colors.black,
                             ),
                           ),
@@ -97,7 +95,7 @@ class WelcomePage extends StatelessWidget {
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: AppColors.buttonColor,
                               primary: Colors.black,
                             ),
                           ),

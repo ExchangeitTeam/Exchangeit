@@ -1,3 +1,4 @@
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/post_text.dart';
@@ -27,7 +28,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.blue.shade600,
+        backgroundColor: AppColors.appBarColor,
         actions: [
           const Spacer(),
           TextButton(
@@ -53,7 +54,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(null), label: 'Photo'),
           BottomNavigationBarItem(icon: Icon(null), label: 'Text'),
