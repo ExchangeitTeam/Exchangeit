@@ -1,4 +1,5 @@
 import 'package:exchangeit/routes/ChangePassword.dart';
+import 'package:exchangeit/routes/DMPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/LoginPage.dart';
 import 'package:exchangeit/routes/OpeningPage.dart';
@@ -38,6 +39,7 @@ class _MyAppState extends State<MyApp> {
         'PassChange': (context) => PassChange(),
         'SharePost': (context) => SharePostScreen(),
         'SharePhoto': (context) => SharePhoto(),
+        'DM': (context) => DMPage()
       },
     );
   }

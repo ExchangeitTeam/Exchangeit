@@ -65,7 +65,9 @@ class _FeedPageState extends State<FeedPage> {
               Icons.send,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, "DM");
+            },
           ),
         ],
       ),

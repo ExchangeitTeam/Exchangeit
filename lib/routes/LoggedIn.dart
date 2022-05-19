@@ -4,7 +4,6 @@ import 'package:exchangeit/routes/SearchPage.dart';
 import 'package:exchangeit/routes/share_post.dart';
 import 'package:flutter/material.dart';
 
-import 'AddPostPage.dart';
 import 'FeedPage.dart';
 
 class LoggedIn extends StatefulWidget {
