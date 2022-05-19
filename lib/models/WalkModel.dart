@@ -86,6 +86,7 @@ class WalkItem extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.black, fontSize: 18),
           ),
+          SizedBox(height: 25),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
