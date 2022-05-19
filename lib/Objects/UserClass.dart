@@ -22,7 +22,6 @@ class User {
   String profile_image = '';
   List<User> followers = [];
   List<User> following = [];
-  List<String> comments = [];
   List<PostBase> Posts = [];
 
   User(
