@@ -10,6 +10,6 @@ class AppColors {
   static const Color bottomBarLogoColor = Colors.black87;
   static const Color postBackgroundColor = Color(0xFFFFFFFF);
   static const Color postTextColor = Colors.white;
-  static const Color locationTextColor = Colors.grey;
+  static const Color locationTextColor = Colors.black;
   static const Color hintTextColor = Color(0x9E5A5A5A);
 }
