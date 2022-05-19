@@ -1,3 +1,4 @@
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/Objects/chatMessage.dart';
 
@@ -16,6 +17,7 @@ class _DialogPageState extends State<DialogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.appBarColor,
         elevation: 0,
         flexibleSpace: SafeArea(
           child: Container(

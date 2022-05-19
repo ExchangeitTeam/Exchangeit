@@ -1,3 +1,4 @@
+import 'package:exchangeit/models/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/Objects/DMClass.dart';
 import 'package:exchangeit/designs/DMUi.dart';
@@ -11,25 +12,25 @@ class DMPage extends StatelessWidget {
             "https://i.insider.com/5cb8b133b8342c1b45130629?width=700"),
         time: "Now"),
     DMObj(
-        name: "Glady's Murphy",
+        name: "Murphy",
         msgTxt: "That's Great",
         profileImg: const NetworkImage(
             "https://i.insider.com/61f14a0ce996470011907119?width=600&format=jpeg&auto=webp"),
         time: "Yesterday"),
     DMObj(
-        name: "Jorge Henry",
+        name: "Henry",
         msgTxt: "Hey where are you?",
         profileImg: const NetworkImage(
             "https://i.insider.com/5cb8b133b8342c1b45130629?width=700"),
         time: "31 Mar"),
     DMObj(
-        name: "Philip Fox",
+        name: "Philip",
         msgTxt: "Busy! Call me in 20 mins",
         profileImg: const NetworkImage(
             "https://i.insider.com/61f14a0ce996470011907119?width=600&format=jpeg&auto=webp"),
         time: "28 Mar"),
     DMObj(
-        name: "Debra Hawkins",
+        name: "Debra",
         msgTxt: "Thankyou, It's awesome",
         profileImg: const NetworkImage(
             "https://i.insider.com/5cb8b133b8342c1b45130629?width=700"),
@@ -59,7 +60,7 @@ class DMPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.blue,
+          backgroundColor: AppColors.appBarColor,
           title: const Text(
             "Direct Messages",
             style: TextStyle(
