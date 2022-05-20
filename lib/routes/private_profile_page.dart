@@ -16,7 +16,7 @@ class _privateProfileViewState extends State<privateProfileView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.appBackColor,
+        backgroundColor: AppColors.appBarColor,
         elevation: 0.0,
         title: Text(
           "Mehmet Sürünen",
@@ -31,7 +31,9 @@ class _privateProfileViewState extends State<privateProfileView> {
               Icons.settings,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, 'Settings');
+            },
           ),
         ],
       ),

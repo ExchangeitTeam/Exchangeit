@@ -17,7 +17,7 @@ class _FeedPageState extends State<FeedPage> {
           'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
       image: NetworkImage(
           "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"),
-      username: "Ayşe Aydemir",
+      username: "Ayse Aydemir",
       isMine: true,
       postId: '1',
       Location: "Everest",
@@ -36,7 +36,7 @@ class _FeedPageState extends State<FeedPage> {
           'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
       image: NetworkImage(
           "https://i.neredekal.com/i/neredekal/75/425x0/604de59d067127e05588bb7b"),
-      username: "İsmail Dag",
+      username: "Ismail Dag",
       isMine: true,
       postId: '2',
       Location: "Ardahan",
@@ -47,7 +47,7 @@ class _FeedPageState extends State<FeedPage> {
       profileImage: NetworkImage(
           'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
       Location: "Munich",
-      username: "Ayşe Aydemir",
+      username: "Ayse Aydemir",
       postId: '10',
     ),
   ];

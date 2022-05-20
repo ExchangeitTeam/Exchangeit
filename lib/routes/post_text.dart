@@ -17,7 +17,7 @@ class _ShareTextState extends State<ShareText> {
             child: TextField(
               decoration: InputDecoration(
                 labelText: 'Tell others about yourself...',
-                labelStyle: TextStyle(fontSize: 24, color: Colors.black),
+                labelStyle: TextStyle(fontSize: 24, color: Colors.grey),
                 border: InputBorder.none,
               ),
               obscureText: false,

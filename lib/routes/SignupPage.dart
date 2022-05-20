@@ -1,4 +1,6 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:exchangeit/models/Styles.dart';
+import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -24,9 +26,9 @@ class _SignUpState extends State<SignUp> {
       body: SafeArea(
         child: Container(
           //margin: EdgeInsets.fromLTRB(0, 10, 0, 25),
-          padding: EdgeInsets.fromLTRB(0, 75, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 45, 0, 0),
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 110),
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 30),
             child: SingleChildScrollView(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -78,18 +80,9 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Username",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
@@ -119,18 +112,9 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Password",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
@@ -157,18 +141,9 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Email",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
@@ -195,18 +170,9 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Age",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
@@ -237,18 +203,9 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Exchange University",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
@@ -269,10 +226,8 @@ class _SignUpState extends State<SignUp> {
                         borderRadius: BorderRadius.circular(25),
                         child: OutlinedButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Settings()));
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                "/LoggedIn", (Route<dynamic> route) => false);
                           },
                           child: Padding(
                             padding: EdgeInsets.all(20),
@@ -298,7 +253,7 @@ class _SignUpState extends State<SignUp> {
                           Text("Already a user? "),
                           TextButton(
                               onPressed: () {
-                                Navigator.popAndPushNamed(context, "Login");
+                                Navigator.popAndPushNamed(context, "/Login");
                               },
                               child: Text(
                                 "Login",

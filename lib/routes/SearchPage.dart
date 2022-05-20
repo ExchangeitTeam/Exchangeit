@@ -326,28 +326,33 @@ class _SearchPeopleState extends State<SearchPeople> {
                 color: Color.fromARGB(255, 0, 170, 229),
                 thickness: 5.0,
               ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, 'PrivProfile');
+                },
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
+                        ),
+                        radius: 25,
                       ),
-                      radius: 25,
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    '@AhmetYerebakan',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25.0,
+                    SizedBox(
+                      width: 10,
                     ),
-                  )
-                ],
+                    Text(
+                      '@AhmetYerebakan',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 25.0,
+                      ),
+                    )
+                  ],
+                ),
               ),
               Divider(
                 color: Color.fromARGB(255, 0, 170, 229),

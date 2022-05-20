@@ -143,7 +143,7 @@ class _PostState extends State<Post> {
       profileImage: NetworkImage(
           'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
       Location: "Munich",
-      username: "Ayşe Aydemir",
+      username: "Ayse Aydemir",
       postId: '10',
     ),
     TextPost(
@@ -152,7 +152,7 @@ class _PostState extends State<Post> {
       profileImage: NetworkImage(
           'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
       Location: "Istanbul",
-      username: "Ayşe Aydemir",
+      username: "Ayse Aydemir",
       postId: '10',
     )
   ];

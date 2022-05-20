@@ -86,7 +86,7 @@ class WalkItem extends StatelessWidget {
           Text(
             WalkPagesList[index].bottom,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black, fontSize: 18),
+            style: AppStyles.WalkTextStyle,
           ),
           SizedBox(height: 25),
           Row(

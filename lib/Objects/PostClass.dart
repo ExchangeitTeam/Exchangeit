@@ -1,3 +1,4 @@
+import 'package:exchangeit/models/Styles.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -171,9 +172,8 @@ class PostHeader extends StatelessWidget {
                       children: [
                         Align(
                           alignment: Alignment.bottomLeft,
-                          child: Text(
-                            username,
-                          ),
+                          child:
+                              Text(username, style: AppStyles.profileTextName),
                         ),
                         SizedBox(
                           height: 5,

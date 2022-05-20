@@ -54,9 +54,12 @@ class _SharePostScreenState extends State<SharePostScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.grey[700],
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(null), label: 'Photo'),
+          BottomNavigationBarItem(
+              icon: Icon(null),
+              label: 'Photo',
+              backgroundColor: AppColors.buttonColor),
           BottomNavigationBarItem(icon: Icon(null), label: 'Text'),
         ],
         currentIndex: _selectedIndex,

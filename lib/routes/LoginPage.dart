@@ -239,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text("Need an Account? "),
                       TextButton(
                           onPressed: () {
-                            Navigator.popAndPushNamed(context, "SignUp");
+                            Navigator.popAndPushNamed(context, "/SignUp");
                           },
                           child: Text(
                             "Sign Up",

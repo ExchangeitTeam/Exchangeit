@@ -1,4 +1,4 @@
-import 'package:exchangeit/routes/ChangePassword.dart';
+import 'package:exchangeit/SettingsOptions/ChangePassword.dart';
 import 'package:exchangeit/routes/DMPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/LoginPage.dart';
