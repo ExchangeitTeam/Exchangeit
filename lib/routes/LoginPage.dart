@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
-import 'package:exchangeit/routes/home.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
