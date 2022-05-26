@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:exchangeit/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,16 +34,6 @@ class _OpeningState extends State<Opening> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Align(
-        alignment: FractionalOffset.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Loading..."),
-          ],
-        ),
-      ),
-    );
+    return WaitingScreen();
   }
 }
