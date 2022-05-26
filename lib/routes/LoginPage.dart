@@ -1,12 +1,16 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/auth.dart';
 import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,6 +25,69 @@ class _LoginScreenState extends State<LoginScreen> {
   int loginCounter = 0;
   String email = '';
   String pass = '';
+
+  final AuthService _auth = AuthService();
+  Future loginUser() async {
+    dynamic result = await _auth.signInWithEmailPass(email, pass);
+    if (result is String) {
+      _showDialog('Login Error', result);
+    } else if (result is User) {
+      //User signed in
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          "/LoggedIn", (Route<dynamic> route) => false);
+    } else {
+      _showDialog('Login Error', result.toString());
+    }
+  }
+
+  Future<void> _showDialog(String title, String message) async {
+    bool isAndroid = Platform.isAndroid;
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          if (isAndroid) {
+            return AlertDialog(
+              title: Text(title),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Text(message),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          } else {
+            return CupertinoAlertDialog(
+              title: Text(title),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Text(message),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          }
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size sizeapp = MediaQuery.of(context).size;
@@ -158,21 +225,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(25),
                     child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            "/LoggedIn", (Route<dynamic> route) => false);
-                        /* if (_formKey.currentState!.validate()) {
-                          print('Email: $email');
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          print('Email: $email');
+
+                          await loginUser();
+
                           setState(() {
                             loginCounter++;
                           });
-
-                        } */
-                        /*else {
+                        } else {
                           _showDialog('Form Error', 'Your form is invalid');
-                        }*/
+                        }
                       },
                       child: Padding(
                         padding:
