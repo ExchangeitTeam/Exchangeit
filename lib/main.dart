@@ -11,6 +11,7 @@ import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -90,8 +91,7 @@ class _MyfirebaseappState extends State<Myfirebaseapp> {
 
 class MainBase extends StatelessWidget {
   const MainBase({Key? key}) : super(key: key);
-  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-
+  static FirebaseAnalytics appanalytics = FirebaseAnalytics.instance;
   @override
   Widget build(BuildContext context) {
     return StreamProvider<appUser?>.value(
@@ -100,19 +100,19 @@ class MainBase extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {
-          '/': (context) => Opening(),
+          '/': (context) => Opening(analytics: appanalytics),
           '/Welcome': (context) => const WelcomePage(),
           '/Walkthrough': (context) => const Walkthrough(),
           '/SignUp': (context) => SignUp(),
           '/Login': (context) => LoginScreen(),
-          '/LoggedIn': (context) => LoggedIn(),
+          '/LoggedIn': (context) => LoggedIn(analytics: appanalytics),
           'Settings': (context) => Settings(),
           'PassChange': (context) => PassChange(),
           'SharePost': (context) => SharePostScreen(),
           'SharePhoto': (context) => SharePhoto(),
           'DM': (context) => DMPage(),
           'PrivProfile': (context) => privateProfileView(),
-          'ProviderMain': (context) => ProvideMain(),
+          'ProviderMain': (context) => ProvideMain(analytics: appanalytics),
         },
       ),
     );
@@ -162,8 +162,8 @@ class WaitingScreen extends StatelessWidget {
 }
 
 class ProvideMain extends StatelessWidget {
-  const ProvideMain({Key? key}) : super(key: key);
-
+  const ProvideMain({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,7 +176,7 @@ class ProvideMain extends StatelessWidget {
               return ErrorScreen(message: 'Error Occured,try again');
             } else if (snapshot.hasData) {
               print(snapshot);
-              return LoggedIn();
+              return LoggedIn(analytics: analytics);
             } else {
               return Text('Some strange things');
             }
