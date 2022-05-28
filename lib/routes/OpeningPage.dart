@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:exchangeit/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,10 +22,19 @@ class _OpeningState extends State<Opening> {
   Future FirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = await prefs.getBool('seen') ?? false;
+    final curruser = FirebaseAuth.instance.currentUser;
     print("ılk ${_seen},");
     if (_seen == true) {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/Welcome', (Route<dynamic> route) => false);
+      if (curruser != null) {
+        print("Username: ${curruser.displayName}");
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/LoggedIn', (Route<dynamic> route) => false);
+        /*Navigator.pushNamed(context, '/LoggedIn');*/
+      } else {
+        print("Still in Login");
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/Login', (Route<dynamic> route) => false);
+      }
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/Walkthrough', (Route<dynamic> route) => false);
