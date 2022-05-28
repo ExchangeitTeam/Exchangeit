@@ -12,28 +12,29 @@ class SettingUser {
       this.username, this.university, this.age, this.bio, this.profile_image);
 }
 
-class User {
-  String id = "";
-  late NetworkImage profileImage;
-  String university = '';
-  String username = '';
-  String age = '';
-  String bio = '';
-  String profile_image = '';
-  List<User> followers = [];
-  List<User> following = [];
+class appUser {
+  String uid;
+  String? university;
+  String? username;
+  String? age;
+  String? bio;
+  String? profile_image_URL;
+  /*List<appUser> followers = [];
+  List<appUser> following = [];
   List<PostBase> Posts = [];
+  */
 
-  User(
-    this.id,
-    this.profileImage,
-    this.username,
-    this.university,
-    this.age,
-    this.bio,
-    this.profile_image,
+  appUser(
+      {required this.uid,
+      this.username,
+      this.university,
+      this.age,
+      this.bio,
+      this.profile_image_URL}
+      /*
     this.followers,
     this.following,
     this.Posts,
-  );
+  */
+      );
 }

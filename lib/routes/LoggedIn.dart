@@ -2,13 +2,15 @@ import 'package:exchangeit/routes/NotificationPage.dart';
 import 'package:exchangeit/routes/profile_page.dart';
 import 'package:exchangeit/routes/SearchPage.dart';
 import 'package:exchangeit/routes/share_post.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
+import '../services/Appanalytics.dart';
 import 'FeedPage.dart';
 
 class LoggedIn extends StatefulWidget {
-  const LoggedIn({Key? key}) : super(key: key);
-
+  const LoggedIn({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<LoggedIn> createState() => _LoggedInState();
 }
@@ -42,6 +44,8 @@ class _LoggedInState extends State<LoggedIn> {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "loginScreen");
     return Scaffold(
       body: PageView(
         controller: _PageController,
