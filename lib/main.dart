@@ -1,3 +1,4 @@
+import 'package:exchangeit/Objects/UserClass.dart';
 import 'package:exchangeit/SettingsOptions/ChangePassword.dart';
 import 'package:exchangeit/routes/DMPage.dart';
 import 'package:exchangeit/routes/GoogleSignIn.dart';
@@ -10,19 +11,24 @@ import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/WelcomePage.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:exchangeit/routes/NotificationPage.dart';
 
+import 'services/auth.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Future<FirebaseApp> _fbappinit = Firebase.initializeApp();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => GoogleSignInProvider(),
+  runApp(Myfirebaseapp(init: _fbappinit));
+  /*ChangeNotifierProvider(
+      create: (context) => SignUpWithGoogle(),
       child: MaterialApp(
         home: FutureBuilder(
           future: _fbappinit,
@@ -49,10 +55,68 @@ Future<void> main() async {
           'SharePhoto': (context) => SharePhoto(),
           'DM': (context) => DMPage(),
           'PrivProfile': (context) => privateProfileView(),
+          'ProviderMain': (context) => ProvideMain(),
         },
       ),
-    ),
-  );
+    ),*/
+}
+
+class Myfirebaseapp extends StatefulWidget {
+  const Myfirebaseapp({Key? key, this.init}) : super(key: key);
+  final Future<FirebaseApp>? init;
+  @override
+  State<Myfirebaseapp> createState() => _MyfirebaseappState();
+}
+
+class _MyfirebaseappState extends State<Myfirebaseapp> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: widget.init,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return MaterialApp(
+                home: ErrorScreen(message: snapshot.error.toString()));
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            FlutterError.onError =
+                FirebaseCrashlytics.instance.recordFlutterError;
+            return MainBase();
+          }
+          return MaterialApp(home: WaitingScreen());
+        });
+  }
+}
+
+class MainBase extends StatelessWidget {
+  const MainBase({Key? key}) : super(key: key);
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamProvider<appUser?>.value(
+      value: AuthService().getCurrentUser,
+      initialData: null,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/': (context) => Opening(),
+          '/Welcome': (context) => const WelcomePage(),
+          '/Walkthrough': (context) => const Walkthrough(),
+          '/SignUp': (context) => SignUp(),
+          '/Login': (context) => LoginScreen(),
+          '/LoggedIn': (context) => LoggedIn(),
+          'Settings': (context) => Settings(),
+          'PassChange': (context) => PassChange(),
+          'SharePost': (context) => SharePostScreen(),
+          'SharePhoto': (context) => SharePhoto(),
+          'DM': (context) => DMPage(),
+          'PrivProfile': (context) => privateProfileView(),
+          'ProviderMain': (context) => ProvideMain(),
+        },
+      ),
+    );
+  }
 }
 
 class ErrorScreen extends StatelessWidget {
@@ -81,12 +145,46 @@ class WaitingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: CircularProgressIndicator(color: Colors.blueAccent),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Loading..."),
+          SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: CircularProgressIndicator(color: Colors.blueAccent),
+          ),
+        ],
       ),
     );
   }
 }
+
+class ProvideMain extends StatelessWidget {
+  const ProvideMain({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return ErrorScreen(message: 'Error Occured,try again');
+            } else if (snapshot.hasData) {
+              print(snapshot);
+              return LoggedIn();
+            } else {
+              return Text('Some strange things');
+            }
+          }),
+    );
+  }
+}
+
 /*
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
