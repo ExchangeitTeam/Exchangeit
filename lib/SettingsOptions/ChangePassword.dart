@@ -1,10 +1,13 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
-class PassChange extends StatefulWidget {
-  PassChange({Key? key}) : super(key: key);
+import '../services/Appanalytics.dart';
 
+class PassChange extends StatefulWidget {
+  PassChange({Key? key,required this.analytics}) : super(key: key);
+ final FirebaseAnalytics analytics;
   @override
   State<PassChange> createState() => _PassChangeState();
 }
@@ -18,6 +21,8 @@ class _PassChangeState extends State<PassChange> {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "Change Password Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,

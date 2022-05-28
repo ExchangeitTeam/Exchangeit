@@ -2,14 +2,16 @@ import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Styles.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/SettingsPage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+import '../services/Appanalytics.dart';
 import 'LoginPage.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
-
+  const SignUp({Key? key,required this.analytics}) : super(key: key);
+final FirebaseAnalytics analytics;
   @override
   State<SignUp> createState() => _SignUpState();
 }
@@ -19,6 +21,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(analytics:widget.analytics, screenName: "SignUp Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,

@@ -1,9 +1,14 @@
 import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/Objects/DMClass.dart';
 import 'package:exchangeit/designs/DMUi.dart';
 
+import '../services/Appanalytics.dart';
+
 class DMPage extends StatelessWidget {
+  DMPage({Key? key,required this.analytics}) : super(key: key);
+  final FirebaseAnalytics? analytics;
   List<DMObj> DMusers = [
     DMObj(
         name: "Jane Russel",
@@ -57,6 +62,8 @@ class DMPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics:analytics, screenName: "DM Page");
     return Scaffold(
         appBar: AppBar(
           elevation: 0,

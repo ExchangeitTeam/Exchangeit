@@ -1,11 +1,14 @@
 import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/post_text.dart';
 
-class SharePostScreen extends StatefulWidget {
-  const SharePostScreen({Key? key}) : super(key: key);
+import '../services/Appanalytics.dart';
 
+class SharePostScreen extends StatefulWidget {
+  const SharePostScreen({Key? key, this.analytics}) : super(key: key);
+ final FirebaseAnalytics? analytics;
   @override
   State<SharePostScreen> createState() => _SharePostScreenState();
 }
@@ -25,6 +28,8 @@ class _SharePostScreenState extends State<SharePostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "Share Post Page");
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -45,7 +50,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
         controller: pageController,
         children: [
           Container(
-            child: SharePhoto(),
+            child: SharePhoto(analytics: widget.analytics),
           ),
           Container(
             child: ShareText(),

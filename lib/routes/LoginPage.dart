@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -11,13 +12,14 @@ import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../services/Appanalytics.dart';
 import '../services/auth.dart';
 import 'GoogleSignIn.dart';
 import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-
+  const LoginScreen({Key? key,required this.analytics}) : super(key: key);
+ final FirebaseAnalytics analytics;
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -92,6 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "App Login Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,

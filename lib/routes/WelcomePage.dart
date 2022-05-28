@@ -2,14 +2,18 @@ import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/models/Styles.dart';
 import 'package:exchangeit/routes/LoginPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({Key? key}) : super(key: key);
+import '../services/Appanalytics.dart';
 
+class WelcomePage extends StatelessWidget {
+   WelcomePage({Key? key,required this.analytics }) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    setCurrentScreenUtil(analytics: analytics, screenName: "Welcome Page");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.appBackColor,
@@ -55,7 +59,7 @@ class WelcomePage extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SignUp()));
+                                      builder: (context) => SignUp(analytics: analytics,)));
                             },
                             child: Padding(
                               padding: EdgeInsets.all(20),
@@ -81,7 +85,7 @@ class WelcomePage extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LoginScreen()));
+                                      builder: (context) => LoginScreen(analytics: analytics,)));
                             },
                             child: Padding(
                               padding: EdgeInsets.all(20),

@@ -1,10 +1,13 @@
 import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
 import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+import '../services/Appanalytics.dart';
 
+class Settings extends StatefulWidget {
+  const Settings({Key? key,required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<Settings> createState() => _SettingsState();
 }
@@ -12,6 +15,8 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "Settings Page");
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,

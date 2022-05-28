@@ -1,8 +1,11 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
-class SharePhoto extends StatefulWidget {
-  const SharePhoto({Key? key}) : super(key: key);
+import '../services/Appanalytics.dart';
 
+class SharePhoto extends StatefulWidget {
+  const SharePhoto({Key? key,required this.analytics}) : super(key: key);
+ final FirebaseAnalytics? analytics;
   @override
   State<SharePhoto> createState() => _SharePhotoState();
 }
@@ -68,6 +71,8 @@ class _SharePhotoState extends State<SharePhoto> {
 
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "Share Post Page");
     return Container(
       color: Colors.white,
       child: ListView.separated(

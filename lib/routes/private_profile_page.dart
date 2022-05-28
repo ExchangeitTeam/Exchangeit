@@ -1,11 +1,14 @@
 import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/private_profile_page_base_screen.dart';
 import 'package:flutter/rendering.dart';
 
-class privateProfileView extends StatefulWidget {
-  const privateProfileView({Key? key}) : super(key: key);
+import '../services/Appanalytics.dart';
 
+class privateProfileView extends StatefulWidget {
+  const privateProfileView({Key? key,required this.analytics}) : super(key: key);
+ final FirebaseAnalytics analytics;
   @override
   State<privateProfileView> createState() => _privateProfileViewState();
 }
@@ -13,6 +16,8 @@ class privateProfileView extends StatefulWidget {
 class _privateProfileViewState extends State<privateProfileView> {
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(
+        analytics: widget.analytics, screenName: "Private Profile Page");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
