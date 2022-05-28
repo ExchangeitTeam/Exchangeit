@@ -6,11 +6,13 @@ import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../models/auth.dart';
+import '../services/auth.dart';
+import 'GoogleSignIn.dart';
 import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -280,8 +282,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           buttonSize: ButtonSize.large,
                           btnText: "Login with Google",
                           elevation: 10,
-                          onPressed: () {
+                          onPressed: () async {
+                            await _auth.googleSignIn();
                             print('Google Pressed');
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                "/LoggedIn", (Route<dynamic> route) => false);
                           })),
                   SizedBox(height: 20),
                   Container(
