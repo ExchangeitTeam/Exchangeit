@@ -1,4 +1,3 @@
-
 class SettingUser {
   String university = '';
   String username = '';
