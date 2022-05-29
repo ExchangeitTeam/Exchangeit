@@ -1,7 +1,6 @@
 import 'package:exchangeit/Objects/UserClass.dart';
 import 'package:exchangeit/SettingsOptions/ChangePassword.dart';
 import 'package:exchangeit/routes/DMPage.dart';
-import 'package:exchangeit/routes/GoogleSignIn.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/routes/LoginPage.dart';
 import 'package:exchangeit/routes/OpeningPage.dart';
@@ -10,8 +9,8 @@ import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
 import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
+import 'package:exchangeit/routes/profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
-import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/WelcomePage.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:exchangeit/routes/NotificationPage.dart';
+
 
 import 'services/auth.dart';
 
@@ -111,7 +110,9 @@ class MainBase extends StatelessWidget {
           'SharePost': (context) => SharePostScreen(analytics: appanalytics),
           'SharePhoto': (context) => SharePhoto(analytics: appanalytics),
           'DM': (context) => DMPage(analytics: appanalytics),
-          'PrivProfile': (context) => privateProfileView(analytics: appanalytics),
+          'PrivProfile': (context) =>
+              privateProfileView(analytics: appanalytics),
+          'Profile': (context) => ProfileView(analytics: appanalytics),
           'ProviderMain': (context) => ProvideMain(analytics: appanalytics),
         },
       ),

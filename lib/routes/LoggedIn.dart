@@ -6,6 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 import '../services/Appanalytics.dart';
+import '../services/auth.dart';
 import 'FeedPage.dart';
 
 class LoggedIn extends StatefulWidget {
@@ -39,6 +40,18 @@ class _LoggedInState extends State<LoggedIn> {
   void _PageChanged(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void initState() {
+    super.initState();
+
+    AuthService().getCurrentUser.listen((user) {
+      if (user == null) {
+        print('No user is currently signed in.');
+      } else {
+        print('${user.username} is the current user');
+      }
     });
   }
 

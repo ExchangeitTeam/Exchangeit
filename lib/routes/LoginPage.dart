@@ -15,8 +15,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/Appanalytics.dart';
 import '../services/auth.dart';
-import 'GoogleSignIn.dart';
-import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key, required this.analytics}) : super(key: key);
@@ -91,6 +89,18 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         });
+  }
+
+  void initState() {
+    super.initState();
+
+    AuthService().getCurrentUser.listen((user) {
+      if (user == null) {
+        print('No user is currently signed in.');
+      } else {
+        print('${user.uid} is the current user uid');
+      }
+    });
   }
 
   @override
@@ -237,10 +247,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           _formKey.currentState!.save();
 
                           await loginUser();
-
-                          setState(() {
-                            loginCounter++;
-                          });
                         } else {
                           _showDialog('Form Error', 'Your form is invalid');
                         }
@@ -280,19 +286,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   ]),
                   SizedBox(height: 20),
                   Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      child: SignInButton(
-                          imagePosition: ImagePosition.left, // left or right
-                          buttonType: ButtonType.google,
-                          buttonSize: ButtonSize.large,
-                          btnText: "Login with Google",
-                          elevation: 10,
-                          onPressed: () async {
-                            await _auth.googleSignIn();
-                            print('Google Pressed');
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                "/LoggedIn", (Route<dynamic> route) => false);
-                          })),
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    child: SignInButton(
+                      imagePosition: ImagePosition.left, // left or right
+                      buttonType: ButtonType.google,
+                      buttonSize: ButtonSize.large,
+                      btnText: "Login with Google",
+                      elevation: 10,
+                      onPressed: () async {
+                        await _auth.googleSignIn();
+                        print('Google Pressed');
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        bool _googlelogged =
+                            await prefs.getBool('googlelogin') ?? false;
+                        if (_googlelogged == true) {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              "/LoggedIn", (Route<dynamic> route) => false);
+                        }
+                      },
+                    ),
+                  ),
                   SizedBox(height: 20),
                   Container(
                       width: MediaQuery.of(context).size.width * 0.75,

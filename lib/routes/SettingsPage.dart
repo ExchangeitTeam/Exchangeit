@@ -3,6 +3,7 @@ import 'package:exchangeit/models/Colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/Appanalytics.dart';
 import '../services/auth.dart';
@@ -99,7 +100,19 @@ class _SettingsState extends State<Settings> {
           ),
           TextButton.icon(
             onPressed: () async {
-              await FacebookLogin().logOut();
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              bool _facebooklogin =
+                  await prefs.getBool('facebooklogin') ?? false;
+              bool _googlelogin = await prefs.getBool('googlelogin') ?? false;
+              if (_facebooklogin == true) {
+                await AuthService().FacebookLogout();
+              }
+              if (_googlelogin == true) {
+                await AuthService().googleLogout();
+              }
+              if (_facebooklogin == false && _googlelogin == false) {
+                AuthService().signOut();
+              }
               Navigator.of(context).pushNamedAndRemoveUntil(
                   '/Login', (Route<dynamic> route) => false);
             },

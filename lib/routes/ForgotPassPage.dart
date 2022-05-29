@@ -25,6 +25,7 @@ class _ForgetPassState extends State<ForgetPass> {
   Widget build(BuildContext context) {
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Reset Password'),
         backgroundColor: AppColors.appBarColor,

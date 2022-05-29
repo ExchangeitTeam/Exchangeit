@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:exchangeit/Objects/UserClass.dart';
-import 'package:exchangeit/routes/LoggedIn.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +42,6 @@ class AuthService {
     switch (res.status) {
       case FacebookLoginStatus.success:
         // The user is suceessfully logged in
-        // Send access token to server for validation and auth
         final FacebookAccessToken accessToken = res.accessToken!;
         final AuthCredential authCredential =
             FacebookAuthProvider.credential(accessToken.token);
@@ -85,31 +83,49 @@ class AuthService {
     }
   }
 
+  Isgooglelogin(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('googlelogin', value);
+  }
+
+  Future FacebookLogout() async {
+    await FacebookLogin().logOut();
+    await FirebaseAuth.instance.signOut();
+  }
+
   Future googleSignIn() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    if (googleUser == null) {
+      Isgooglelogin(false);
+    } else {
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    // Once signed in, return the UserCredential
-    UserCredential result =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    User user = result.user!;
-    var userDoc = await FirestoreService.userCollection.doc(user.uid).get();
-    if (userDoc.exists) {
-      return _userFromFirebase(user);
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      Isgooglelogin(true);
+      // Once signed in, return the UserCredential
+      UserCredential result =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      User user = result.user!;
+      var userDoc = await FirestoreService.userCollection.doc(user.uid).get();
+      if (userDoc.exists) {
+        return _userFromFirebase(user);
+      }
+      String name = user.displayName.toString().toLowerCase();
+      name = name.replaceAll(' ', '');
+      FirestoreService.addUser(user.uid, name);
     }
-    String name = user.displayName.toString().toLowerCase();
-    name = name.replaceAll(' ', '');
-    FirestoreService.addUser(user.uid, name);
+  }
+
+  Future googleLogout() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
   }
 
   Future signOut() async {

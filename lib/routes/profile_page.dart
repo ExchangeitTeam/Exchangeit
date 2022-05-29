@@ -1,27 +1,55 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
+import 'package:exchangeit/services/FirestoreServices.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/profile_page_base_screen.dart';
 import 'package:exchangeit/routes/profile_page_posts.dart';
-import 'package:exchangeit/routes/profile_page_gallery.dart';
 import 'package:exchangeit/routes/profile_page_location.dart';
+import 'package:provider/provider.dart';
+
+import '../Objects/UserClass.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({Key? key}) : super(key: key);
-
+  const ProfileView({Key? key, this.analytics}) : super(key: key);
+  final FirebaseAnalytics? analytics;
   @override
   State<ProfileView> createState() => _ProfileViewState();
+}
+
+String username = '';
+Future getusername(var uid) async {
+  if (uid != null) {
+    DocumentSnapshot mes = await FirestoreService.userCollection.doc(uid).get();
+    username = mes.get('username');
+  }
+  print(uid);
+}
+
+currentusercheck() {
+  var _user = FirebaseAuth.instance.currentUser;
+  if (_user == null) {
+    print('user yok');
+  } else {
+    print('user var');
+  }
 }
 
 class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
+    currentusercheck();
+    final user = Provider.of<appUser?>(context);
+    var _userid = user?.uid;
+    getusername(_userid);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 0, 170, 229),
         elevation: 0.0,
         title: Text(
-          "Ayşe Aydemir",
+          username,
           style: TextStyle(
             color: Colors.white,
           ),
