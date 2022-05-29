@@ -20,7 +20,6 @@ import 'package:exchangeit/routes/WelcomePage.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import 'services/auth.dart';
 
 Future<void> main() async {

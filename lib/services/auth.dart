@@ -1,4 +1,3 @@
-
 import 'package:exchangeit/Objects/UserClass.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
