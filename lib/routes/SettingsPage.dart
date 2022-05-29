@@ -2,17 +2,20 @@ import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 
 import '../services/Appanalytics.dart';
+import '../services/auth.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({Key? key,required this.analytics}) : super(key: key);
+  const Settings({Key? key, required this.analytics}) : super(key: key);
   final FirebaseAnalytics analytics;
   @override
   State<Settings> createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
+  final AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     setCurrentScreenUtil(
@@ -95,7 +98,11 @@ class _SettingsState extends State<Settings> {
                 fixedSize: Size(size.width, size.height * 0.1)),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () async {
+              await FacebookLogin().logOut();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/Login', (Route<dynamic> route) => false);
+            },
             icon: Icon(
               Icons.logout_outlined,
               size: 30,

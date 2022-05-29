@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,8 +19,8 @@ import 'GoogleSignIn.dart';
 import 'SignupPage.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key,required this.analytics}) : super(key: key);
- final FirebaseAnalytics analytics;
+  const LoginScreen({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -301,8 +302,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           buttonSize: ButtonSize.large,
                           btnText: "Login with Facebook",
                           elevation: 10,
-                          onPressed: () {
+                          onPressed: () async {
                             print('Facebook Pressed');
+                            await _auth.FacebookSignIn();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            bool _facebooklogin =
+                                await prefs.getBool('facebooklogin') ?? false;
+                            if (_facebooklogin == true) {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  "/LoggedIn", (Route<dynamic> route) => false);
+                            } else {
+                              print('giremedim');
+                            }
                           })),
                   SizedBox(height: 40),
                   Row(
