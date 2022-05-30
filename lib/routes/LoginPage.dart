@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    AuthService().getCurrentUser.listen((user) {
+    _auth.getCurrentUser.listen((user) {
       if (user == null) {
         print('No user is currently signed in.');
       } else {

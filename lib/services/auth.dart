@@ -25,6 +25,14 @@ class AuthService {
     return user;
   }
 
+  Future SignupProcess(String email, String pass, String username, String uni,
+      String age) async {
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email, password: pass);
+    User user = userCredential.user!;
+    FirestoreService.SignUpUseradd(user.uid, username, uni, age);
+  }
+
   Isfacebooklogin(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('facebooklogin', value);

@@ -16,6 +16,11 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final formKeySign = GlobalKey<FormState>();
+  String email = "";
+  String password = "";
+  String username = "";
+  String age = "";
+  String uni = "";
 
   @override
   Widget build(BuildContext context) {
@@ -90,11 +95,13 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave username empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 4) {
                                   return 'username too short';
+                                } else {
+                                  username = value;
                                 }
                               }
+                              return null;
                             },
                             onSaved: (value) {},
                           ),
@@ -122,9 +129,10 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave password empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 4) {
                                   return 'password too short';
+                                } else {
+                                  password = value;
                                 }
                               }
                             },
@@ -151,9 +159,10 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave e-mail empty';
-                                }
-                                if (!EmailValidator.validate(value)) {
+                                } else if (!EmailValidator.validate(value)) {
                                   return 'Please enter a valid e-mail address';
+                                } else {
+                                  email = value;
                                 }
                               }
                             },
@@ -180,10 +189,11 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave age empty';
-                                }
-                                if (int.parse(value) < 0 ||
+                                } else if (int.parse(value) < 0 ||
                                     int.parse(value) > 100) {
                                   return 'Please enter a valid age';
+                                } else {
+                                  age = value;
                                 }
                               }
                             },
@@ -213,9 +223,10 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave University empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 3) {
                                   return 'University name too short';
+                                } else {
+                                  uni = value;
                                 }
                               }
                             },
