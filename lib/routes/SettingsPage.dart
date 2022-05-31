@@ -1,6 +1,8 @@
 import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 import '../services/Appanalytics.dart';
@@ -95,7 +97,9 @@ class _SettingsState extends State<Settings> {
                 fixedSize: Size(size.width, size.height * 0.1)),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              FirebaseCrashlytics.instance.crash();
+            },
             icon: Icon(
               Icons.logout_outlined,
               size: 30,

@@ -1,4 +1,6 @@
+import 'package:exchangeit/routes/photo_view_page.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 
 class BaseScreenView extends StatefulWidget {
   const BaseScreenView({Key? key}) : super(key: key);
@@ -8,6 +10,7 @@ class BaseScreenView extends StatefulWidget {
 }
 
 class _BaseScreenViewState extends State<BaseScreenView> {
+  final NetworkImage pp = NetworkImage('https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png');
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,8 +27,12 @@ class _BaseScreenViewState extends State<BaseScreenView> {
                   padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage(
-                        'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
+                    backgroundImage: pp,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => photoViewPage(pht: pp)));
+                      },
+                    ),
                   ),
                 ),
               ),

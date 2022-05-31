@@ -1,31 +1,28 @@
-import 'package:exchangeit/Objects/PostClass.dart';
-import 'package:exchangeit/routes/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
-class Post extends StatefulWidget {
-  const Post({Key? key}) : super(key: key);
+class printComments extends StatefulWidget {
+  const printComments({Key? key}) : super(key: key);
 
   @override
-  State<Post> createState() => _PostState();
+  State<printComments> createState() => _printCommentsState();
 }
 
-class PostInfo extends StatelessWidget {
+class commentInfo extends StatelessWidget {
+
   final String avatar;
   final String name;
   final String timeAgo;
   final String text;
   final String likes;
-  final String comments;
 
-  PostInfo({
+  commentInfo({
     Key? key,
     required this.avatar,
     required this.name,
     required this.timeAgo,
     required this.text,
     required this.likes,
-    required this.comments,
   }) : super(key: key);
 
   @override
@@ -91,43 +88,6 @@ class PostInfo extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(width: 20),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              IconData(0xe17e, fontFamily: 'MaterialIcons'),
-                              size: 16.0,
-                              color: Colors.black45,
-                            ),
-                            onPressed: () {},
-
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(6.0),
-                            child: Text(
-                              this.comments,
-                              style: TextStyle(
-                                color: Colors.black45,
-                                fontSize: 14.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 20),
-                      Row(
-                        children: [
-                          Icon(
-                            IconData(0xf378, fontFamily: 'MaterialIcons'),
-                            size: 16.0,
-                            color: Colors.black45,
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(6.0),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 )
@@ -140,42 +100,34 @@ class PostInfo extends StatelessWidget {
   }
 }
 
-class _PostState extends State<Post> {
-  final List<TextPost> posts = [
-    TextPost(
-      text: "Munich is beautiful",
-      isMine: true,
-      profileImage: NetworkImage(
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
-      Location: "Munich",
-      username: "Ayse Aydemir",
-      postId: '10',
-    ),
-    TextPost(
-      text: "Sabancı is the best university",
-      isMine: true,
-      profileImage: NetworkImage(
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
-      Location: "Istanbul",
-      username: "Ayse Aydemir",
-      postId: '10',
-    )
+class _printCommentsState extends State<printComments> {
+  final List<commentInfo> _items = [
+    commentInfo(
+        avatar: 'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
+        name: 'Ayse Aydemir',
+        timeAgo: '5m',
+        text: 'Amazing',
+        likes: '0'),
+    commentInfo(
+        avatar: 'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
+        name: 'Mehmet Sürünen',
+        timeAgo: '1h',
+        text: 'Fascinating',
+        likes: '3'),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
-            return posts[index];
-          },
-          separatorBuilder: (BuildContext context, int index) => Divider(
-            height: 0,
-          ),
-          itemCount: posts.length,
+    return Container(
+      color: Colors.white,
+      child: ListView.separated(
+        itemBuilder: (BuildContext context, int index) {
+          return _items[index];
+        },
+        separatorBuilder: (BuildContext context, int index) => Divider(
+          height: 0,
         ),
+        itemCount: _items.length,
       ),
     );
   }

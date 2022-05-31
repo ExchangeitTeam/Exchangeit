@@ -234,7 +234,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-
                           await loginUser();
 
                           setState(() {
