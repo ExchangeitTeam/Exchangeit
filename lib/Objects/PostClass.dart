@@ -93,10 +93,9 @@ class ImagePost extends PostBase {
                             color: Colors.black45,
                           ),
                           onPressed: () {
-                            //Hocam burasi haaa sakin unutma!!!!!!!!!!!!!!
-                            print('1!');
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context)=> postPageView(pf: this)),
+
                             );
                           },
                         ),
