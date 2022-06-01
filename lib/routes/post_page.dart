@@ -4,8 +4,9 @@ import '../Objects/PostClass.dart';
 import '../models/Colors.dart';
 
 class postPageView extends StatefulWidget {
-  const postPageView({Key? key, required this.pf}) : super(key: key);
-  final dynamic ? pf;
+  const postPageView({Key? key, required this.pf , required this.isPhoto}) : super(key: key);
+  final String pf;
+  final bool isPhoto;
   @override
   State<postPageView> createState() => _postPageViewState();
 }
@@ -142,6 +143,17 @@ class _postPageViewState extends State<postPageView> {
     Location: "Everest",
   );
 
+  final textPost = TextPost(
+    text: "Sabancı is the best university",
+    isMine: true,
+    profileImage: NetworkImage(
+        'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
+    Location: "Istanbul",
+    username: "Mehmet Sürünen",
+    postId: '10',
+  );
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -157,7 +169,7 @@ class _postPageViewState extends State<postPageView> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              imagePost,
+              widget.isPhoto ? imagePost : textPost,
               Container(
                 child: TextField(
                   decoration: InputDecoration(

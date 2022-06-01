@@ -94,8 +94,7 @@ class ImagePost extends PostBase {
                           ),
                           onPressed: () {
                             Navigator.push(context,
-                                MaterialPageRoute(builder: (context)=> postPageView(pf: this)),
-
+                                MaterialPageRoute(builder: (context)=> postPageView(pf: this.postId, isPhoto: true,)),
                             );
                           },
                         ),
@@ -404,7 +403,11 @@ class TextPost extends PostBase {
                             size: 16.0,
                             color: Colors.black45,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context)=> postPageView(pf: postId, isPhoto: false,)),
+                            );
+                          },
                         ),
                         Container(
                           margin: const EdgeInsets.all(6.0),
