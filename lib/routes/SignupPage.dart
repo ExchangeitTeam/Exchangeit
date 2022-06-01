@@ -1,8 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Styles.dart';
-import 'package:exchangeit/routes/LoggedIn.dart';
-import 'package:exchangeit/routes/SettingsPage.dart';
+import 'package:exchangeit/services/FirestoreServices.dart';
+import 'package:exchangeit/services/auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -10,18 +11,23 @@ import '../services/Appanalytics.dart';
 import 'LoginPage.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key,required this.analytics}) : super(key: key);
-final FirebaseAnalytics analytics;
+  const SignUp({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
   final formKeySign = GlobalKey<FormState>();
+  String email = "";
+  String password = "";
+  String username = "";
+  String age = "";
+  String uni = "";
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(analytics:widget.analytics, screenName: "SignUp Page");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignUp Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -91,13 +97,14 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave username empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 4) {
                                   return 'username too short';
+                                } else {
+                                  username = value;
                                 }
                               }
+                              return null;
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -123,13 +130,13 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave password empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 4) {
                                   return 'password too short';
+                                } else {
+                                  password = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -152,13 +159,13 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave e-mail empty';
-                                }
-                                if (!EmailValidator.validate(value)) {
+                                } else if (!EmailValidator.validate(value)) {
                                   return 'Please enter a valid e-mail address';
+                                } else {
+                                  email = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -181,14 +188,14 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave age empty';
-                                }
-                                if (int.parse(value) < 0 ||
+                                } else if (int.parse(value) < 0 ||
                                     int.parse(value) > 100) {
                                   return 'Please enter a valid age';
+                                } else {
+                                  age = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -214,13 +221,13 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave University empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 3) {
                                   return 'University name too short';
+                                } else {
+                                  uni = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -228,9 +235,45 @@ class _SignUpState extends State<SignUp> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(25),
                         child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                "/LoggedIn", (Route<dynamic> route) => false);
+                          onPressed: () async {
+                            if (formKeySign.currentState!.validate()) {
+                              print('Sign up pressed');
+                              await FirestoreService.IsUsernameTaken(username)
+                                  .then((value) async {
+                                if (value) {
+                                  return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title:
+                                              Text('Username already taken!'),
+                                          content: Text(
+                                              'Please select another username!'),
+                                        );
+                                      });
+                                } else {
+                                  username = username.toLowerCase().trim();
+                                  await AuthService.registerUser(
+                                      email, username, uni, age, password);
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        elevation: 10,
+                                        content: Text(
+                                            'Registration Successful! You are redirecting to the home page'),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 12),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  });
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      "/LoggedIn",
+                                      (Route<dynamic> route) => false);
+                                }
+                              });
+                            }
                           },
                           child: Padding(
                             padding: EdgeInsets.all(20),
@@ -253,7 +296,7 @@ class _SignUpState extends State<SignUp> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Already a user? "),
+                          Text("Already a user?"),
                           TextButton(
                               onPressed: () {
                                 Navigator.popAndPushNamed(context, "/Login");

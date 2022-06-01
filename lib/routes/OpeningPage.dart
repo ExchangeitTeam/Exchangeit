@@ -50,6 +50,6 @@ class _OpeningState extends State<Opening> {
     setCurrentScreenUtil(
         analytics: widget.analytics, screenName: "WaitingScreen");
 
-    return WaitingScreen();
+    return WaitingScreen(message: "Exchangeit is initializing...");
   }
 }

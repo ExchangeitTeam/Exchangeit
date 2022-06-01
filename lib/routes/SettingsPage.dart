@@ -2,17 +2,21 @@ import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/Appanalytics.dart';
+import '../services/auth.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({Key? key,required this.analytics}) : super(key: key);
+  const Settings({Key? key, required this.analytics}) : super(key: key);
   final FirebaseAnalytics analytics;
   @override
   State<Settings> createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
+  final AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     setCurrentScreenUtil(
@@ -95,7 +99,23 @@ class _SettingsState extends State<Settings> {
                 fixedSize: Size(size.width, size.height * 0.1)),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              bool _facebooklogin =
+                  await prefs.getBool('facebooklogin') ?? false;
+              bool _googlelogin = await prefs.getBool('googlelogin') ?? false;
+              if (_facebooklogin == true) {
+                await AuthService().FacebookLogout();
+              }
+              if (_googlelogin == true) {
+                await AuthService().googleLogout();
+              }
+              if (_facebooklogin == false && _googlelogin == false) {
+                AuthService().signOut();
+              }
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/Login', (Route<dynamic> route) => false);
+            },
             icon: Icon(
               Icons.logout_outlined,
               size: 30,
