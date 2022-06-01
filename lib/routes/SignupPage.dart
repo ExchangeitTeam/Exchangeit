@@ -1,6 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Styles.dart';
+import 'package:exchangeit/services/FirestoreServices.dart';
+import 'package:exchangeit/services/auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -24,8 +27,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "SignUp Page");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignUp Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -103,7 +105,6 @@ class _SignUpState extends State<SignUp> {
                               }
                               return null;
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -136,7 +137,6 @@ class _SignUpState extends State<SignUp> {
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -166,7 +166,6 @@ class _SignUpState extends State<SignUp> {
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -197,7 +196,6 @@ class _SignUpState extends State<SignUp> {
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -230,7 +228,6 @@ class _SignUpState extends State<SignUp> {
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -238,10 +235,45 @@ class _SignUpState extends State<SignUp> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(25),
                         child: OutlinedButton(
-                          onPressed: () {
-                            print('Sign up pressed');
-                            /*Navigator.of(context).pushNamedAndRemoveUntil(
-                                "/LoggedIn", (Route<dynamic> route) => false);*/
+                          onPressed: () async {
+                            if (formKeySign.currentState!.validate()) {
+                              print('Sign up pressed');
+                              await FirestoreService.IsUsernameTaken(username)
+                                  .then((value) async {
+                                if (value) {
+                                  return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title:
+                                              Text('Username already taken!'),
+                                          content: Text(
+                                              'Please select another username!'),
+                                        );
+                                      });
+                                } else {
+                                  username = username.toLowerCase().trim();
+                                  await AuthService.registerUser(
+                                      email, username, uni, age, password);
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        elevation: 10,
+                                        content: Text(
+                                            'Registration Successful! You are redirecting to the home page'),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 12),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  });
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      "/LoggedIn",
+                                      (Route<dynamic> route) => false);
+                                }
+                              });
+                            }
                           },
                           child: Padding(
                             padding: EdgeInsets.all(20),

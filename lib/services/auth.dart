@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/Objects/UserClass.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _curruser = FirebaseAuth.instance.currentUser;
+
   appUser? userFromLocal(User? user) {
     if (_curruser == null) {
       return null;
@@ -67,7 +69,7 @@ class AuthService {
 
         final _user = _auth.currentUser;
 
-        /*QuerySnapshot snapshot = await FirebaseFirestore.instance
+        QuerySnapshot snapshot = await FirebaseFirestore.instance
             .collection('users')
             .where("userId", isEqualTo: _user!.uid)
             .get();
@@ -75,9 +77,6 @@ class AuthService {
         if (snapshot.docs.isEmpty) {
           facebookSignUp(profile);
         }
-
-        facebooklogin();
-         */
         Isfacebooklogin(true);
         break;
       case FacebookLoginStatus.cancel:
@@ -88,6 +87,12 @@ class AuthService {
         Isfacebooklogin(false);
         break;
     }
+  }
+
+  Future<String?> facebookSignUp(profile) async {
+    final _user = FirebaseAuth.instance.currentUser;
+    String username = profile!.firstName.toString().toLowerCase().trim();
+    FirestoreService.addUser(_user!.uid, username);
   }
 
   Isgooglelogin(bool value) async {
@@ -144,16 +149,16 @@ class AuthService {
     }
   }
 
-  Future<dynamic> signInWithEmailPass(String email, String pass) async {
+  static Future<dynamic> signInWithEmailPass(String email, String pass) async {
     try {
-      UserCredential uc = await _auth.signInWithEmailAndPassword(
+      UserCredential uc =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: pass,
       );
       return uc.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        registerUserWithEmailPass(email, pass);
         return e.message ?? 'E-mail and/or Password not found';
       } else if (e.code == 'wrong-password') {
         return e.message ?? 'Password is not correct';
@@ -163,13 +168,19 @@ class AuthService {
     }
   }
 
-  Future<dynamic> registerUserWithEmailPass(String email, String pass) async {
+  static Future<dynamic> registerUser(String email, String username, String uni,
+      String age, String pass) async {
     try {
-      UserCredential uc = await _auth.createUserWithEmailAndPassword(
+      UserCredential uc =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: pass,
       );
-      return uc.user;
+      User? user = uc.user;
+      print(user?.uid);
+      print(user?.displayName);
+      await FirestoreService.SignUpUseradd(user!.uid, username, uni, age);
+      return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         return e.message ?? 'E-mail already in use';

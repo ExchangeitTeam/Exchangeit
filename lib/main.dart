@@ -26,38 +26,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Future<FirebaseApp> _fbappinit = Firebase.initializeApp();
   runApp(Myfirebaseapp(init: _fbappinit));
-  /*ChangeNotifierProvider(
-      create: (context) => SignUpWithGoogle(),
-      child: MaterialApp(
-        home: FutureBuilder(
-          future: _fbappinit,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return ErrorScreen(message: snapshot.error.toString());
-            } else if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData) {
-              return Opening();
-            } else {
-              return WaitingScreen();
-            }
-          },
-        ),
-        routes: {
-          '/Welcome': (context) => const WelcomePage(),
-          '/Walkthrough': (context) => const Walkthrough(),
-          '/SignUp': (context) => SignUp(),
-          '/Login': (context) => LoginScreen(),
-          '/LoggedIn': (context) => LoggedIn(),
-          'Settings': (context) => Settings(),
-          'PassChange': (context) => PassChange(),
-          'SharePost': (context) => SharePostScreen(),
-          'SharePhoto': (context) => SharePhoto(),
-          'DM': (context) => DMPage(),
-          'PrivProfile': (context) => privateProfileView(),
-          'ProviderMain': (context) => ProvideMain(),
-        },
-      ),
-    ),*/
 }
 
 class Myfirebaseapp extends StatefulWidget {
@@ -82,7 +50,7 @@ class _MyfirebaseappState extends State<Myfirebaseapp> {
                 FirebaseCrashlytics.instance.recordFlutterError;
             return MainBase();
           }
-          return MaterialApp(home: WaitingScreen());
+          return MaterialApp(home: WaitingScreen(message: "Loading..."));
         });
   }
 }
@@ -139,8 +107,8 @@ class ErrorScreen extends StatelessWidget {
 }
 
 class WaitingScreen extends StatelessWidget {
-  const WaitingScreen({Key? key}) : super(key: key);
-
+  WaitingScreen({Key? key, required this.message}) : super(key: key);
+  String message;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,7 +116,7 @@ class WaitingScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Loading..."),
+          Text(message),
           SizedBox(
             height: 20,
           ),

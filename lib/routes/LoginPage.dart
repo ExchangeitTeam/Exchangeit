@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:exchangeit/main.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
@@ -31,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final AuthService _auth = AuthService();
   Future loginUser() async {
-    dynamic result = await _auth.signInWithEmailPass(email, pass);
+    dynamic result = await AuthService.signInWithEmailPass(email, pass);
     if (result is String) {
       _showDialog('Login Error', result);
     } else if (result is User) {
@@ -101,6 +102,18 @@ class _LoginScreenState extends State<LoginScreen> {
         print('${user.uid} is the current user uid');
       }
     });
+  }
+
+  showDialogueForWaiting(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => WaitingScreen(
+            message: "Your account is being verified, please wait..."));
+  }
+
+  hideProgressDialogue(BuildContext context) {
+    Navigator.of(context).pop(WaitingScreen(
+        message: "Your account is being verified, please wait..."));
   }
 
   @override
@@ -294,6 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       btnText: "Login with Google",
                       elevation: 10,
                       onPressed: () async {
+                        showDialogueForWaiting(context);
                         await _auth.googleSignIn();
                         print('Google Pressed');
                         SharedPreferences prefs =
@@ -301,6 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         bool _googlelogged =
                             await prefs.getBool('googlelogin') ?? false;
                         if (_googlelogged == true) {
+                          hideProgressDialogue(context);
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               "/LoggedIn", (Route<dynamic> route) => false);
                         }

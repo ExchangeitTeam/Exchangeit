@@ -44,13 +44,16 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     currentusercheck();
-    final user = Provider.of<appUser?>(context);
+    var user = Provider.of<appUser?>(context);
     var _userid = user?.uid;
+    if (user == null) {
+      _userid = FirebaseAuth.instance.currentUser?.uid;
+    }
     return FutureBuilder(
         future: Future.wait([getusername(_userid)]),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return WaitingScreen();
+            return WaitingScreen(message: "Loading profile page");
           }
           return Scaffold(
             backgroundColor: Colors.white,
