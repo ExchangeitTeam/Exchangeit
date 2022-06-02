@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import '../services/Appanalytics.dart';
 
 class PassChange extends StatefulWidget {
-  PassChange({Key? key,required this.analytics}) : super(key: key);
- final FirebaseAnalytics analytics;
+  PassChange({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<PassChange> createState() => _PassChangeState();
 }
@@ -21,8 +21,7 @@ class _PassChangeState extends State<PassChange> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "Change Password Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Change Password Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,

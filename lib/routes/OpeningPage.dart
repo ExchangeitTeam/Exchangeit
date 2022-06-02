@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/Appanalytics.dart';
 
 class Opening extends StatefulWidget {
-  const Opening({Key? key, required this.analytics}) : super(key: key);
+  Opening({Key? key, required this.analytics}) : super(key: key);
   final FirebaseAnalytics analytics;
   @override
   State<Opening> createState() => _OpeningState();
@@ -47,9 +47,8 @@ class _OpeningState extends State<Opening> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "WaitingScreen");
+    Appanalytics.setCurrentScreenUtil(screenName: "Waiting Screen");
 
-    return WaitingScreen();
+    return WaitingScreen(message: "Exchangeit is initializing...");
   }
 }

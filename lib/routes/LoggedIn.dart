@@ -6,6 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 import '../services/Appanalytics.dart';
+import '../services/auth.dart';
 import 'FeedPage.dart';
 
 class LoggedIn extends StatefulWidget {
@@ -18,13 +19,6 @@ class LoggedIn extends StatefulWidget {
 class _LoggedInState extends State<LoggedIn> {
   int _selectedIndex = 0;
   PageController _PageController = PageController();
-  List<Widget> _BarOptions = [
-    FeedPage(),
-    SearchMain(),
-    SharePostScreen(),
-    NotificationView(),
-    ProfileView(),
-  ];
   static List<String> page_names = [
     "Home",
     "Search",
@@ -42,14 +36,31 @@ class _LoggedInState extends State<LoggedIn> {
     });
   }
 
+  void initState() {
+    super.initState();
+
+    AuthService().getCurrentUser.listen((user) {
+      if (user == null) {
+        print('No user is currently signed in.');
+      } else {
+        print('${user.username} is the current user');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "loginScreen");
+    //setCurrentScreenUtil(screenName: "Logged In Screen");
     return Scaffold(
       body: PageView(
         controller: _PageController,
-        children: _BarOptions,
+        children: [
+          FeedPage(analytics: widget.analytics),
+          SearchMain(),
+          SharePostScreen(analytics: widget.analytics),
+          NotificationView(),
+          ProfileView(analytics: widget.analytics),
+        ],
         onPageChanged: _PageChanged,
         physics: NeverScrollableScrollPhysics(),
       ),

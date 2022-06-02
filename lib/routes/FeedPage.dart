@@ -1,11 +1,13 @@
 import 'package:exchangeit/models/Colors.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 import '../Objects/PostClass.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({Key? key}) : super(key: key);
-
+  const FeedPage({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<FeedPage> createState() => _FeedPageState();
 }
@@ -53,6 +55,7 @@ class _FeedPageState extends State<FeedPage> {
   ];
   @override
   Widget build(BuildContext context) {
+    Appanalytics.setCurrentScreenUtil(screenName: 'Post Page');
     return Scaffold(
       appBar: AppBar(
         title: Text('Exchangeit'),

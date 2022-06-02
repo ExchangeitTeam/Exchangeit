@@ -1,12 +1,14 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 import '../models/Colors.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
 class ForgetPass extends StatefulWidget {
-  const ForgetPass({Key? key}) : super(key: key);
-
+  const ForgetPass({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<ForgetPass> createState() => _ForgetPassState();
 }
@@ -23,8 +25,10 @@ class _ForgetPassState extends State<ForgetPass> {
   String email = "";
   @override
   Widget build(BuildContext context) {
+    Appanalytics.setCurrentScreenUtil(screenName: 'ForgotPassword');
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Reset Password'),
         backgroundColor: AppColors.appBarColor,
