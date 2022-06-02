@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:flutter/material.dart';
 
 import '../models/Colors.dart';
@@ -23,6 +24,7 @@ class _ForgetPassState extends State<ForgetPass> {
   String email = "";
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(screenName: 'Forgot Password');
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
