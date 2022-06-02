@@ -7,8 +7,9 @@ import 'package:flutter/rendering.dart';
 import '../services/Appanalytics.dart';
 
 class privateProfileView extends StatefulWidget {
-  const privateProfileView({Key? key,required this.analytics}) : super(key: key);
- final FirebaseAnalytics analytics;
+  const privateProfileView({Key? key, required this.analytics})
+      : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<privateProfileView> createState() => _privateProfileViewState();
 }
@@ -16,8 +17,7 @@ class privateProfileView extends StatefulWidget {
 class _privateProfileViewState extends State<privateProfileView> {
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "Private Profile Page");
+    setCurrentScreenUtil(screenName: "Private Profile Page");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

@@ -1,6 +1,7 @@
 import 'package:exchangeit/models/Styles.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
+import 'package:exchangeit/routes/post_page.dart';
 
 abstract class PostBase extends StatelessWidget {
   final NetworkImage profileImage;
@@ -91,7 +92,16 @@ class ImagePost extends PostBase {
                             size: 16.0,
                             color: Colors.black45,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => postPageView(
+                                        pf: this.postId,
+                                        isPhoto: true,
+                                      )),
+                            );
+                          },
                         ),
                         Container(
                           margin: const EdgeInsets.all(6.0),
@@ -398,7 +408,16 @@ class TextPost extends PostBase {
                             size: 16.0,
                             color: Colors.black45,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => postPageView(
+                                        pf: postId,
+                                        isPhoto: false,
+                                      )),
+                            );
+                          },
                         ),
                         Container(
                           margin: const EdgeInsets.all(6.0),

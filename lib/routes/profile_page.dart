@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/main.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,6 +50,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (user == null) {
       _userid = FirebaseAuth.instance.currentUser?.uid;
     }
+    setLogEventUtil(eventName: 'Profile Page Viewed');
     return FutureBuilder(
         future: Future.wait([getusername(_userid)]),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {

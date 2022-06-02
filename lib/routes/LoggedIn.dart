@@ -40,6 +40,7 @@ class _LoggedInState extends State<LoggedIn> {
   void _PageChanged(int index) {
     setState(() {
       _selectedIndex = index;
+      setCurrentScreenUtil(screenName: page_names[index]);
     });
   }
 
@@ -57,8 +58,7 @@ class _LoggedInState extends State<LoggedIn> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "loginScreen");
+    //setCurrentScreenUtil(screenName: "Logged In Screen");
     return Scaffold(
       body: PageView(
         controller: _PageController,

@@ -47,8 +47,7 @@ class _OpeningState extends State<Opening> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(
-        analytics: widget.analytics, screenName: "WaitingScreen");
+    setCurrentScreenUtil(screenName: "WaitingScreen");
 
     return WaitingScreen(message: "Exchangeit is initializing...");
   }

@@ -1,4 +1,5 @@
 import 'package:exchangeit/models/Colors.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:flutter/material.dart';
 
 import '../Objects/PostClass.dart';
@@ -53,6 +54,7 @@ class _FeedPageState extends State<FeedPage> {
   ];
   @override
   Widget build(BuildContext context) {
+    setCurrentScreenUtil(screenName: 'Post Page');
     return Scaffold(
       appBar: AppBar(
         title: Text('Exchangeit'),
