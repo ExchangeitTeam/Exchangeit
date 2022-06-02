@@ -19,7 +19,7 @@ class _SettingsState extends State<Settings> {
   final AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "Settings Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Settings Page");
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,

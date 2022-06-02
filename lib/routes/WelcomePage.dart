@@ -13,7 +13,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    setCurrentScreenUtil(screenName: "Welcome Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Welcome Page");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.appBackColor,

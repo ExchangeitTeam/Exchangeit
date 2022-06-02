@@ -15,8 +15,8 @@ import 'package:provider/provider.dart';
 import '../Objects/UserClass.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({Key? key, this.analytics}) : super(key: key);
-  final FirebaseAnalytics? analytics;
+  const ProfileView({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -50,7 +50,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (user == null) {
       _userid = FirebaseAuth.instance.currentUser?.uid;
     }
-    setLogEventUtil(eventName: 'Profile Page Viewed');
+    Appanalytics.setLogEventUtil(eventName: 'Profile_Page_Viewed');
     return FutureBuilder(
         future: Future.wait([getusername(_userid)]),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {

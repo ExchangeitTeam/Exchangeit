@@ -11,6 +11,7 @@ import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:exchangeit/routes/profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
+import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -56,8 +57,8 @@ class _MyfirebaseappState extends State<Myfirebaseapp> {
 }
 
 class MainBase extends StatelessWidget {
-  const MainBase({Key? key}) : super(key: key);
-  static FirebaseAnalytics appanalytics = FirebaseAnalytics.instance;
+  MainBase({Key? key}) : super(key: key);
+  FirebaseAnalytics appanalytics = Appanalytics.analytics;
   @override
   Widget build(BuildContext context) {
     return StreamProvider<appUser?>.value(
@@ -130,7 +131,7 @@ class WaitingScreen extends StatelessWidget {
 }
 
 class ProvideMain extends StatelessWidget {
-  const ProvideMain({Key? key, required this.analytics}) : super(key: key);
+  ProvideMain({Key? key, required this.analytics}) : super(key: key);
   final FirebaseAnalytics analytics;
   @override
   Widget build(BuildContext context) {

@@ -19,13 +19,6 @@ class LoggedIn extends StatefulWidget {
 class _LoggedInState extends State<LoggedIn> {
   int _selectedIndex = 0;
   PageController _PageController = PageController();
-  List<Widget> _BarOptions = [
-    FeedPage(),
-    SearchMain(),
-    SharePostScreen(),
-    NotificationView(),
-    ProfileView(),
-  ];
   static List<String> page_names = [
     "Home",
     "Search",
@@ -40,7 +33,6 @@ class _LoggedInState extends State<LoggedIn> {
   void _PageChanged(int index) {
     setState(() {
       _selectedIndex = index;
-      setCurrentScreenUtil(screenName: page_names[index]);
     });
   }
 
@@ -62,7 +54,13 @@ class _LoggedInState extends State<LoggedIn> {
     return Scaffold(
       body: PageView(
         controller: _PageController,
-        children: _BarOptions,
+        children: [
+          FeedPage(analytics: widget.analytics),
+          SearchMain(),
+          SharePostScreen(analytics: widget.analytics),
+          NotificationView(),
+          ProfileView(analytics: widget.analytics),
+        ],
         onPageChanged: _PageChanged,
         physics: NeverScrollableScrollPhysics(),
       ),

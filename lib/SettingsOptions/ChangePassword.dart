@@ -21,7 +21,7 @@ class _PassChangeState extends State<PassChange> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "Change Password Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Change Password Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
