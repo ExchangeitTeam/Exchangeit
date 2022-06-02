@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
@@ -14,7 +15,6 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
   }
 
   late TabController _controller = TabController(length: 3, vsync: this);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,9 +82,7 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
               controller: _controller,
               children: [
                 SingleChildScrollView(child: SearchLocation()),
-                SingleChildScrollView(
-                  child: SearchTopic(),
-                ),
+                SingleChildScrollView(child: SearchTopic()),
                 SingleChildScrollView(child: SearchPeople()),
               ],
             ),
@@ -97,27 +95,54 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
 
 class SearchLocation extends StatefulWidget {
   const SearchLocation({Key? key}) : super(key: key);
-
   @override
   State<SearchLocation> createState() => _SearchLocationState();
 }
 
 class _SearchLocationState extends State<SearchLocation> {
+  final _firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
+    CollectionReference locationsRef = _firestore.collection('Locations');
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          color: Colors.white38,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-              Row(
+        StreamBuilder<QuerySnapshot>(
+            stream: locationsRef.snapshots(),
+            builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+              if (asyncSnapshot.hasError) {
+                return Center(child: Text('Bir Hata Oluştu, Tekrar Deneynizi'));
+              } else {
+                if (asyncSnapshot.hasData) {
+                  List<DocumentSnapshot> listOfDocumentSnap =
+                      asyncSnapshot.data.docs;
+                  return SingleChildScrollView(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: listOfDocumentSnap.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(
+                                '${listOfDocumentSnap[index].get('name')}',
+                                style: TextStyle(fontSize: 24)),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              }
+            }),
+        Divider(
+          color: Colors.blue,
+          thickness: 5.0,
+        ),
+        /*Row(
                 children: [
                   Text(
                     '#Germany',
@@ -260,10 +285,7 @@ class _SearchLocationState extends State<SearchLocation> {
               Divider(
                 color: Colors.blue,
                 thickness: 5.0,
-              ),
-            ],
-          ),
-        ),
+              ),*/
       ],
     );
   }
@@ -276,12 +298,14 @@ class SearchPeople extends StatefulWidget {
 }
 
 class _SearchPeopleState extends State<SearchPeople> {
+  final _firestore = FirebaseFirestore.instance;
   void buttonPressed() {
     print('Button Pressed in Function');
   }
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference usersRef = _firestore.collection('Users');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -294,150 +318,33 @@ class _SearchPeopleState extends State<SearchPeople> {
                 color: Color.fromARGB(255, 0, 170, 229),
                 thickness: 5.0,
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, 'PrivProfile');
+              StreamBuilder<QuerySnapshot>(
+                stream: usersRef.snapshots(),
+                builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+                  if (asyncSnapshot.hasData) {
+                    List<DocumentSnapshot> listOfDocumentSnap =
+                        asyncSnapshot.data.docs;
+                    return SingleChildScrollView(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: listOfDocumentSnap.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                  '${listOfDocumentSnap[index].get('username')}',
+                                  style: TextStyle(fontSize: 24)),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
                 },
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
-                        ),
-                        radius: 25,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      '@MehmetSürünen',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, 'PrivProfile');
-                },
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
-                        ),
-                        radius: 25,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      '@AhmetYerebakan',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25.0,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        'https://img.chip.com.tr/rcman/Cw940h529q95gm/images/content/201407050205465146.jpg',
-                      ),
-                      radius: 25,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    '@AyseOlmez',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25.0,
-                    ),
-                  )
-                ],
-              ),
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        'https://img.chip.com.tr/rcman/Cw940h529q95gm/images/content/201407050205465146.jpg',
-                      ),
-                      radius: 25,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    '@ZeynepOlmez',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25.0,
-                    ),
-                  )
-                ],
-              ),
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
-                      ),
-                      radius: 25,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    '@İsmailDag',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25.0,
-                    ),
-                  )
-                ],
-              ),
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
               ),
             ],
           ),

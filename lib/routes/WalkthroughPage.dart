@@ -1,3 +1,4 @@
+import 'package:exchangeit/main.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/models/WalkModel.dart';
@@ -54,7 +55,7 @@ class _WalkthroughState extends State<Walkthrough> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "Walkthrough Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Walkthrough Page");
     return Container(
       color: Colors.grey,
       width: double.infinity,

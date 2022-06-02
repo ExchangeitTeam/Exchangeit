@@ -8,7 +8,7 @@ import '../services/Appanalytics.dart';
 
 class DMPage extends StatelessWidget {
   DMPage({Key? key, required this.analytics}) : super(key: key);
-  final FirebaseAnalytics? analytics;
+  final FirebaseAnalytics analytics;
   List<DMObj> DMusers = [
     DMObj(
         name: "Jane Russel",
@@ -62,7 +62,7 @@ class DMPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "DM Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "DM Page");
     return Scaffold(
         appBar: AppBar(
           elevation: 0,

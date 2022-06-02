@@ -37,11 +37,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _showDialog('Login Error', result);
     } else if (result is User) {
       //User signed in
-      FirebaseAnalytics.instance.logEvent(name: 'Logged In Succesfully');
+      FirebaseAnalytics.instance.logEvent(name: 'Logged_In_Succesfully');
       Navigator.of(context).pushNamedAndRemoveUntil(
           "/LoggedIn", (Route<dynamic> route) => false);
     } else {
-      FirebaseAnalytics.instance.logEvent(name: 'Login Error');
+      FirebaseAnalytics.instance.logEvent(name: 'Login_Error');
       _showDialog('Login Error', result.toString());
     }
   }
@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "App Login Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "App Login Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -249,7 +249,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ForgetPass()));
+                                builder: (context) =>
+                                    ForgetPass(analytics: widget.analytics)));
                       },
                     ),
                   ),
@@ -317,8 +318,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             await prefs.getBool('googlelogin') ?? false;
                         if (_googlelogged == true) {
                           hideProgressDialogue(context);
-                          setLogEventUtil(
-                              eventName: 'Google Logged In Successfully');
+                          Appanalytics.setLogEventUtil(
+                              eventName: 'Google_Logged_In_Successfully');
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               "/LoggedIn", (Route<dynamic> route) => false);
                         }
@@ -342,8 +343,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             bool _facebooklogin =
                                 await prefs.getBool('facebooklogin') ?? false;
                             if (_facebooklogin == true) {
-                              setLogEventUtil(
-                                  eventName: 'Facebook Logged In Successfully');
+                              Appanalytics.setLogEventUtil(
+                                  eventName: 'Facebook_Logged_In_Successfully');
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   "/LoggedIn", (Route<dynamic> route) => false);
                             } else {

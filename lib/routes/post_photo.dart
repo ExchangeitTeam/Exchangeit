@@ -5,7 +5,7 @@ import '../services/Appanalytics.dart';
 
 class SharePhoto extends StatefulWidget {
   const SharePhoto({Key? key, required this.analytics}) : super(key: key);
-  final FirebaseAnalytics? analytics;
+  final FirebaseAnalytics analytics;
   @override
   State<SharePhoto> createState() => _SharePhotoState();
 }
@@ -71,7 +71,7 @@ class _SharePhotoState extends State<SharePhoto> {
 
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "Share Post Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Share Post Page");
     return Container(
       color: Colors.white,
       child: ListView.separated(

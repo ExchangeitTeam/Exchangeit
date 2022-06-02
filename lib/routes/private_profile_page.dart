@@ -17,7 +17,7 @@ class privateProfileView extends StatefulWidget {
 class _privateProfileViewState extends State<privateProfileView> {
   @override
   Widget build(BuildContext context) {
-    setCurrentScreenUtil(screenName: "Private Profile Page");
+    Appanalytics.setCurrentScreenUtil(screenName: "Private_Profile_Page");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
