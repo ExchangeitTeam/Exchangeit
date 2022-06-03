@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+import '../main.dart';
 import '../services/Appanalytics.dart';
 import 'LoginPage.dart';
 
@@ -15,6 +16,18 @@ class SignUp extends StatefulWidget {
   final FirebaseAnalytics analytics;
   @override
   State<SignUp> createState() => _SignUpState();
+}
+
+showDialogueForWaiting(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => WaitingScreen(
+          message: "Your account is being created, please wait..."));
+}
+
+hideProgressDialogue(BuildContext context) {
+  Navigator.of(context).pop(
+      WaitingScreen(message: "Your account is being created, please wait..."));
 }
 
 class _SignUpState extends State<SignUp> {
@@ -253,8 +266,10 @@ class _SignUpState extends State<SignUp> {
                                       });
                                 } else {
                                   username = username.toLowerCase().trim();
+                                  showDialogueForWaiting(context);
                                   await AuthService.registerUser(
                                       email, username, uni, age, password);
+                                  hideProgressDialogue(context);
                                   setState(() {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(

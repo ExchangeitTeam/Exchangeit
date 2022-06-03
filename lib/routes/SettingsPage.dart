@@ -104,9 +104,11 @@ class _SettingsState extends State<Settings> {
                   await prefs.getBool('facebooklogin') ?? false;
               bool _googlelogin = await prefs.getBool('googlelogin') ?? false;
               if (_facebooklogin == true) {
+                await prefs.setBool('facebooklogin', false);
                 await AuthService().FacebookLogout();
               }
               if (_googlelogin == true) {
+                await prefs.setBool('googlelogin', false);
                 await AuthService().googleLogout();
               }
               if (_facebooklogin == false && _googlelogin == false) {

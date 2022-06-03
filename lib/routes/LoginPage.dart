@@ -260,8 +260,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-
+                          showDialogueForWaiting(context);
                           await loginUser();
+                          hideProgressDialogue(context);
                         } else {
                           _showDialog('Form Error', 'Your form is invalid');
                         }
