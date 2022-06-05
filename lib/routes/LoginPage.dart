@@ -32,15 +32,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final AuthService _auth = AuthService();
   Future loginUser() async {
+    showDialogueForWaiting(context);
     dynamic result = await AuthService.signInWithEmailPass(email, pass);
     if (result is String) {
+      hideProgressDialogue(context);
       _showDialog('Login Error', result);
     } else if (result is User) {
       //User signed in
+      hideProgressDialogue(context);
       FirebaseAnalytics.instance.logEvent(name: 'Logged_In_Succesfully');
       Navigator.of(context).pushNamedAndRemoveUntil(
           "/LoggedIn", (Route<dynamic> route) => false);
     } else {
+      hideProgressDialogue(context);
       FirebaseAnalytics.instance.logEvent(name: 'Login_Error');
       _showDialog('Login Error', result.toString());
     }
@@ -260,9 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          showDialogueForWaiting(context);
                           await loginUser();
-                          hideProgressDialogue(context);
                         } else {
                           _showDialog('Form Error', 'Your form is invalid');
                         }

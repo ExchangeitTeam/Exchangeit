@@ -1,9 +1,26 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../services/Appanalytics.dart';
+
+Future Passvalidator(String email, String currentPass, String newPass) async {
+  AuthCredential cred =
+      EmailAuthProvider.credential(email: email, password: currentPass);
+
+  _curruser!.reauthenticateWithCredential(cred).then((value) {
+    _curruser!.updatePassword(newPass).then((_) {
+      message = "Password successfully updated";
+    }).catchError((error) {
+      message = "Password could not be updated";
+    });
+  }).catchError((err) {
+    message = "Incorrect email or password";
+  });
+  //message = "Something happened";
+}
 
 class PassChange extends StatefulWidget {
   PassChange({Key? key, required this.analytics}) : super(key: key);
@@ -12,9 +29,11 @@ class PassChange extends StatefulWidget {
   State<PassChange> createState() => _PassChangeState();
 }
 
-String current_pass = '';
-String email = '';
-String new_pass = '';
+final _curruser = FirebaseAuth.instance.currentUser;
+String current_pass = "";
+String email = "";
+String new_pass = "";
+String message = "";
 
 class _PassChangeState extends State<PassChange> {
   final passkey = GlobalKey<FormState>();
@@ -200,7 +219,22 @@ class _PassChangeState extends State<PassChange> {
                             height: 10,
                           ),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (passkey.currentState!.validate()) {
+                                await Passvalidator(
+                                    email, current_pass, new_pass);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    elevation: 10,
+                                    content: Text(message),
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 12),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            },
                             child: Text(
                               "Update Password",
                             ),
