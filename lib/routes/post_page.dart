@@ -1,12 +1,14 @@
+import 'package:exchangeit/Objects/NewPostClass.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import '../Objects/PostClass.dart';
+import '../Objects/PostTile.dart';
 import '../models/Colors.dart';
 
 class postPageView extends StatefulWidget {
   const postPageView({Key? key, required this.pf, required this.isPhoto})
       : super(key: key);
-  final String pf;
+  final dynamic pf;
   final bool isPhoto;
   @override
   State<postPageView> createState() => _postPageViewState();
@@ -146,14 +148,14 @@ class _postPageViewState extends State<postPageView> {
     Location: "Everest",
   );
 
-  final textPost = TextPost(
-    text: "Sabancı is the best university",
-    isMine: true,
-    profileImage: NetworkImage(
-        'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
-    Location: "Istanbul",
-    username: "Mehmet Sürünen",
-    postId: '10',
+  final userPost = UserPost(
+      postId: "1",
+      text: "London is amazing",
+      image_url: "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+      date: "09-06-2022",
+      likeCount: 12,
+      commentCount: 0,
+      comments: []
   );
 
   @override
@@ -171,7 +173,21 @@ class _postPageViewState extends State<postPageView> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              widget.isPhoto ? imagePost : textPost,
+              widget.isPhoto ? ImagePost(
+                  image: widget.pf.image,
+                  profileImage: widget.pf.profileImage,
+                  username: widget.pf.username,
+                  isMine: widget.pf.isMine,
+                  postId: widget.pf.postId,
+                  Location: widget.pf.Location
+              ) : PostTile(
+                  post: widget.pf,
+                  delete: () {
+                    setState(() {});
+                  },
+                  like: () {},
+                  searched: false
+              ),
               Container(
                 child: TextField(
                   decoration: InputDecoration(
@@ -190,9 +206,9 @@ class _postPageViewState extends State<postPageView> {
               Container(
                 child: ListView.separated(
                   shrinkWrap: true,
-                  itemCount: _items.length,
+                  itemCount: widget.pf.comments.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _items[index];
+                    return widget.pf.comments[index];
                   },
                   separatorBuilder: (BuildContext context, int index) =>
                       Divider(

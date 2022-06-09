@@ -1,13 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:exchangeit/routes/post_page.dart';
+import 'package:exchangeit/routes/profile_page.dart';
 import 'package:flutter/material.dart';
 
 import '../Objects/PostClass.dart';
 
 class Gallery extends StatefulWidget {
+  const Gallery({required this.myPosts});
+  final List<dynamic> myPosts;
   @override
   _GalleryState createState() => _GalleryState();
 }
 
 class _GalleryState extends State<Gallery> {
+
   final List<ImagePost> _items = [
     ImagePost(
       profileImage: NetworkImage(
@@ -43,17 +49,35 @@ class _GalleryState extends State<Gallery> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
-            return _items[index];
-          },
-          separatorBuilder: (BuildContext context, int index) => Divider(
-            height: 0,
-          ),
-          itemCount: _items.length,
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 0,
+          crossAxisCount: 3,
         ),
+        itemCount: _items.length,
+        itemBuilder: (context, index) {
+          return new GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => postPageView(
+                      pf: myPosts[index],
+                      isPhoto: false,
+                    )),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(myPosts[index].image_url),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:like_button/like_button.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
 import '../models/Styles.dart';
+import '../routes/post_page.dart';
 import '../routes/profile_page_posts.dart';
 
 class PostTile extends StatefulWidget {
@@ -132,7 +133,16 @@ class _PostTileState extends State<PostTile> {
         future: PostalreadyLiked().then((value) => liked_already = value),
         builder: (context, snapshot) {
           return GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => postPageView(
+                      pf: widget.post,
+                      isPhoto: false,
+                    )),
+              );
+            },
             child: Card(
               margin: EdgeInsets.all(8),
               color: Colors.lightBlueAccent[100],
