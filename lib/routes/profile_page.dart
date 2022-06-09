@@ -79,7 +79,8 @@ int likeCount = 0;
 
 List<UserPost> myPosts = [];
 
-class _ProfileViewState extends State<ProfileView> {
+class _ProfileViewState extends State<ProfileView>
+    with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     currentusercheck();

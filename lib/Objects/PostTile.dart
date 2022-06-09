@@ -33,12 +33,16 @@ class _PostTileState extends State<PostTile> {
   String location = '';
   Future<bool> PostalreadyLiked() async {
     DocumentSnapshot liked = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('Users')
         .doc(widget.post.owner)
         .collection('posts')
         .doc(widget.post.postId)
         .get();
-
+    DocumentSnapshot userinfos = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.post.owner)
+        .get();
+    Postusername = userinfos['username'];
     location = liked.get('location');
     List<dynamic> listOfLikes = [];
     listOfLikes = liked.get('likedBy');
@@ -66,7 +70,7 @@ class _PostTileState extends State<PostTile> {
       listOfLikes.add(_currentuser!.uid);
 
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(widget.post.owner)
           .collection('posts')
           .doc(widget.post.postId)
@@ -80,12 +84,11 @@ class _PostTileState extends State<PostTile> {
       });
 
       DocumentSnapshot info = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(_currentuser!.uid)
           .get();
-
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(widget.post.owner)
           .collection('notifications')
           .add({
@@ -101,7 +104,7 @@ class _PostTileState extends State<PostTile> {
       listOfLikes.remove(_currentuser!.uid);
 
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(widget.post.owner)
           .collection('posts')
           .doc(widget.post.postId)
@@ -121,7 +124,7 @@ class _PostTileState extends State<PostTile> {
   Future<void> report(UserPost post) async {
     //yapamadım
   }
-
+  String Postusername = "boş";
   @override
   Widget build(BuildContext context) {
     if (widget.post.image_url != "") {
@@ -139,6 +142,10 @@ class _PostTileState extends State<PostTile> {
                   children: [
                     Row(
                       children: [
+                        Text(
+                          Postusername,
+                          style: AppStyles.profileTextName,
+                        ),
                         SizedBox(width: 100),
                         Spacer(),
                         _currentuser!.uid == widget.post.owner

@@ -66,7 +66,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
         customMetadata: {'picked-file-path': fileName});
     firebase_storage.UploadTask uploadTask;
 
-    uploadTask = ref.putFile(io.File(_imageFile!.path)!, metadata);
+    uploadTask = ref.putFile(io.File(_imageFile!.path), metadata);
 
     firebase_storage.UploadTask task = await Future.value(uploadTask);
     Future.value(uploadTask)
