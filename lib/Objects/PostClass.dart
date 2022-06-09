@@ -97,7 +97,7 @@ class ImagePost extends PostBase {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => postPageView(
-                                        pf: this.postId,
+                                        pf: this,
                                         isPhoto: true,
                                       )),
                             );
