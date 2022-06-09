@@ -43,44 +43,44 @@ currentusercheck() {
   }
 }
 
-Future getPosts(var uid) async {
-  myPosts = [];
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('Users')
-      .doc(uid)
-      .collection('posts')
-      .orderBy('datetime', descending: true)
-      .get();
-
-  for (var message in snapshot.docs) {
-    likeCount = message.get('likeCount');
-    print(likeCount);
-    List comment = message.get('comments');
-    Timestamp t = message.get('datetime');
-    DateTime d = t.toDate();
-    String date = d.toString().substring(0, 10);
-    UserPost post = UserPost(
-        postId: message.id,
-        text: message.get('content').toString(),
-        image_url: message.get('image_url').toString(),
-        date: date,
-        likeCount: likeCount,
-        commentCount: comment.length,
-        comments: comment,
-        owner: uid);
-    myPosts.add(post);
-
-    String locat = message['location'];
-    print(locat);
-  }
-}
-
 int likeCount = 0;
 
 List<UserPost> myPosts = [];
 
 class _ProfileViewState extends State<ProfileView>
     with TickerProviderStateMixin {
+  Future getPosts(var uid) async {
+    myPosts = [];
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(uid)
+        .collection('posts')
+        .orderBy('datetime', descending: true)
+        .get();
+
+    for (var message in snapshot.docs) {
+      likeCount = message.get('likeCount');
+      print(likeCount);
+      List comment = message.get('comments');
+      Timestamp t = message.get('datetime');
+      DateTime d = t.toDate();
+      String date = d.toString().substring(0, 10);
+      UserPost post = UserPost(
+          postId: message.id,
+          text: message.get('content').toString(),
+          image_url: message.get('image_url').toString(),
+          date: date,
+          likeCount: likeCount,
+          commentCount: comment.length,
+          comments: comment,
+          owner: uid);
+      myPosts.add(post);
+
+      String locat = message['location'];
+      print(locat);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     currentusercheck();
@@ -181,7 +181,7 @@ class _ProfileViewState extends State<ProfileView>
                               ),
                             ),
                           ),
-                          Gallery(),
+                          Gallery(GmyPosts: myPosts),
                           Location(),
                         ],
                       ),
