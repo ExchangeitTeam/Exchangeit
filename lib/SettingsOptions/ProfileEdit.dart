@@ -1,11 +1,15 @@
+import 'dart:io' as io;
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import '../Objects/UserClass.dart';
+import 'package:path/path.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -15,6 +19,7 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  final _currentuser = FirebaseAuth.instance.currentUser;
   final _formKey = GlobalKey<FormState>();
   String university = '';
   String username = '';
@@ -35,8 +40,105 @@ class _EditProfileState extends State<EditProfile> {
           : _imageFile = null;
     });
   }
-  //TO DO:image upload backend
-  //TO D0:profile update
+
+  Future<bool> UsernamealreadyTaken(String username) async {
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('username', isEqualTo: username)
+        .get();
+
+    if (snap.docs.isNotEmpty) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future uploadPostwithImage(BuildContext context) async {
+    String fileName = basename(_imageFile!.path);
+    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('posts')
+        .child(_currentuser!.uid)
+        .child('/$fileName');
+
+    var url;
+
+    final metadata = firebase_storage.SettableMetadata(
+        contentType: 'image/jpeg',
+        customMetadata: {'picked-file-path': fileName});
+    firebase_storage.UploadTask uploadTask;
+
+    uploadTask = ref.putFile(io.File(_imageFile!.path)!, metadata);
+
+    firebase_storage.UploadTask task = await Future.value(uploadTask);
+    Future.value(uploadTask)
+        .then((value) async => {
+              url = await value.ref.getDownloadURL(),
+              print(url),
+              UpdateProfile(username, university, age, bio, url),
+              print("Upload file path ${value.ref.fullPath}"),
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("Uploaded to storage"),
+              )),
+            })
+        .onError((error, stackTrace) =>
+            {print("Upload file path error ${error.toString()} ")});
+  }
+
+  Future UpdateProfile(String username, String university, String age,
+      String bio, String profile_pic) async {
+    final firestoreInst = FirebaseFirestore.instance;
+    DocumentSnapshot docsnap =
+        await firestoreInst.collection('Users').doc(_currentuser!.uid).get();
+    String oldname = docsnap.get('username');
+    List oldkey = docsnap.get('searchKey');
+    String olduni = docsnap.get('university');
+    String oldage = docsnap.get('age');
+    String oldbio = docsnap.get('bio');
+    String oldprofile_pic = docsnap.get('profile_pic');
+    List<String> newusernameList = [];
+    for (int i = 1; i <= username.length; i++) {
+      newusernameList.add(username.substring(0, i).toLowerCase());
+    }
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(_currentuser!.uid)
+        .update({
+      'username': username == "" ? oldname : username,
+      'searchKey': newusernameList.isEmpty ? oldkey : newusernameList,
+      'userId': _currentuser!.uid,
+      "university": (university == '') ? olduni : university,
+      "age": (age == '') ? oldage : age,
+      "bio": (bio == '') ? oldbio : bio,
+      "profile_pic": (profile_pic == '') ? oldprofile_pic : profile_pic,
+    });
+    //Mesajlar için update gerekirse
+    /*
+    QuerySnapshot query = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(_currentuser!.uid)
+        .collection('messages')
+        .get();
+
+    List userIds = [];
+
+    for (var i in query.docs) {
+      userIds.add(i.id);
+    }
+
+    for (int i = 0; i < userIds.length; i++) {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userIds[i])
+          .collection('messages')
+          .doc(_currentuser!.uid)
+          .update({
+        'userName': username == "" ? oldname : username,
+        "profile_pic": (profile_pic == '') ? oldprofile_pic : profile_pic,
+      });
+    }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +167,14 @@ class _EditProfileState extends State<EditProfile> {
                         pickImage();
                       },
                       child: CircleAvatar(
-                        backgroundColor: Colors.blueGrey, // !!change later
+                        backgroundColor: AppColors.appBackColor,
                         child: ClipOval(
+                          // !!change later
                           child: _imageFile == null
                               ? Image.asset(
                                   'images/addphoto.png',
                                   fit: BoxFit.fitHeight,
-                                ) //değişecek
+                                )
                               : Image.file(_imageFile!),
                         ),
                         radius: 50,
@@ -234,32 +337,45 @@ class _EditProfileState extends State<EditProfile> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(30),
                         child: OutlinedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              if (false) {
-                              } //To Do: username already exist check
-                              else {
-                                if (_imageFile == null) {
-                                  //TO DO:profile update function
-                                  Navigator.pop(context);
+                              UsernamealreadyTaken(username)
+                                  .then((ourvalue) async {
+                                if (ourvalue) {
+                                  return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title:
+                                              Text('Username already taken!'),
+                                          content: Text(
+                                              'Please select another one!'),
+                                        );
+                                      });
                                 } else {
-                                  //TO DO:update profile  image function
-                                  Navigator.pop(context);
+                                  if (_imageFile == null) {
+                                    UpdateProfile(
+                                        username, university, age, bio, "");
+                                    Navigator.pop(context);
+                                  } else {
+                                    uploadPostwithImage(context);
+                                    //TO DO:update profile  image function
+                                    Navigator.pop(context);
+                                  }
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        elevation: 10,
+                                        content: Text('Profile Updated'),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 12),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  });
                                 }
-                                setState(() {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.green,
-                                      elevation: 10,
-                                      content: Text('Profile Updated'),
-                                      margin: EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 12),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                });
-                              }
+                              });
                             }
                           },
                           child: Padding(
