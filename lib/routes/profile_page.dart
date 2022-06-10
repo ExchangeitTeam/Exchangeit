@@ -46,39 +46,44 @@ currentusercheck() {
 int likeCount = 0;
 
 List<UserPost> myPosts = [];
+Future getPosts(var uid) async {
+  myPosts = [];
+  QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('Users')
+      .doc(uid)
+      .collection('posts')
+      .orderBy('datetime', descending: true)
+      .get();
+
+  for (var message in snapshot.docs) {
+    likeCount = message.get('likeCount');
+    print(likeCount);
+    List comment = message.get('comments');
+    Timestamp t = message.get('datetime');
+    DateTime d = t.toDate();
+    String date = d.toString().substring(0, 10);
+    UserPost post = UserPost(
+      postId: message.id,
+      text: message.get('content').toString(),
+      image_url: message.get('image_url').toString(),
+      date: date,
+      likeCount: likeCount,
+      commentCount: comment.length,
+      comments: comment,
+      owner: uid,
+      topic: message.get("topic"),
+    );
+    myPosts.add(post);
+
+    String locat = message['location'];
+    print(locat);
+  }
+}
 
 class _ProfileViewState extends State<ProfileView>
     with TickerProviderStateMixin {
-  Future getPosts(var uid) async {
-    myPosts = [];
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(uid)
-        .collection('posts')
-        .orderBy('datetime', descending: true)
-        .get();
-
-    for (var message in snapshot.docs) {
-      likeCount = message.get('likeCount');
-      print(likeCount);
-      List comment = message.get('comments');
-      Timestamp t = message.get('datetime');
-      DateTime d = t.toDate();
-      String date = d.toString().substring(0, 10);
-      UserPost post = UserPost(
-          postId: message.id,
-          text: message.get('content').toString(),
-          image_url: message.get('image_url').toString(),
-          date: date,
-          likeCount: likeCount,
-          commentCount: comment.length,
-          comments: comment,
-          owner: uid);
-      myPosts.add(post);
-
-      String locat = message['location'];
-      print(locat);
-    }
+  void initState() {
+    setState(() {});
   }
 
   @override

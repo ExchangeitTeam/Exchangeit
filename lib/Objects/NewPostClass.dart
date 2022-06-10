@@ -9,6 +9,7 @@ class UserPost {
   String owner = '';
   String owner_name = '';
   String location = "";
+  String topic = "";
 
   UserPost(
       {required this.postId,
@@ -20,7 +21,8 @@ class UserPost {
       required this.comments,
       this.owner = '',
       this.owner_name = '',
-      this.location = ""});
+      this.location = "",
+      this.topic = ""});
 
   @override
   String toString() =>

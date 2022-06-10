@@ -226,8 +226,21 @@ class _PostTileState extends State<PostTile> {
                               children: [
                                 Text(location, style: AppStyles.postOwnerText),
                                 SizedBox(height: 5),
-                                Text(widget.post.text,
-                                    style: AppStyles.postText),
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                                  Container(
+                                    width: 150,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          widget.post.text,
+                                          style: AppStyles.postText,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 3,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
                                 SizedBox(height: 15),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -261,6 +274,16 @@ class _PostTileState extends State<PostTile> {
                         ),
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Container(
+                            child: Text(widget.post.topic),
+                          ),
+                        )
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -361,6 +384,16 @@ class _PostTileState extends State<PostTile> {
                             ],
                           ),
                           SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Container(
+                                  child: Text(widget.post.topic),
+                                ),
+                              )
+                            ],
+                          )
                         ],
                       ),
                     ],

@@ -24,9 +24,11 @@ class _SharePostScreenState extends State<SharePostScreen> {
   final _currentuser = FirebaseAuth.instance.currentUser;
   String post_message = '';
   String location = '';
+  String Posttopic = '';
   final _PostKey = GlobalKey<FormState>();
   final _textFormControllercontent = TextEditingController();
   final _textFormControllerlocation = TextEditingController();
+  final _textFormControllertopic = TextEditingController();
 
   showDialogueForWaiting(BuildContext context) {
     showDialog(
@@ -72,7 +74,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
         .then((value) async => {
               url = await value.ref.getDownloadURL(),
               print(url),
-              FirebasePostUpload(_currentuser!.uid, 0, url, message),
+              FirebasePostUpload(_currentuser!.uid, 0, url, message, Posttopic),
               print("Upload file path ${value.ref.fullPath}"),
               hideProgressDialogue(context),
               ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +92,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
             {print("Upload file path error ${error.toString()} ")});
   }
 
-  Future FirebasePostUpload(uid, like, url, content) async {
+  Future FirebasePostUpload(uid, like, url, content, topic) async {
     final firestoreInstance = FirebaseFirestore.instance;
 
     List<String> indexList = [];
@@ -113,6 +115,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
       "sharedFrom": '',
       'location_key': indexList,
       "userID": _currentuser!.uid,
+      "topic": topic,
     }).then((value) {
       print(value.id);
     });
@@ -137,13 +140,15 @@ class _SharePostScreenState extends State<SharePostScreen> {
             onPressed: () {
               if (_PostKey.currentState!.validate()) {
                 if (_imageFile == null) {
-                  FirebasePostUpload(_currentuser!.uid, 0, '', post_message);
+                  FirebasePostUpload(
+                      _currentuser!.uid, 0, '', post_message, Posttopic);
                 } else {
                   uploadPostwithImage(context, post_message);
                 }
               }
               _textFormControllercontent.clear();
               _textFormControllerlocation.clear();
+              _textFormControllertopic.clear();
               setState(() {
                 _imageFile = null;
               });
@@ -242,6 +247,33 @@ class _SharePostScreenState extends State<SharePostScreen> {
                             return null;
                           } else {
                             location = value;
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    child: Container(
+                      child: TextFormField(
+                        controller: _textFormControllertopic,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Topic",
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(5.0),
+                          ),
+                        ),
+                        validator: (String? value) {
+                          if (value == '' || value == null) {
+                            return null;
+                          } else {
+                            Posttopic = value;
                           }
                           return null;
                         },
