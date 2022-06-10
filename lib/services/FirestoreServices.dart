@@ -59,7 +59,7 @@ class FirestoreService {
       "age": age,
       "bio": '',
       "profile_pic": '',
-      'follow_requests': '',
+      'follow_requests': [],
       'bookmarks': [],
       'deactivated': false,
       'old_username': '',
