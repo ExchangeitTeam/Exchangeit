@@ -1,6 +1,10 @@
+import 'package:exchangeit/main.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/models/WalkModel.dart';
 import 'dart:async';
+
+import '../services/Appanalytics.dart';
 
 class WalkthroughScreen {
   String header;
@@ -15,8 +19,8 @@ class WalkthroughScreen {
 }
 
 class Walkthrough extends StatefulWidget {
-  const Walkthrough({Key? key}) : super(key: key);
-
+  const Walkthrough({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<Walkthrough> createState() => _WalkthroughState();
 }
@@ -51,6 +55,7 @@ class _WalkthroughState extends State<Walkthrough> {
 
   @override
   Widget build(BuildContext context) {
+    Appanalytics.setCurrentScreenUtil(screenName: "Walkthrough Page");
     return Container(
       color: Colors.grey,
       width: double.infinity,
