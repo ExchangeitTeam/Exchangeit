@@ -69,12 +69,12 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
         .doc(widget.post.postId)
         .get();
 
-    List<dynamic> listOfLikes = [];
+    List<dynamic> allLike = [];
 
-    listOfLikes = liked.get('likedBy');
+    allLike = liked.get('likedBy');
 
     if (isLiked == false) {
-      listOfLikes.add(_currentuser!.uid);
+      allLike.add(_currentuser!.uid);
 
       await FirebaseFirestore.instance
           .collection('Users')
@@ -83,14 +83,14 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
           .doc(widget.post.postId)
           .update({
         'totalLike': widget.post.totalLike + 1,
-        'likedBy': listOfLikes,
+        'likedBy': allLike,
       }).then((value) => getliked = true);
 
       setState(() {
         post.totalLike = post.totalLike + 1;
       });
 
-      DocumentSnapshot info = await FirebaseFirestore.instance
+      DocumentSnapshot Sender = await FirebaseFirestore.instance
           .collection('Users')
           .doc(_currentuser!.uid)
           .get();
@@ -99,17 +99,17 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
           .doc(widget.post.postownerID)
           .collection('notifications')
           .add({
-        'message': 'You received a like from ${info['username']}!',
         'datetime': DateTime.now(),
-        'url': widget.post.imageurl,
+        'notification': 'You get a like from ${Sender['username']}!',
+        'Posturl': widget.post.imageurl,
         'uid': _currentuser!.uid,
-        'follow_request': 'no',
-        'postId' : widget.post.postId,
+        'IsfollowReq': 'no',
+        'postId': widget.post.postId,
       });
 
       return getliked;
     } else {
-      listOfLikes.remove(_currentuser!.uid);
+      allLike.remove(_currentuser!.uid);
 
       await FirebaseFirestore.instance
           .collection('Users')
@@ -118,7 +118,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
           .doc(widget.post.postId)
           .update({
         'totalLike': widget.post.totalLike - 1,
-        'likedBy': listOfLikes,
+        'likedBy': allLike,
       }).then((value) => getliked = false);
 
       setState(() {
@@ -134,7 +134,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
   Widget build(BuildContext context) {
     if (widget.post.imageurl != "") {
       return FutureBuilder(
-        future: PostalreadyLiked().then((value) => Isliked = value),
+        future: PostalreadyLiked().then((changer) => Isliked = changer),
         builder: (context, snapshot) {
           return InkWell(
             onTap: () {
@@ -149,7 +149,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
             },
             child: Container(
               child: Card(
-                margin: EdgeInsets.all(8),
+                margin: EdgeInsets.all(10),
                 color: Colors.lightBlueAccent[100],
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -176,8 +176,9 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => PostEditScreen(
-                                                ourPost: widget.post)),
+                                            builder: (context) =>
+                                                PostEditScreen(
+                                                    ourPost: widget.post)),
                                       );
                                     },
                                     icon: Icon(Icons.edit))
@@ -272,7 +273,8 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                                 style: AppStyles.postOwnerText),
                             decoration: BoxDecoration(
                               color: Colors.green,
-                              border: Border.all(color: Colors.green, width: 2.0),
+                              border:
+                                  Border.all(color: Colors.green, width: 2.0),
                               borderRadius:
                                   BorderRadius.all(Radius.elliptical(50, 50)),
                             ),

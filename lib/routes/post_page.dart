@@ -1,7 +1,7 @@
 import 'package:exchangeit/Objects/NewPostClass.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
-import '../Objects/PostClass.dart';
+
 import '../Objects/PostBase.dart';
 import '../models/Colors.dart';
 
@@ -162,21 +162,13 @@ class _postPageViewState extends State<postPageView> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              widget.isPhoto
-                  ? ImagePost(
-                      image: widget.pf.image,
-                      profileImage: widget.pf.profileImage,
-                      username: widget.pf.username,
-                      isMine: widget.pf.isMine,
-                      postId: widget.pf.postId,
-                      Location: widget.pf.Location)
-                  : BaseDesingPost(
-                      post: widget.pf,
-                      delete: () {
-                        setState(() {});
-                      },
-                      like: () {},
-                      searched: false),
+              BaseDesingPost(
+                  post: widget.pf,
+                  delete: () {
+                    setState(() {});
+                  },
+                  like: () {},
+                  searched: false),
               Container(
                 child: TextField(
                   decoration: InputDecoration(

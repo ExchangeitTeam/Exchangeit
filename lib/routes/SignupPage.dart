@@ -175,7 +175,7 @@ class _SignUpState extends State<SignUp> {
                           width: sizeapp.width * 0.8,
                           child: TextFormField(
                             keyboardType: TextInputType.text,
-                            obscureText: false,
+                            obscureText: true,
                             enableSuggestions: true,
                             autocorrect: false,
                             decoration: InputDecoration(

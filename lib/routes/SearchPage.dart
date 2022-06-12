@@ -47,6 +47,10 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
                 labelPadding: EdgeInsets.symmetric(horizontal: 40.0),
                 tabs: [
                   Tab(
+                    text: 'People',
+                    icon: Icon(Icons.people_alt),
+                  ),
+                  Tab(
                     text: 'Post',
                     icon: Icon(Icons.comment),
                   ),
@@ -58,10 +62,6 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
                     text: 'Topics',
                     icon: Icon(Icons.lightbulb_outlined),
                   ),
-                  Tab(
-                    text: 'People',
-                    icon: Icon(Icons.people_alt),
-                  ),
                 ],
                 controller: _controller,
               ),
@@ -71,10 +71,10 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _controller,
               children: [
+                SingleChildScrollView(child: SearchPeople()),
                 SingleChildScrollView(child: SearchPost()),
                 SingleChildScrollView(child: SearchLocation()),
                 SingleChildScrollView(child: SearchTopic()),
-                SingleChildScrollView(child: SearchPeople()),
               ],
             ),
           )
@@ -96,12 +96,14 @@ class _SearchLocationState extends State<SearchLocation> {
   void buttonPressed() {
     print('Button Pressed in Function');
   }
+
   String loc = "";
-  void initiateSearch(String val) {
+  void Starter(String val) {
     setState(() {
       loc = val.trim();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     CollectionReference locationsRef = _firestore.collection('Locations');
@@ -119,29 +121,30 @@ class _SearchLocationState extends State<SearchLocation> {
             ),
             enableSuggestions: true,
             cursorColor: Colors.green,
-            onChanged: (val) => initiateSearch(val),
-
+            onChanged: (val) => Starter(val),
           ),
         ),
         StreamBuilder<QuerySnapshot>(
             stream: loc != "" && loc != null
-                ?
-            locationsRef.where('searchKey', arrayContains: loc).snapshots()
-                :locationsRef.where("name", isNull: false).snapshots(),
-            builder: (BuildContext context, AsyncSnapshot <QuerySnapshot> asyncSnapshot) {
+                ? locationsRef
+                    .where('searchKey', arrayContains: loc)
+                    .snapshots()
+                : locationsRef.where("name", isNull: false).snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
               if (asyncSnapshot.hasError) {
-                return Center(
-                    child: Text('Bir Hata Oluştu, Tekrar Deneyiniz'));
+                return Center(child: Text('Bir Hata Oluştu, Tekrar Deneyiniz'));
               } else {
                 if (asyncSnapshot.hasData) {
-                  List<DocumentSnapshot> listOfDocumentSnap = asyncSnapshot.data!.docs;
+                  List<DocumentSnapshot> listOfDocumentSnap =
+                      asyncSnapshot.data!.docs;
                   return SingleChildScrollView(
                     child: ListView.separated(
                       shrinkWrap: true,
                       itemCount: listOfDocumentSnap.length,
                       itemBuilder: (context, index) {
                         return InkWell(
-                          child:  Row(
+                          child: Row(
                             children: [
                               Text(
                                 '#${listOfDocumentSnap[index].get('name')}',
@@ -165,10 +168,11 @@ class _SearchLocationState extends State<SearchLocation> {
                               ),
                             ],
                           ),
-                          onTap: (){},
+                          onTap: () {},
                         );
                       },
-                      separatorBuilder: (BuildContext context, int index) => Divider(
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Divider(
                         color: Color.fromARGB(255, 0, 170, 229),
                         thickness: 5.0,
                       ),
@@ -180,9 +184,7 @@ class _SearchLocationState extends State<SearchLocation> {
                   );
                 }
               }
-
-            }
-        ),
+            }),
       ],
     );
   }
@@ -199,12 +201,14 @@ class _SearchPeopleState extends State<SearchPeople> {
   void buttonPressed() {
     print('Button Pressed in Function');
   }
+
   String user = "";
-  void initiateSearch(String val) {
+  void Starter(String val) {
     setState(() {
       user = val.trim();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     CollectionReference usersRef = _firestore.collection('Users');
@@ -222,8 +226,7 @@ class _SearchPeopleState extends State<SearchPeople> {
             ),
             enableSuggestions: true,
             cursorColor: Colors.green,
-            onChanged: (val) => initiateSearch(val),
-
+            onChanged: (val) => Starter(val),
           ),
         ),
         Container(
@@ -237,16 +240,19 @@ class _SearchPeopleState extends State<SearchPeople> {
               ),
               StreamBuilder<QuerySnapshot>(
                   stream: user != "" && user != null
-                      ?
-                  usersRef.where("userSearch", arrayContains: user).snapshots()
+                      ? usersRef
+                          .where("userSearch", arrayContains: user)
+                          .snapshots()
                       : usersRef.where("username", isNull: false).snapshots(),
-                  builder: (BuildContext context, AsyncSnapshot <QuerySnapshot>asyncSnapshot) {
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
                     if (asyncSnapshot.hasError) {
                       return Center(
                           child: Text('Bir Hata Oluştu, Tekrar Deneyiniz'));
                     } else {
                       if (asyncSnapshot.hasData) {
-                        List<DocumentSnapshot> listOfDocumentSnap = asyncSnapshot.data!.docs;
+                        List<DocumentSnapshot> listOfDocumentSnap =
+                            asyncSnapshot.data!.docs;
                         return SingleChildScrollView(
                           child: ListView.separated(
                             shrinkWrap: true,
@@ -276,16 +282,25 @@ class _SearchPeopleState extends State<SearchPeople> {
                                         ),
                                       ),
                                     ),
-                                    onTap: (){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => privateProfileView(uid: listOfDocumentSnap[index].get('userId'))),);
-                                      print('@${listOfDocumentSnap[index].get('userId')}');
-
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                privateProfileView(
+                                                    uid: listOfDocumentSnap[
+                                                            index]
+                                                        .get('userId'))),
+                                      );
+                                      print(
+                                          '@${listOfDocumentSnap[index].get('userId')}');
                                     },
                                   ),
                                 ],
                               );
                             },
-                            separatorBuilder: (BuildContext context, int index) => Divider(
+                            separatorBuilder:
+                                (BuildContext context, int index) => Divider(
                               color: Color.fromARGB(255, 0, 170, 229),
                               thickness: 5.0,
                             ),
@@ -297,10 +312,7 @@ class _SearchPeopleState extends State<SearchPeople> {
                         );
                       }
                     }
-
-                  }
-              ),
-
+                  }),
             ],
           ),
         ),
@@ -333,8 +345,6 @@ class _SearchTopicState extends State<SearchTopic> {
             ),
             enableSuggestions: true,
             cursorColor: Colors.green,
-
-
           ),
         ),
         Container(
@@ -497,6 +507,7 @@ class _SearchTopicState extends State<SearchTopic> {
     );
   }
 }
+
 class SearchPost extends StatefulWidget {
   const SearchPost({Key? key}) : super(key: key);
 
@@ -509,6 +520,7 @@ class _SearchPostState extends State<SearchPost> {
   void buttonPressed() {
     print('Button Pressed in Function');
   }
+
   @override
   Widget build(BuildContext context) {
     CollectionReference usersRef = _firestore.collection('Users');
@@ -526,8 +538,6 @@ class _SearchPostState extends State<SearchPost> {
             ),
             enableSuggestions: true,
             cursorColor: Colors.green,
-
-
           ),
         ),
         Container(
@@ -541,13 +551,15 @@ class _SearchPostState extends State<SearchPost> {
               ),
               StreamBuilder<QuerySnapshot>(
                   stream: usersRef.snapshots(),
-                  builder: (BuildContext context, AsyncSnapshot <QuerySnapshot> asyncSnapshot) {
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
                     if (asyncSnapshot.hasError) {
                       return Center(
                           child: Text('Bir Hata Oluştu, Tekrar Deneynizi'));
                     } else {
                       if (asyncSnapshot.hasData) {
-                        List<DocumentSnapshot> listOfDocumentSnap = asyncSnapshot.data!.docs;
+                        List<DocumentSnapshot> listOfDocumentSnap =
+                            asyncSnapshot.data!.docs;
                         return SingleChildScrollView(
                           child: ListView.separated(
                             shrinkWrap: true,
@@ -582,7 +594,8 @@ class _SearchPostState extends State<SearchPost> {
                                 ),
                               );
                             },
-                            separatorBuilder: (BuildContext context, int index) => Divider(
+                            separatorBuilder:
+                                (BuildContext context, int index) => Divider(
                               color: Color.fromARGB(255, 0, 170, 229),
                               thickness: 5.0,
                             ),
@@ -594,10 +607,7 @@ class _SearchPostState extends State<SearchPost> {
                         );
                       }
                     }
-
-                  }
-              ),
-
+                  }),
               Divider(
                 color: Color.fromARGB(255, 0, 170, 229),
                 thickness: 5.0,

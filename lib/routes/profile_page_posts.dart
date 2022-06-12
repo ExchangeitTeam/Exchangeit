@@ -1,4 +1,3 @@
-import 'package:exchangeit/Objects/PostClass.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -136,26 +135,7 @@ class PostInfo extends StatelessWidget {
 }
 
 class _PostState extends State<Post> {
-  final List<TextPost> posts = [
-    TextPost(
-      text: "Munich is beautiful",
-      isMine: true,
-      profileImage: NetworkImage(
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
-      Location: "Munich",
-      username: "Ayse Aydemir",
-      postId: '10',
-    ),
-    TextPost(
-      text: "Sabancı is the best university",
-      isMine: true,
-      profileImage: NetworkImage(
-          'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
-      Location: "Istanbul",
-      username: "Ayse Aydemir",
-      postId: '10',
-    )
-  ];
+  final List posts = [];
 
   @override
   Widget build(BuildContext context) {
