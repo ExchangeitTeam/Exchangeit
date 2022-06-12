@@ -2,7 +2,7 @@ import 'package:exchangeit/Objects/NewPostClass.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import '../Objects/PostClass.dart';
-import '../Objects/PostTile.dart';
+import '../Objects/PostBase.dart';
 import '../models/Colors.dart';
 
 class postPageView extends StatefulWidget {
@@ -137,24 +137,13 @@ class _postPageViewState extends State<postPageView> {
         likes: '3'),
   ];
 
-  final imagePost = ImagePost(
-    profileImage: NetworkImage(
-        'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png'),
-    image: NetworkImage(
-        "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"),
-    username: "Ayse Aydemir",
-    isMine: false,
-    postId: '1',
-    Location: "Everest",
-  );
-
   final userPost = UserPost(
       postId: "1",
-      text: "London is amazing",
-      image_url:
+      content: "London is amazing",
+      imageurl:
           "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
       date: "09-06-2022",
-      likeCount: 12,
+      totalLike: 12,
       commentCount: 0,
       comments: []);
 
@@ -181,7 +170,7 @@ class _postPageViewState extends State<postPageView> {
                       isMine: widget.pf.isMine,
                       postId: widget.pf.postId,
                       Location: widget.pf.Location)
-                  : PostTile(
+                  : BaseDesingPost(
                       post: widget.pf,
                       delete: () {
                         setState(() {});

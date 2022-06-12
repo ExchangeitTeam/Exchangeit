@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../Objects/NewPostClass.dart';
 import '../Objects/PostClass.dart';
 import '../main.dart';
-import 'Post_FeedTiles.dart';
+import 'FeedProvider.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key, required this.analytics}) : super(key: key);
@@ -20,9 +20,14 @@ class FeedPage extends StatefulWidget {
 List<UserPost> myPosts = [];
 
 class _FeedPageState extends State<FeedPage> {
+  @override
+  void initState() {
+    setState(() {});
+  }
+
   final _currentuser = FirebaseAuth.instance.currentUser;
   List posts = [];
-  int likeCount = 0;
+  int TotalLike = 0;
   Future getPosts(var uid) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
@@ -32,21 +37,23 @@ class _FeedPageState extends State<FeedPage> {
         .get();
 
     for (var message in snapshot.docs) {
-      likeCount = message.get('likeCount');
-      print(likeCount);
+      TotalLike = message.get('totalLike');
+      print(TotalLike);
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0, 10);
+      String posttopic = message.get('topic');
       UserPost post = UserPost(
           postId: message.id,
-          text: message.get('content').toString(),
-          image_url: message.get('image_url').toString(),
+          content: message.get('content').toString(),
+          imageurl: message.get('imageUrl').toString(),
           date: date,
-          likeCount: likeCount,
+          totalLike: TotalLike,
           commentCount: comment.length,
           comments: comment,
-          owner: uid);
+          postownerID: uid,
+          topic: posttopic);
       posts.add(post);
 
       String locat = message['location'];
@@ -54,14 +61,14 @@ class _FeedPageState extends State<FeedPage> {
     }
   }
 
-  Future getFollowingPosts() async {
+  Future getFeedPosts() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(_currentuser!.uid)
         .get();
-    List following = snapshot.get('following');
+    List allPostOwner = snapshot.get('following');
 
-    for (var id in following) {
+    for (var id in allPostOwner) {
       print("Following id:$id");
       await getPosts(id);
     }
@@ -71,7 +78,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     Appanalytics.setCurrentScreenUtil(screenName: 'Post Page');
     return FutureBuilder(
-        future: Future.wait([getFollowingPosts()]),
+        future: Future.wait([getFeedPosts()]),
         builder: (context, snapshot) {
           print("Post len: ${posts.length}");
           posts.sort((a, b) {
@@ -107,7 +114,7 @@ class _FeedPageState extends State<FeedPage> {
                   child: Container(
                     child: Column(
                       children: posts
-                          .map((currentpost) => FeedpostTile(
+                          .map((currentpost) => FeedProvider(
                               post: currentpost,
                               delete: () {
                                 setState(() async {

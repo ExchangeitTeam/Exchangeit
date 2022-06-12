@@ -1,82 +1,70 @@
-import 'dart:io' as io;
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:exchangeit/models/Colors.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:exchangeit/Objects/NewPostClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../main.dart';
-import '../services/Appanalytics.dart';
+import '../models/Colors.dart';
 import 'package:path/path.dart';
 
-class SharePostScreen extends StatefulWidget {
-  const SharePostScreen({Key? key, required this.analytics}) : super(key: key);
-  final FirebaseAnalytics analytics;
+class PostEditScreen extends StatefulWidget {
+  PostEditScreen({Key? key, required this.ourPost}) : super(key: key);
+  UserPost ourPost;
+
   @override
-  State<SharePostScreen> createState() => _SharePostScreenState();
+  State<PostEditScreen> createState() => _PostEditScreenState();
 }
 
-class _SharePostScreenState extends State<SharePostScreen> {
-  File? _holdImage = null;
-  final _currentuser = FirebaseAuth.instance.currentUser;
-  String contentPost = '';
-  String location = '';
-  String Posttopic = '';
-  final _PostKey = GlobalKey<FormState>();
+showDialogueForWaiting(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          WaitingScreen(message: "Your post is being edited, please wait..."));
+}
 
-  showDialogueForWaiting(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => WaitingScreen(
-            message: "Your post is being created, please wait..."));
-  }
+hideProgressDialogue(BuildContext context) {
+  Navigator.of(context)
+      .pop(WaitingScreen(message: "Your post is being edited, please wait..."));
+}
 
-  hideProgressDialogue(BuildContext context) {
-    Navigator.of(context).pop(
-        WaitingScreen(message: "Your post is being created, please wait..."));
-  }
-
-  Future pickImage() async {
-    // ignore: deprecated_member_use
+class _PostEditScreenState extends State<PostEditScreen> {
+  Future pickNewImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
-      _holdImage = File(pickedFile!.path);
+      newImageFile = File(pickedFile!.path);
     });
   }
 
-  Future uploadPostwithImage(BuildContext context, message) async {
-    showDialogueForWaiting(context);
-    String fileName = basename(_holdImage!.path);
+  Future uploadPostwithImage(BuildContext context, content) async {
+    String fileName = basename(newImageFile!.path);
     final storageRef = FirebaseStorage.instance.ref();
-    final Firebaseref = storageRef
+    storageRef
         .child('All_App_Posts')
-        .child(_currentuser!.uid)
+        .child(currentuser!.uid)
         .child('/$fileName');
-
-    var url;
 
     final FirebaseData = SettableMetadata(
         contentType: 'image/jpeg',
         customMetadata: {'picked-file-path': fileName});
-    UploadTask Firestoreup;
+    UploadTask storageuploader;
 
-    Firestoreup = Firebaseref.putFile(File(_holdImage!.path), FirebaseData);
-    await Future.value(Firestoreup)
+    storageuploader =
+        storageRef.putFile(File(newImageFile!.path), FirebaseData);
+    await Future.value(storageuploader)
         .then((value) async => {
-              url = await value.ref.getDownloadURL(),
-              print(url),
-              FirebasePostUpload(_currentuser!.uid, 0, url, message, Posttopic),
+              EditedUrl = await value.ref.getDownloadURL(),
+              print(EditedUrl),
               print("Upload file path ${value.ref.fullPath}"),
-              hideProgressDialogue(context),
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   backgroundColor: Colors.green,
                   elevation: 10,
                   content:
-                      Text("Your Post successfully uploaded,check feed page"),
+                      Text("Your Post successfully edited,check feed page"),
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -86,7 +74,8 @@ class _SharePostScreenState extends State<SharePostScreen> {
             {print("Upload file path error ${error.toString()} ")});
   }
 
-  Future FirebasePostUpload(uid, like, url, content, topic) async {
+  Future FirebasePostUpdate(
+      UserPost ourpost, uid, url, content, topic, location) async {
     final firestoreInstance = FirebaseFirestore.instance;
 
     List<String> locationList = [];
@@ -94,34 +83,39 @@ class _SharePostScreenState extends State<SharePostScreen> {
     for (int i = 1; i <= location.length; i++) {
       locationList.add(location.substring(0, i).toLowerCase());
     }
-    firestoreInstance
-        .collection("Users")
-        .doc(_currentuser!.uid)
+    await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(ourpost.postownerID)
         .collection('posts')
-        .add({
+        .doc(ourpost.postId)
+        .update({
       "imageUrl": url,
-      "totalLike": like,
-      "comments": [],
       "content": content,
       "datetime": DateTime.now(),
       "location": location,
-      "likedBy": [],
       'searchLoc': locationList,
-      "userID": _currentuser!.uid,
       "topic": topic,
-    }).then((value) {});
+    });
   }
 
+  final currentuser = FirebaseAuth.instance.currentUser;
+  File? newImageFile = null;
+  String newContent = '';
+  String newLocation = '';
+  String EditedUrl = '';
+  String newTopic = '';
+  final _EditPostKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    Appanalytics.setCurrentScreenUtil(screenName: "Share Post Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        title: Text('Edit Post Screen'),
         elevation: 0,
+        foregroundColor: Colors.white,
         backgroundColor: AppColors.appBarColor,
+        centerTitle: true,
         actions: [
-          const Spacer(),
           TextButton(
             style: TextButton.styleFrom(
               primary: Colors.white,
@@ -129,16 +123,16 @@ class _SharePostScreenState extends State<SharePostScreen> {
             ),
             child: Text('Post'),
             onPressed: () {
-              if (_PostKey.currentState!.validate()) {
-                if (_holdImage == null) {
-                  FirebasePostUpload(
-                      _currentuser!.uid, 0, '', contentPost, Posttopic);
+              if (_EditPostKey.currentState!.validate()) {
+                if (newImageFile == null) {
+                  FirebasePostUpdate(widget.ourPost, currentuser!.uid,
+                      EditedUrl, newContent, newTopic, newLocation);
                 } else {
-                  uploadPostwithImage(context, contentPost);
+                  uploadPostwithImage(context, newContent);
                 }
               }
               setState(() {
-                _holdImage = null;
+                newImageFile = null;
               });
             },
           ),
@@ -149,7 +143,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
           Container(
             margin: const EdgeInsets.only(top: 20),
             child: Form(
-              key: _PostKey,
+              key: _EditPostKey,
               child: Column(
                 children: [
                   Expanded(
@@ -165,14 +159,14 @@ class _SharePostScreenState extends State<SharePostScreen> {
                           left: 30.0, right: 30.0, top: 25.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(70)),
-                        child: _holdImage != null
+                        child: newImageFile != null
                             ? InkWell(
-                                onTap: pickImage,
-                                child: Image.file(_holdImage!),
+                                onTap: pickNewImage,
+                                child: Image.file(newImageFile!),
                               )
                             : OutlinedButton(
-                                child: Text("Click for Add Photo"),
-                                onPressed: pickImage,
+                                child: Text("Click for Add new photo"),
+                                onPressed: pickNewImage,
                               ),
                       ),
                     ),
@@ -190,6 +184,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
                         maxLines: null,
                         decoration: new InputDecoration(
                           hintText: "Write your content",
+                          fillColor: Colors.black,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.blue),
                               borderRadius:
@@ -202,15 +197,12 @@ class _SharePostScreenState extends State<SharePostScreen> {
                               borderSide: BorderSide(color: Colors.red),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
-                          fillColor: Colors.grey[200],
-                          filled: true,
                         ),
                         validator: (String? value) {
                           if (value == '' || value == null) {
-                            return 'Please enter some content';
+                            newContent = widget.ourPost.content;
                           } else {
-                            contentPost = value;
-                            print(contentPost);
+                            newContent = value;
                           }
                           return null;
                         },
@@ -226,7 +218,8 @@ class _SharePostScreenState extends State<SharePostScreen> {
                       child: TextFormField(
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
-                          hintText: "Enter Location",
+                          hintText: "Enter New Location",
+                          fillColor: Colors.black,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.blue),
                               borderRadius:
@@ -239,14 +232,12 @@ class _SharePostScreenState extends State<SharePostScreen> {
                               borderSide: BorderSide(color: Colors.red),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
-                          fillColor: Colors.grey[200],
-                          filled: true,
                         ),
                         validator: (String? value) {
                           if (value == '' || value == null) {
-                            return null;
+                            newLocation = widget.ourPost.location;
                           } else {
-                            location = value;
+                            newLocation = value;
                           }
                           return null;
                         },
@@ -262,32 +253,35 @@ class _SharePostScreenState extends State<SharePostScreen> {
                       child: TextFormField(
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
-                            fillColor: Colors.grey[200],
-                            filled: true,
-                            hintText: "Enter Topic",
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.red),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.red),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
+                          hintText: "Enter New Topic",
+                          fillColor: Colors.black,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                        ),
                         validator: (String? value) {
                           if (value == '' || value == null) {
                             return null;
                           } else {
-                            Posttopic = value;
+                            newTopic = value;
                           }
                           return null;
                         },
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: 20,
+                  )
                 ],
               ),
             ),

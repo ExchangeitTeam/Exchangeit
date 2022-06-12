@@ -71,7 +71,7 @@ class _GalleryState extends State<Gallery> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(widget.GmyPosts[index].image_url),
+                  image: NetworkImage(widget.GmyPosts[index].imageurl),
                 ),
               ),
             ),

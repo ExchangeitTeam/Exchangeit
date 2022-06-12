@@ -24,20 +24,14 @@ hideProgressDialogue(BuildContext context) {
 }
 
 Future makePrivate() async {
-  if (isPrivate == 'public') {
-    await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(_currentuser!.uid)
-        .update({
-      'isPrivate': 'private',
+  if (Privchecher == false) {
+    await FirebaseFirestore.instance.collection("Users").doc(FireId).update({
+      'checkPrivate': true,
     });
   }
-  if (isPrivate == 'private') {
-    await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(_currentuser!.uid)
-        .update({
-      'isPrivate': 'public',
+  if (Privchecher == true) {
+    await FirebaseFirestore.instance.collection("Users").doc(FireId).update({
+      'checkPrivate': false,
     });
   }
 }
@@ -45,18 +39,17 @@ Future makePrivate() async {
 Future checkPrivate() async {
   print("check girdi");
   try {
-    DocumentSnapshot curruserinfo = await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(_currentuser!.uid)
-        .get();
-    isPrivate = curruserinfo.get("isPrivate");
+    DocumentSnapshot curruser =
+        await FirebaseFirestore.instance.collection("Users").doc(FireId).get();
+    Privchecher = curruser.get("checkPrivate");
   } catch (e) {
     print(e);
   }
 }
 
 final _currentuser = FirebaseAuth.instance.currentUser;
-String isPrivate = '';
+final FireId = _currentuser!.uid;
+bool Privchecher = true;
 
 class Settings extends StatefulWidget {
   const Settings({Key? key, required this.analytics}) : super(key: key);
@@ -95,11 +88,11 @@ class _SettingsState extends State<Settings> {
                           MaterialPageRoute(
                               builder: (context) => EditProfile()));
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.edit,
                       size: 30,
                     ),
-                    label: Text(
+                    label: const Text(
                       "Edit Profile",
                       style: TextStyle(fontSize: 20),
                     ),
@@ -126,12 +119,12 @@ class _SettingsState extends State<Settings> {
                         );
                       });
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.visibility_off,
                       size: 30,
                     ),
                     label: Text(
-                      isPrivate == 'public'
+                      Privchecher == false
                           ? 'Make private profile'
                           : 'Make public profile',
                       style: TextStyle(fontSize: 20),
@@ -145,7 +138,7 @@ class _SettingsState extends State<Settings> {
                     onPressed: () {
                       Navigator.pushNamed(context, 'PassChange');
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.password,
                       size: 30,
                     ),

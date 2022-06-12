@@ -1,4 +1,3 @@
-import 'dart:io' as io;
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
@@ -7,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import '../Objects/UserClass.dart';
 import 'package:path/path.dart';
 
@@ -26,22 +25,19 @@ class _EditProfileState extends State<EditProfile> {
   String age = '';
   String bio = '';
   String profile_image = '';
-  final _impicker = ImagePicker();
-  File? _imageFile = null;
+  File? newImage = null;
   SettingUser curruser_profile = SettingUser('', '', '', '', '');
   //TO DO:image picker backend
   Future pickImage() async {
-    // ignore: deprecated_member_use
-    final pickedFile = await _impicker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
-      pickedFile != null
-          ? _imageFile = File(pickedFile.path)
-          : _imageFile = null;
+      pickedFile != null ? newImage = File(pickedFile.path) : newImage = null;
     });
   }
 
-  Future<bool> UsernamealreadyTaken(String username) async {
+  Future<bool> UsernameTaken(String username) async {
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection('Users')
         .where('username', isEqualTo: username)
@@ -55,32 +51,27 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future uploadPostwithImage(BuildContext context) async {
-    String fileName = basename(_imageFile!.path);
-    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-        .ref()
-        .child('posts')
+    String fileName = basename(newImage!.path);
+    final storageRef = FirebaseStorage.instance.ref();
+    final FireRef = storageRef
+        .child('All_App_Posts')
         .child(_currentuser!.uid)
         .child('/$fileName');
 
-    var url;
+    var Imageurl;
 
-    final metadata = firebase_storage.SettableMetadata(
+    final metadata = SettableMetadata(
         contentType: 'image/jpeg',
         customMetadata: {'picked-file-path': fileName});
-    firebase_storage.UploadTask uploadTask;
+    UploadTask FirebaseuploadTask;
 
-    uploadTask = ref.putFile(io.File(_imageFile!.path)!, metadata);
-
-    firebase_storage.UploadTask task = await Future.value(uploadTask);
-    Future.value(uploadTask)
+    FirebaseuploadTask = FireRef.putFile(File(newImage!.path), metadata);
+    await Future.value(FirebaseuploadTask)
         .then((value) async => {
-              url = await value.ref.getDownloadURL(),
+              Imageurl = await value.ref.getDownloadURL(),
               print(url),
-              UpdateProfile(username, university, age, bio, url),
+              UpdateProfile(username, university, age, bio, Imageurl),
               print("Upload file path ${value.ref.fullPath}"),
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("Uploaded to storage"),
-              )),
             })
         .onError((error, stackTrace) =>
             {print("Upload file path error ${error.toString()} ")});
@@ -92,11 +83,11 @@ class _EditProfileState extends State<EditProfile> {
     DocumentSnapshot docsnap =
         await firestoreInst.collection('Users').doc(_currentuser!.uid).get();
     String oldname = docsnap.get('username');
-    List oldkey = docsnap.get('searchKey');
+    List oldSearch = docsnap.get('userSearch');
     String olduni = docsnap.get('university');
     String oldage = docsnap.get('age');
     String oldbio = docsnap.get('bio');
-    String oldprofile_pic = docsnap.get('profile_pic');
+    String oldprofileIm = docsnap.get('profileIm');
     List<String> newusernameList = [];
     for (int i = 1; i <= username.length; i++) {
       newusernameList.add(username.substring(0, i).toLowerCase());
@@ -106,38 +97,13 @@ class _EditProfileState extends State<EditProfile> {
         .doc(_currentuser!.uid)
         .update({
       'username': username == "" ? oldname : username,
-      'searchKey': newusernameList.isEmpty ? oldkey : newusernameList,
+      'userSearch': newusernameList.isEmpty ? oldSearch : newusernameList,
       'userId': _currentuser!.uid,
-      "university": (university == '') ? olduni : university,
-      "age": (age == '') ? oldage : age,
-      "bio": (bio == '') ? oldbio : bio,
-      "profile_pic": (profile_pic == '') ? oldprofile_pic : profile_pic,
+      'university': (university == '') ? olduni : university,
+      'age': (age == '') ? oldage : age,
+      'bio': (bio == '') ? oldbio : bio,
+      'profileIm': (profile_pic == '') ? oldprofileIm : profile_pic,
     });
-    //Mesajlar için update gerekirse
-    /*
-    QuerySnapshot query = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(_currentuser!.uid)
-        .collection('messages')
-        .get();
-
-    List userIds = [];
-
-    for (var i in query.docs) {
-      userIds.add(i.id);
-    }
-
-    for (int i = 0; i < userIds.length; i++) {
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(userIds[i])
-          .collection('messages')
-          .doc(_currentuser!.uid)
-          .update({
-        'userName': username == "" ? oldname : username,
-        "profile_pic": (profile_pic == '') ? oldprofile_pic : profile_pic,
-      });
-    }*/
   }
 
   @override
@@ -170,12 +136,12 @@ class _EditProfileState extends State<EditProfile> {
                         backgroundColor: AppColors.appBackColor,
                         child: ClipOval(
                           // !!change later
-                          child: _imageFile == null
+                          child: newImage == null
                               ? Image.asset(
                                   'images/addphoto.png',
                                   fit: BoxFit.fitHeight,
                                 )
-                              : Image.file(_imageFile!),
+                              : Image.file(newImage!),
                         ),
                         radius: 50,
                       ),
@@ -320,10 +286,11 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
                         ),
-                        onSaved: (String? value) {
+                        validator: (String? value) {
                           if (value == null || value == "") {
                             bio = "";
                           } else {
+                            print(bio);
                             bio = value;
                           }
                         },
@@ -339,8 +306,7 @@ class _EditProfileState extends State<EditProfile> {
                         child: OutlinedButton(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              UsernamealreadyTaken(username)
-                                  .then((ourvalue) async {
+                              UsernameTaken(username).then((ourvalue) async {
                                 if (ourvalue) {
                                   return showDialog(
                                       context: context,
@@ -353,7 +319,7 @@ class _EditProfileState extends State<EditProfile> {
                                         );
                                       });
                                 } else {
-                                  if (_imageFile == null) {
+                                  if (newImage == null) {
                                     UpdateProfile(
                                         username, university, age, bio, "");
                                     Navigator.pop(context);

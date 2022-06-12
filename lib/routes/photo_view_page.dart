@@ -11,10 +11,14 @@ class photoViewPage extends StatefulWidget {
 class _photoViewPageState extends State<photoViewPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: PhotoView(
-      imageProvider: widget.pht,
-      backgroundDecoration: BoxDecoration(color: Colors.white),
-    ));
+    return SizedBox(
+      width: 300.0,
+      height: 300.0,
+      child: Container(
+          child: PhotoView(
+        imageProvider: widget.pht,
+        backgroundDecoration: BoxDecoration(color: Colors.white),
+      )),
+    );
   }
 }

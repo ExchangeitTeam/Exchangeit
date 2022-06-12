@@ -7,34 +7,34 @@ import 'package:like_button/like_button.dart';
 
 import '../Objects/NewPostClass.dart';
 
-class FeedpostTile extends StatefulWidget {
+class FeedProvider extends StatefulWidget {
   final UserPost post;
   final VoidCallback delete;
   final VoidCallback like;
   bool searched;
-  FeedpostTile(
+  FeedProvider(
       {required this.post,
       required this.delete,
       required this.like,
       required this.searched});
 
   @override
-  State<FeedpostTile> createState() => _FeedpostTileState();
+  State<FeedProvider> createState() => _FeedProviderState();
 }
 
-class _FeedpostTileState extends State<FeedpostTile> {
+class _FeedProviderState extends State<FeedProvider> {
   final _currentuser = FirebaseAuth.instance.currentUser;
-  bool liked_already = false;
+  bool Isliked = false;
   Future<bool> PostalreadyLiked() async {
     DocumentSnapshot liked = await FirebaseFirestore.instance
         .collection('Users')
-        .doc(widget.post.owner)
+        .doc(widget.post.postownerID)
         .collection('posts')
         .doc(widget.post.postId)
         .get();
     DocumentSnapshot userinfos = await FirebaseFirestore.instance
         .collection('Users')
-        .doc(widget.post.owner)
+        .doc(widget.post.postownerID)
         .get();
     Postusername = userinfos['username'];
     location = liked.get('location');
@@ -51,7 +51,7 @@ class _FeedpostTileState extends State<FeedpostTile> {
 
     DocumentSnapshot liked = await FirebaseFirestore.instance
         .collection('Users')
-        .doc(widget.post.owner)
+        .doc(widget.post.postownerID)
         .collection('posts')
         .doc(widget.post.postId)
         .get();
@@ -65,11 +65,11 @@ class _FeedpostTileState extends State<FeedpostTile> {
 
       await FirebaseFirestore.instance
           .collection('Users')
-          .doc(widget.post.owner)
+          .doc(widget.post.postownerID)
           .collection('posts')
           .doc(widget.post.postId)
           .update({
-        'likeCount': widget.post.likeCount + 1,
+        'totalLike': widget.post.totalLike + 1,
         'likedBy': listOfLikes,
       }).then((value) => getliked = true);
 
@@ -83,12 +83,12 @@ class _FeedpostTileState extends State<FeedpostTile> {
           .get();
       await FirebaseFirestore.instance
           .collection('Users')
-          .doc(widget.post.owner)
+          .doc(widget.post.postownerID)
           .collection('notifications')
           .add({
         'message': 'You received a like from ${info['username']}!',
         'datetime': DateTime.now(),
-        'url': widget.post.image_url,
+        'url': widget.post.imageurl,
         'uid': _currentuser!.uid,
         'follow_request': 'no',
       });
@@ -99,11 +99,11 @@ class _FeedpostTileState extends State<FeedpostTile> {
 
       await FirebaseFirestore.instance
           .collection('Users')
-          .doc(widget.post.owner)
+          .doc(widget.post.postownerID)
           .collection('posts')
           .doc(widget.post.postId)
           .update({
-        'likeCount': widget.post.likeCount - 1,
+        'totalLike': widget.post.totalLike - 1,
         'likedBy': listOfLikes,
       }).then((value) => getliked = false);
 
@@ -115,18 +115,15 @@ class _FeedpostTileState extends State<FeedpostTile> {
     }
   }
 
-  Future<void> report(UserPost post) async {
-    //yapamadım
-  }
   String location = '';
   String Postusername = "";
   @override
   Widget build(BuildContext context) {
-    if (widget.post.image_url != '') {
+    if (widget.post.imageurl != '') {
       return FutureBuilder(
-          future: PostalreadyLiked().then((value) => liked_already = value),
+          future: PostalreadyLiked().then((value) => Isliked = value),
           builder: (context, snapshot) {
-            return GestureDetector(
+            return InkWell(
               onTap: () {},
               child: Card(
                 margin: EdgeInsets.all(10),
@@ -137,7 +134,7 @@ class _FeedpostTileState extends State<FeedpostTile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Image.network(widget.post.image_url,
+                        Image.network(widget.post.imageurl,
                             height: 150, width: 150, fit: BoxFit.cover),
                         Column(
                           children: [
@@ -156,16 +153,6 @@ class _FeedpostTileState extends State<FeedpostTile> {
                                     style: AppStyles.profileText),
                                 //SizedBox(width :5),
                                 SizedBox.shrink(),
-                                IconButton(
-                                  alignment: Alignment.center,
-                                  onPressed: () => report(widget.post),
-                                  iconSize: 20,
-                                  splashRadius: 24,
-                                  color: AppColors.postTextColor,
-                                  icon: Icon(
-                                    Icons.report,
-                                  ),
-                                ),
                               ],
                             ),
                             Column(
@@ -177,7 +164,7 @@ class _FeedpostTileState extends State<FeedpostTile> {
                                   children: [
                                     SizedBox(width: 10),
                                     Text(
-                                      widget.post.text,
+                                      widget.post.content,
                                       style: AppStyles.postText,
                                       overflow: TextOverflow.fade,
                                     ),
@@ -188,14 +175,14 @@ class _FeedpostTileState extends State<FeedpostTile> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     LikeButton(
-                                      isLiked: liked_already,
+                                      isLiked: Isliked,
                                       onTap: (isLiked) {
-                                        return LikeButtonTapped(context,
-                                            liked_already, widget.post);
+                                        return LikeButtonTapped(
+                                            context, Isliked, widget.post);
                                       },
                                     ),
                                     SizedBox(width: 5),
-                                    Text('${widget.post.likeCount}',
+                                    Text('${widget.post.totalLike}',
                                         style: AppStyles.postText),
                                     SizedBox(width: 15),
                                     Icon(Icons.chat_bubble_outline,
@@ -220,11 +207,9 @@ class _FeedpostTileState extends State<FeedpostTile> {
           });
     } else {
       return FutureBuilder(
-          future: PostalreadyLiked().then((result) => liked_already = result),
+          future: PostalreadyLiked().then((result) => Isliked = result),
           builder: (context, snapshot) {
-            //print(widget.post.text);
-            //print(liked_already);
-            return GestureDetector(
+            return InkWell(
               onTap: () {},
               child: Card(
                 margin: EdgeInsets.all(10),
@@ -250,16 +235,6 @@ class _FeedpostTileState extends State<FeedpostTile> {
                               Text(widget.post.date, style: AppStyles.postText),
                               //SizedBox(width :5),
                               SizedBox.shrink(),
-                              IconButton(
-                                alignment: Alignment.center,
-                                onPressed: () => report(widget.post),
-                                iconSize: 20,
-                                splashRadius: 24,
-                                color: AppColors.postTextColor,
-                                icon: Icon(
-                                  Icons.report,
-                                ),
-                              ),
                             ],
                           ),
                           Text(location, style: AppStyles.postLocation),
@@ -268,7 +243,7 @@ class _FeedpostTileState extends State<FeedpostTile> {
                             children: [
                               SizedBox(width: 10),
                               Text(
-                                widget.post.text,
+                                widget.post.content,
                                 style: AppStyles.postText,
                                 overflow: TextOverflow.fade,
                               ),
@@ -279,14 +254,14 @@ class _FeedpostTileState extends State<FeedpostTile> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               LikeButton(
-                                isLiked: liked_already,
+                                isLiked: Isliked,
                                 onTap: (isLiked) {
                                   return LikeButtonTapped(
-                                      context, liked_already, widget.post);
+                                      context, Isliked, widget.post);
                                 },
                               ),
                               SizedBox(width: 5),
-                              Text('${widget.post.likeCount}',
+                              Text('${widget.post.totalLike}',
                                   style: AppStyles.postText),
                               SizedBox(width: 15),
                               Icon(Icons.chat_bubble_outline,

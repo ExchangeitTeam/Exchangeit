@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:exchangeit/Objects/PostTile.dart';
+import 'package:exchangeit/Objects/PostBase.dart';
 import 'package:exchangeit/main.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
@@ -26,8 +26,11 @@ class ProfileView extends StatefulWidget {
 String username = '';
 Future getusername(var uid) async {
   if (uid != null) {
-    DocumentSnapshot mes = await FirestoreService.userCollection.doc(uid).get();
-    username = mes.get('username');
+    DocumentSnapshot docSnap =
+        await FirestoreService.userCollection.doc(uid).get();
+    username = docSnap.get('username');
+    totalFollower = docSnap.get('followerCount');
+    totalFollowing = docSnap.get('followingCount');
   }
   print('Provider uid:$uid');
   print('Provider usernama: $username');
@@ -43,7 +46,7 @@ currentusercheck() {
   }
 }
 
-int likeCount = 0;
+int totalLike = 0;
 
 List<UserPost> myPosts = [];
 Future getPosts(var uid) async {
@@ -56,32 +59,29 @@ Future getPosts(var uid) async {
       .get();
 
   for (var message in snapshot.docs) {
-    likeCount = message.get('likeCount');
-    print(likeCount);
+    totalLike = message.get('totalLike');
+    print(totalLike);
     List comment = message.get('comments');
     Timestamp t = message.get('datetime');
     DateTime d = t.toDate();
     String date = d.toString().substring(0, 10);
+    String posttopic = message.get("topic");
     UserPost post = UserPost(
       postId: message.id,
-      text: message.get('content').toString(),
-      image_url: message.get('image_url').toString(),
+      content: message.get('content').toString(),
+      imageurl: message.get('imageUrl').toString(),
       date: date,
-      likeCount: likeCount,
+      totalLike: totalLike,
       commentCount: comment.length,
       comments: comment,
-      owner: uid,
-      topic: message.get("topic"),
+      postownerID: uid,
+      topic: posttopic,
     );
     myPosts.add(post);
-
-    String locat = message['location'];
-    print(locat);
   }
 }
 
-class _ProfileViewState extends State<ProfileView>
-    with TickerProviderStateMixin {
+class _ProfileViewState extends State<ProfileView> {
   void initState() {
     setState(() {});
   }
@@ -134,7 +134,7 @@ class _ProfileViewState extends State<ProfileView>
                     SliverList(
                       delegate: SliverChildListDelegate(
                         [
-                          BaseScreenView(),
+                          SingleChildScrollView(child: BaseScreenView()),
                         ],
                       ),
                     ),
@@ -174,7 +174,7 @@ class _ProfileViewState extends State<ProfileView>
                                 child: Container(
                                   child: Column(
                                       children: myPosts
-                                          .map((mappingpost) => PostTile(
+                                          .map((mappingpost) => BaseDesingPost(
                                               post: mappingpost,
                                               delete: () {
                                                 setState(() {});

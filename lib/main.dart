@@ -7,7 +7,6 @@ import 'package:exchangeit/routes/OpeningPage.dart';
 import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
-import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:exchangeit/routes/profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
@@ -76,7 +75,6 @@ class MainBase extends StatelessWidget {
           'Settings': (context) => Settings(analytics: appanalytics),
           'PassChange': (context) => PassChange(analytics: appanalytics),
           'SharePost': (context) => SharePostScreen(analytics: appanalytics),
-          'SharePhoto': (context) => SharePhoto(analytics: appanalytics),
           'DM': (context) => DMPage(analytics: appanalytics),
           'PrivProfile': (context) =>
               privateProfileView(analytics: appanalytics),

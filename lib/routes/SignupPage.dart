@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Styles.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
 import 'package:exchangeit/services/auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-
+import 'package:path/path.dart';
 import '../main.dart';
 import '../services/Appanalytics.dart';
 import 'LoginPage.dart';
@@ -37,6 +40,40 @@ class _SignUpState extends State<SignUp> {
   String username = "";
   String age = "";
   String uni = "";
+  File? PicPath;
+  String ppUrl = "";
+  Future pickImage() async {
+    // ignore: deprecated_member_use
+    final Image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (Image == null) {
+        PicPath = null;
+      } else {
+        PicPath = File(Image.path);
+      }
+    });
+  }
+
+  Future uploadPostwithImage(BuildContext context) async {
+    String fileName = basename(PicPath!.path);
+    final storageRef = FirebaseStorage.instance.ref();
+    storageRef.child('All_PP').child('/$fileName');
+    final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+        customMetadata: {'picked-file-path': fileName});
+    UploadTask FirebaseuploadTask;
+
+    FirebaseuploadTask = storageRef.putFile(File(PicPath!.path), metadata);
+    await Future.value(FirebaseuploadTask)
+        .then((value) async => {
+              ppUrl = await value.ref.getDownloadURL(),
+              print(url),
+              print("Upload file path ${value.ref.fullPath}"),
+            })
+        .onError((error, stackTrace) =>
+            {print("Upload file path error ${error.toString()} ")});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +116,21 @@ class _SignUpState extends State<SignUp> {
                           InkWell(
                             hoverColor: Colors.red,
                             onTap: () {
+                              pickImage();
                               print("Pressed add profile page");
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.blueGrey,
                               radius: 50,
+                              child: ClipOval(
+                                // !!change later
+                                child: PicPath == null
+                                    ? Image.asset(
+                                        'images/addphoto.png',
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.file(PicPath!),
+                              ),
                             ),
                           ),
                         ],
@@ -267,8 +314,9 @@ class _SignUpState extends State<SignUp> {
                                 } else {
                                   username = username.toLowerCase().trim();
                                   showDialogueForWaiting(context);
-                                  await AuthService.registerUser(
-                                      email, username, uni, age, password);
+                                  await uploadPostwithImage(context);
+                                  await AuthService.registerUser(email,
+                                      username, uni, age, password, ppUrl);
                                   hideProgressDialogue(context);
                                   setState(() {
                                     ScaffoldMessenger.of(context).showSnackBar(

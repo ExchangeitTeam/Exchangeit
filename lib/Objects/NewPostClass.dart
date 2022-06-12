@@ -1,30 +1,26 @@
 class UserPost {
-  String text;
-  String image_url;
+  String content;
+  String imageurl;
   String date;
-  int likeCount;
+  int totalLike;
   int commentCount;
   List<dynamic> comments;
   String postId;
-  String owner = '';
-  String owner_name = '';
+  String postownerID = '';
+  String ownername = '';
   String location = "";
   String topic = "";
 
   UserPost(
       {required this.postId,
-      required this.text,
-      required this.image_url,
+      required this.content,
+      required this.imageurl,
       required this.date,
-      required this.likeCount,
+      required this.totalLike,
       required this.commentCount,
       required this.comments,
-      this.owner = '',
-      this.owner_name = '',
+      this.postownerID = '',
+      this.ownername = '',
       this.location = "",
       this.topic = ""});
-
-  @override
-  String toString() =>
-      'ID: $postId\nCaption: $text\nDate: $date\nLikes: $likeCount\nComments: $commentCount';
 }

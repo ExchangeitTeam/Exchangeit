@@ -73,8 +73,7 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
               ),
               enableSuggestions: true,
               cursorColor: Colors.green,
-
-              //onChanged: (val) => initiateSearch(val),
+              onChanged: (searchword) {},
             ),
           ),
           Expanded(
@@ -121,11 +120,16 @@ class _SearchLocationState extends State<SearchLocation> {
                       shrinkWrap: true,
                       itemCount: listOfDocumentSnap.length,
                       itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            title: Text(
-                                '${listOfDocumentSnap[index].get('name')}',
-                                style: TextStyle(fontSize: 24)),
+                        return InkWell(
+                          onTap: () {
+                            print("bastım");
+                          },
+                          child: Card(
+                            child: ListTile(
+                              title: Text(
+                                  '${listOfDocumentSnap[index].get('name')}',
+                                  style: TextStyle(fontSize: 24)),
+                            ),
                           ),
                         );
                       },
@@ -329,11 +333,17 @@ class _SearchPeopleState extends State<SearchPeople> {
                         shrinkWrap: true,
                         itemCount: listOfDocumentSnap.length,
                         itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text(
-                                  '${listOfDocumentSnap[index].get('username')}',
-                                  style: TextStyle(fontSize: 24)),
+                          return InkWell(
+                            onTap: () {
+                              print(
+                                  "${listOfDocumentSnap[index].get('userId')}");
+                            },
+                            child: Card(
+                              child: ListTile(
+                                title: Text(
+                                    '${listOfDocumentSnap[index].get('username')}',
+                                    style: TextStyle(fontSize: 24)),
+                              ),
                             ),
                           );
                         },
