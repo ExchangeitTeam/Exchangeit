@@ -104,6 +104,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
         'url': widget.post.imageurl,
         'uid': _currentuser!.uid,
         'follow_request': 'no',
+        'postId' : widget.post.postId,
       });
 
       return getliked;
@@ -146,153 +147,155 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                         )),
               );
             },
-            child: Card(
-              margin: EdgeInsets.all(8),
-              color: Colors.lightBlueAccent[100],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Row(
+            child: Container(
+              child: Card(
+                margin: EdgeInsets.all(8),
+                color: Colors.lightBlueAccent[100],
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Row(
+                          children: [
+                            Text(
+                              Postusername,
+                              style: AppStyles.profileTextName,
+                            ),
+                            SizedBox(width: 100),
+                            Spacer(),
+                            _currentuser!.uid == widget.post.postownerID
+                                ? IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    alignment: Alignment.center,
+                                    visualDensity: VisualDensity.compact,
+                                    iconSize: 15,
+                                    splashRadius: 20,
+                                    color: Colors.white,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PostEditScreen(
+                                                ourPost: widget.post)),
+                                      );
+                                    },
+                                    icon: Icon(Icons.edit))
+                                : SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            child: Image.network(widget.post.imageurl,
+                                height: 250, width: 350, fit: BoxFit.fill),
+                          )
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            Postusername,
-                            style: AppStyles.profileTextName,
+                            widget.post.date,
+                            style: GoogleFonts.signika(
+                              color: Colors.deepOrangeAccent,
+                              fontSize: 16,
+                            ),
                           ),
-                          SizedBox(width: 100),
                           Spacer(),
-                          _currentuser!.uid == widget.post.postownerID
+                          LikeButton(
+                            circleColor: CircleColor(
+                                start: const Color(0xFFFF5722),
+                                end: const Color(0xFFFFC107)),
+                            isLiked: Isliked,
+                            onTap: (isLiked) {
+                              return LikeButtonTapped(
+                                  context, Isliked, widget.post);
+                            },
+                          ),
+                          SizedBox(width: 5),
+                          Text('${widget.post.totalLike}',
+                              style: AppStyles.postText),
+                          Spacer(),
+                          Icon(Icons.insert_comment_outlined,
+                              color: Colors.white),
+                          SizedBox(width: 5),
+                          Text('${widget.post.commentCount}',
+                              style: AppStyles.postText),
+                          Spacer(),
+                          widget.searched == false
                               ? IconButton(
                                   padding: EdgeInsets.all(0),
                                   alignment: Alignment.center,
-                                  visualDensity: VisualDensity.compact,
-                                  iconSize: 15,
+                                  onPressed: widget.delete,
+                                  iconSize: 20,
                                   splashRadius: 20,
                                   color: Colors.white,
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PostEditScreen(
-                                              ourPost: widget.post)),
-                                    );
-                                  },
-                                  icon: Icon(Icons.edit))
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                  ),
+                                )
                               : SizedBox.shrink(),
                         ],
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          child: Image.network(widget.post.imageurl,
-                              height: 250, width: 350, fit: BoxFit.cover),
-                        )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.post.date,
-                          style: GoogleFonts.signika(
-                            color: Colors.deepOrangeAccent,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Spacer(),
-                        LikeButton(
-                          circleColor: CircleColor(
-                              start: const Color(0xFFFF5722),
-                              end: const Color(0xFFFFC107)),
-                          isLiked: Isliked,
-                          onTap: (isLiked) {
-                            return LikeButtonTapped(
-                                context, Isliked, widget.post);
-                          },
-                        ),
-                        SizedBox(width: 5),
-                        Text('${widget.post.totalLike}',
-                            style: AppStyles.postText),
-                        Spacer(),
-                        Icon(Icons.insert_comment_outlined,
-                            color: Colors.white),
-                        SizedBox(width: 5),
-                        Text('${widget.post.commentCount}',
-                            style: AppStyles.postText),
-                        Spacer(),
-                        widget.searched == false
-                            ? IconButton(
-                                padding: EdgeInsets.all(0),
-                                alignment: Alignment.center,
-                                onPressed: widget.delete,
-                                iconSize: 20,
-                                splashRadius: 20,
-                                color: Colors.white,
-                                icon: Icon(
-                                  Icons.delete_outline,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 5),
+                          Row(mainAxisSize: MainAxisSize.min, children: [
+                            Column(
+                              children: [
+                                Container(
+                                  child: Text(
+                                    widget.post.content,
+                                    style: AppStyles.WalkTextStyle,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                  ),
+                                  color: Colors.white,
+                                  padding: EdgeInsets.all(8),
                                 ),
-                              )
-                            : SizedBox.shrink(),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 5),
-                        Row(mainAxisSize: MainAxisSize.min, children: [
-                          Column(
-                            children: [
-                              Container(
-                                child: Text(
-                                  widget.post.content,
-                                  style: AppStyles.WalkTextStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 3,
-                                ),
-                                color: Colors.white,
-                                padding: EdgeInsets.all(8),
-                              ),
-                            ],
-                          ),
-                        ]),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text("Location: $location",
-                              style: AppStyles.postOwnerText),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            border: Border.all(color: Colors.green, width: 2.0),
-                            borderRadius:
-                                BorderRadius.all(Radius.elliptical(50, 50)),
-                          ),
-                        ),
-                        Spacer(),
-                        Center(
-                          child: Container(
+                              ],
+                            ),
+                          ]),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
                             padding: EdgeInsets.all(10),
-                            child: Text(widget.post.topic,
-                                style: AppStyles.buttonText),
+                            child: Text("Location: $location",
+                                style: AppStyles.postOwnerText),
                             decoration: BoxDecoration(
                               color: Colors.green,
-                              border:
-                                  Border.all(color: Colors.green, width: 2.0),
-                              borderRadius: new BorderRadius.all(
-                                  Radius.elliptical(50, 50)),
+                              border: Border.all(color: Colors.green, width: 2.0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.elliptical(50, 50)),
                             ),
                           ),
-                        )
-                      ],
-                    )
-                  ],
+                          Spacer(),
+                          Center(
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Text(widget.post.topic,
+                                  style: AppStyles.buttonText),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                border:
+                                    Border.all(color: Colors.green, width: 2.0),
+                                borderRadius: new BorderRadius.all(
+                                    Radius.elliptical(50, 50)),
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
