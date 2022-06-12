@@ -19,7 +19,7 @@ class NotificationTile extends StatelessWidget {
                 CircleAvatar(
                   child: ClipOval(
                       child: Image.network(
-                    "https://tr.web.img4.acsta.net/c_310_420/pictures/16/01/19/11/06/274206.jpg",
+                    notificationObj.profilePic,
                     fit: BoxFit.cover,
                   )),
                   backgroundColor: Colors.white,
@@ -34,6 +34,7 @@ class NotificationTile extends StatelessWidget {
                     ],
                   ),
                 ),
+                /*
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                   child: CircleAvatar(
@@ -45,6 +46,7 @@ class NotificationTile extends StatelessWidget {
                     radius: 30,
                   ),
                 ),
+                */
                 IconButton(
                     onPressed: remove,
                     icon: const Icon(Icons.delete, size: 28, color: Colors.red))

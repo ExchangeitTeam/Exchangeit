@@ -77,7 +77,7 @@ class MainBase extends StatelessWidget {
           'SharePost': (context) => SharePostScreen(analytics: appanalytics),
           'DM': (context) => DMPage(analytics: appanalytics),
           'PrivProfile': (context) =>
-              privateProfileView(analytics: appanalytics),
+              privateProfileView(),
           'Profile': (context) => ProfileView(analytics: appanalytics),
           'ProviderMain': (context) => ProvideMain(analytics: appanalytics),
         },
