@@ -190,7 +190,7 @@ class _SignUpState extends State<SignUp> {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave password empty';
-                                } else if (value.length < 4) {
+                                } else if (value.length < 8) {
                                   return 'password too short';
                                 } else {
                                   password = value;
@@ -314,9 +314,14 @@ class _SignUpState extends State<SignUp> {
                                 } else {
                                   username = username.toLowerCase().trim();
                                   showDialogueForWaiting(context);
-                                  await uploadPostwithImage(context);
-                                  await AuthService.registerUser(email,
-                                      username, uni, age, password, ppUrl);
+                                  if (PicPath == null) {
+                                    await AuthService.registerUser(email,
+                                        username, uni, age, password, "");
+                                  } else {
+                                    await uploadPostwithImage(context);
+                                    await AuthService.registerUser(email,
+                                        username, uni, age, password, ppUrl);
+                                  }
                                   hideProgressDialogue(context);
                                   setState(() {
                                     ScaffoldMessenger.of(context).showSnackBar(
