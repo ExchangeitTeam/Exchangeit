@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:exchangeit/routes/photo_view_page.dart';
+import 'package:exchangeit/routes/ZoomPhotoView.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -69,17 +69,17 @@ class _BaseScreenViewState extends State<BaseScreenView> {
                       ),
                     ),
                     Expanded(
-                      flex: 7,
+                      flex: 3,
                       child: Column(
                         children: [
                           Row(
                             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(width: 40),
                               Center(
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(
@@ -100,7 +100,7 @@ class _BaseScreenViewState extends State<BaseScreenView> {
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 25),
+                              SizedBox(width: 15),
                               Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,

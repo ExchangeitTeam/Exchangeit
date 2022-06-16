@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/Objects/PostBase.dart';
 import 'package:exchangeit/main.dart';
 import 'package:exchangeit/models/Colors.dart';
+import 'package:exchangeit/models/Styles.dart';
+import 'package:exchangeit/routes/ZoomPhotoView.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
 import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
@@ -81,11 +83,30 @@ Future getPosts(var uid) async {
   }
 }
 
-class _ProfileViewState extends State<ProfileView> {
+class _ProfileViewState extends State<ProfileView>
+    with SingleTickerProviderStateMixin {
+  int totalFollower = 0;
+  int totalFollowing = 0;
+  String profilepp = "";
+  String Bio = "";
+  String uni = "";
+
+  Future getuserInfo() async {
+    DocumentSnapshot docSnap =
+        await FirestoreService.userCollection.doc(userID).get();
+    totalFollower = await docSnap.get('followerCount');
+    totalFollowing = await docSnap.get('followingCount');
+    profilepp = await docSnap.get('profileIm');
+    Bio = await docSnap.get('bio');
+    uni = await docSnap.get('university');
+  }
+
   void initState() {
     setState(() {});
   }
 
+  late TabController _ProfileController = TabController(length: 3, vsync: this);
+  String buttonChanger = "Follow";
   @override
   Widget build(BuildContext context) {
     currentusercheck();
@@ -96,12 +117,15 @@ class _ProfileViewState extends State<ProfileView> {
     }
     Appanalytics.setLogEventUtil(eventName: 'Profile_Page_Viewed');
     return FutureBuilder(
-        future: Future.wait([getusername(_userid), getPosts(_userid)]),
+        future: Future.wait(
+          [getusername(_userid), getPosts(_userid), getuserInfo()],
+        ),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingScreen(message: "Loading profile page");
           }
           print("mypost array lenght: ${myPosts.length}");
+          final NetworkImage pp = NetworkImage(profilepp);
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -126,22 +150,184 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
               ],
             ),
-            body: DefaultTabController(
-              length: 3,
-              child: NestedScrollView(
-                headerSliverBuilder: (context, _) {
-                  return [
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          SingleChildScrollView(child: BaseScreenView()),
-                        ],
-                      ),
-                    ),
-                  ];
-                },
-                body: Column(
+            body: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height),
+                child: Column(
                   children: <Widget>[
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              //mainAxisAlignment: MainAxisAlignment.start,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: pp,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  photoViewPage(pht: pp)));
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 0),
+                                      child: Text(
+                                        '$totalFollower',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      'Followers',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 0),
+                                      child: Text(
+                                        '$totalFollowing',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      'Follow',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(width: 25),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const SizedBox(height: 30),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(15),
+                              splashColor: Colors.blueAccent,
+                              onTap: () {
+                                setState(() {
+                                  if (buttonChanger == "Requested")
+                                    buttonChanger = "Follow";
+                                  else
+                                    buttonChanger = "Requested";
+                                });
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Container(
+                                  width: 150,
+                                  height: 40,
+                                  margin: const EdgeInsets.all(3.0),
+                                  padding: const EdgeInsets.all(3.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.lightBlue[100],
+                                    border: Border.all(
+                                        width: 2.5,
+                                        color: Colors.lightBlueAccent),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                  ),
+                                  child: Center(child: Text(buttonChanger)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(15),
+                              splashColor: Colors.blueAccent,
+                              onTap: () {
+                                //Send Message page
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Container(
+                                  width: 150,
+                                  height: 40,
+                                  margin: const EdgeInsets.all(3.0),
+                                  padding: const EdgeInsets.all(3.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.lightBlue[100],
+                                    border: Border.all(
+                                        width: 2.5,
+                                        color: Colors.lightBlueAccent),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                  ),
+                                  child: Center(child: Text("Send Message")),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+                              child: Text(
+                                " University: $uni",
+                                style: AppStyles.WalkTextStyle,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(15, 0, 15, 20),
+                              child: Text(
+                                "$Bio",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                     Material(
                       color: Colors.white,
                       child: TabBar(
@@ -149,6 +335,7 @@ class _ProfileViewState extends State<ProfileView> {
                         unselectedLabelColor: Colors.grey[400],
                         indicatorWeight: 1,
                         indicatorColor: Colors.black,
+                        controller: _ProfileController,
                         tabs: [
                           Tab(
                             icon: Icon(
@@ -167,6 +354,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     Expanded(
                       child: TabBarView(
+                        controller: _ProfileController,
                         children: [
                           Container(
                             child: SingleChildScrollView(
@@ -177,6 +365,11 @@ class _ProfileViewState extends State<ProfileView> {
                                           .map((mappingpost) => BaseDesingPost(
                                               post: mappingpost,
                                               delete: () {
+                                                FirestoreService.userCollection
+                                                    .doc(_userid)
+                                                    .collection('posts')
+                                                    .doc(mappingpost.postId)
+                                                    .delete();
                                                 setState(() {});
                                               },
                                               like: () {},

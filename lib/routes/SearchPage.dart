@@ -3,6 +3,8 @@ import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
+import '../services/FirestoreServices.dart';
+
 class SearchMain extends StatefulWidget {
   const SearchMain({Key? key}) : super(key: key);
 
@@ -190,6 +192,13 @@ class _SearchLocationState extends State<SearchLocation> {
   }
 }
 
+bool Private = false;
+Future IsSearchProfilePrivate(var searchID) async {
+  DocumentSnapshot docSnap =
+      await FirestoreService.userCollection.doc(searchID).get();
+  Private = await docSnap.get('checkPrivate');
+}
+
 class SearchPeople extends StatefulWidget {
   const SearchPeople({Key? key}) : super(key: key);
   @override
@@ -264,7 +273,7 @@ class _SearchPeopleState extends State<SearchPeople> {
                                     padding: const EdgeInsets.all(3.0),
                                     child: CircleAvatar(
                                       backgroundImage: NetworkImage(
-                                        'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
+                                        'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
                                       ),
                                       radius: 25,
                                     ),
@@ -282,18 +291,23 @@ class _SearchPeopleState extends State<SearchPeople> {
                                         ),
                                       ),
                                     ),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                privateProfileView(
-                                                    uid: listOfDocumentSnap[
-                                                            index]
-                                                        .get('userId'))),
-                                      );
-                                      print(
-                                          '@${listOfDocumentSnap[index].get('userId')}');
+                                    onTap: () async {
+                                      await IsSearchProfilePrivate(
+                                          listOfDocumentSnap[index]
+                                              .get('userId'));
+                                      if (Private) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  privateProfileView(
+                                                      uid: listOfDocumentSnap[
+                                                              index]
+                                                          .get('userId'))),
+                                        );
+                                        print(
+                                            '@${listOfDocumentSnap[index].get('userId')}');
+                                      } else {}
                                     },
                                   ),
                                 ],

@@ -28,37 +28,12 @@ class _privateBaseScreenViewState extends State<privateBaseScreenView> {
 
   Future getuserInfo() async {
     DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(widget.uid).get();
+        await FirestoreService.userCollection.doc(widget.uid).get();
     totalFollower = await docSnap.get('followerCount');
     totalFollowing = await docSnap.get('followingCount');
     profilepp = await docSnap.get('profileIm');
     Bio = await docSnap.get('bio');
     uni = await docSnap.get('university');
-  }
-
-  Future updateFollower() async{
-    List allFollowers = [];
-    List allFollowings = [];
-    DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(widget.uid).get();
-
-    int currFollowers = docSnap.get('followerCount');
-    allFollowers = docSnap.get('followers');
-    allFollowers.add(currId);
-
-    await FirestoreService.userCollection.doc(widget.uid).update(
-        {'followers': allFollowers,
-          'followerCount': currFollowers + 1}
-    );
-
-    int currFollowing = docSnap.get('followingCount');
-    allFollowings = docSnap.get('following');
-    allFollowings.add(widget.uid);
-
-    await FirestoreService.userCollection.doc(currId).update(
-        {'following': allFollowings,
-          'followingCount': currFollowing + 1}
-    );
   }
 
   @override
@@ -67,170 +42,175 @@ class _privateBaseScreenViewState extends State<privateBaseScreenView> {
     return FutureBuilder(
         future: getuserInfo(),
         builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return WaitingScreen(message: "Loading Profile");
-      }
-        return Container(
-          child: Column(
-            children: [
-              Row(
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 5,
-                    //mainAxisAlignment: MainAxisAlignment.start,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundImage: NetworkImage(
-                            profilepp),
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return WaitingScreen(message: "Loading Profile");
+          }
+          return Container(
+            child: Column(
+              children: [
+                Row(
+                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      //mainAxisAlignment: MainAxisAlignment.start,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundImage: NetworkImage(profilepp),
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 7,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 10),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                                    child: Text(
-                                      "$totalFollower",
-                                      style: TextStyle(
-                                        fontSize: 20,
+                    Expanded(
+                      flex: 7,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(width: 10),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 0),
+                                      child: Text(
+                                        "$totalFollower",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    'Followers',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 15),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                                    child: Text(
-                                      "$totalFollowing",
+                                    Text(
+                                      'Followers',
                                       style: TextStyle(
-                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 15),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 0),
+                                      child: Text(
+                                        "$totalFollowing",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    'Follow',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
+                                    Text(
+                                      'Follow',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 20),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Stack(
-                                    children: <Widget>[
-                                      Positioned.fill(
-                                        child: Container(
-                                          margin: const EdgeInsets.all(3.0),
-                                          padding: const EdgeInsets.all(3.0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue,
-                                            border: Border.all(width: 1.5),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(15.0)),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned.fill(
+                                          child: Container(
+                                            margin: const EdgeInsets.all(3.0),
+                                            padding: const EdgeInsets.all(3.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              border: Border.all(width: 1.5),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(15.0)),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.all(16.0),
-                                          primary: Colors.black,
-                                          textStyle: const TextStyle(fontSize: 15),
-                                          fixedSize:
-                                              Size(sizeapp.width * 0.75 - 80, 50),
+                                        TextButton(
+                                          style: TextButton.styleFrom(
+                                            padding: const EdgeInsets.all(16.0),
+                                            primary: Colors.black,
+                                            textStyle:
+                                                const TextStyle(fontSize: 15),
+                                            fixedSize: Size(
+                                                sizeapp.width * 0.75 - 80, 50),
+                                          ),
+                                          onPressed: () {
+                                            //updateFollower();
+                                            setState(() {
+                                              buttonStat =
+                                                  buttonStat == "Requested"
+                                                      ? "Follow"
+                                                      : "Requested";
+                                            });
+                                          },
+                                          child: Text(
+                                            buttonStat,
+                                          ),
                                         ),
-                                        onPressed: () {
-                                          updateFollower();
-                                          setState(() {
-                                            buttonStat = buttonStat == "Requested" ? "Follow" : "Requested";
-                                          });
-                                        },
-                                        child: Text(buttonStat,),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
-                    child: Text(
+                  ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+                      child: Text(
                         "$uni",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(15, 0, 15, 20),
-                    child: Text(
-                      "$Bio",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
+                  ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(15, 0, 15, 20),
+                      child: Text(
+                        "$Bio",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    );
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
