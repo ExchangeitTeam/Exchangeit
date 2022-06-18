@@ -7,11 +7,9 @@ import 'package:exchangeit/routes/ZoomPhotoView.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
 import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:exchangeit/services/FirestoreServices.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/profile_page_base_screen.dart';
-import 'package:exchangeit/routes/profile_page_posts.dart';
 import 'package:exchangeit/routes/profile_page_location.dart';
 import 'package:provider/provider.dart';
 
@@ -19,18 +17,19 @@ import '../Objects/NewPostClass.dart';
 import '../Objects/UserClass.dart';
 import 'FF_list.dart';
 
-class ProfileView extends StatefulWidget {
-  const ProfileView({Key? key, required this.analytics}) : super(key: key);
-  final FirebaseAnalytics ? analytics;
+class followedProfilePage extends StatefulWidget {
+  const followedProfilePage({Key? key, required this.userId}) : super(key: key);
+  final dynamic userId;
   @override
-  State<ProfileView> createState() => _ProfileViewState();
+  State<followedProfilePage> createState() => _followedProfilePageState();
 }
+
 
 String username = '';
 Future getusername(var uid) async {
   if (uid != null) {
     DocumentSnapshot docSnap =
-        await FirestoreService.userCollection.doc(uid).get();
+    await FirestoreService.userCollection.doc(uid).get();
     username = docSnap.get('username');
     totalFollower = docSnap.get('followerCount');
     totalFollowing = docSnap.get('followingCount');
@@ -39,6 +38,7 @@ Future getusername(var uid) async {
   print('Provider usernama: $username');
 }
 
+/*
 currentusercheck() {
   var _user = FirebaseAuth.instance.currentUser;
   if (_user == null) {
@@ -48,12 +48,12 @@ currentusercheck() {
     print('Firebase user:${_user.uid}');
   }
 }
-
+ */
 int totalLike = 0;
 
 List<UserPost> myPosts = [];
 Future getPosts(var uid) async {
-  myPosts.clear();
+  myPosts = [];
   QuerySnapshot snapshot = await FirebaseFirestore.instance
       .collection('Users')
       .doc(uid)
@@ -83,18 +83,17 @@ Future getPosts(var uid) async {
     myPosts.add(post);
   }
 }
-
-class _ProfileViewState extends State<ProfileView>
+int totalFollower = 0;
+int totalFollowing = 0;
+String profilepp = "";
+String Bio = "";
+String uni = "";
+class _followedProfilePageState extends State<followedProfilePage>
     with SingleTickerProviderStateMixin {
-  int totalFollower = 0;
-  int totalFollowing = 0;
-  String profilepp = "";
-  String Bio = "";
-  String uni = "";
 
   Future getuserInfo() async {
     DocumentSnapshot docSnap =
-        await FirestoreService.userCollection.doc(userID).get();
+    await FirestoreService.userCollection.doc(widget.userId).get();
     totalFollower = await docSnap.get('followerCount');
     totalFollowing = await docSnap.get('followingCount');
     profilepp = await docSnap.get('profileIm');
@@ -103,25 +102,96 @@ class _ProfileViewState extends State<ProfileView>
   }
 
   void initState() {
-    setState(() {
-      myPosts.clear();
-    });
+    setState(() {});
   }
 
+  Future updateFollower() async {
+      List allFollowers = [];
+      List allFollowings = [];
+      DocumentSnapshot docSnap =
+      await FirestoreService.userCollection.doc(widget.userId).get();
+
+      int currFollowers = docSnap.get('followerCount');
+      allFollowers = docSnap.get('followers');
+      allFollowers.add(currId);
+
+      await FirestoreService.userCollection.doc(widget.userId).update(
+          {'followers': allFollowers, 'followerCount': currFollowers + 1});
+
+      docSnap =
+      await FirestoreService.userCollection.doc(currId).get();
+
+      int currFollowing = docSnap.get('followingCount');
+      allFollowings = docSnap.get('following');
+      allFollowings.add(widget.userId);
+
+      await FirestoreService.userCollection.doc(currId).update(
+          {'following': allFollowings, 'followingCount': currFollowing + 1});
+
+      setState(() {});
+  }
+
+  Future negUpdateFollower() async {
+    List nAllFollowers = [];
+    List nAllFollowings = [];
+    DocumentSnapshot docSnap =
+    await FirestoreService.userCollection.doc(widget.userId).get();
+
+    int currFollowers = docSnap.get('followerCount');
+    nAllFollowers = docSnap.get('followers');
+    nAllFollowers.remove(currId);
+
+    await FirestoreService.userCollection.doc(widget.userId).update(
+        {'followers': nAllFollowers, 'followerCount': currFollowers - 1});
+
+    docSnap =
+    await FirestoreService.userCollection.doc(currId).get();
+
+    int currFollowing = docSnap.get('followingCount');
+    nAllFollowings = docSnap.get('following');
+    nAllFollowings.remove(widget.userId);
+
+
+    await FirestoreService.userCollection.doc(currId).update(
+        {'following': nAllFollowings, 'followingCount': currFollowing - 1});
+
+    setState(() {});
+  }
+
+  String followState = "Follow";
+
+  Future isFollowCheck() async{
+    DocumentSnapshot CurrentuserSnap =
+    await FirestoreService.userCollection.doc(currId).get();
+    List allfollowings = [];
+    allfollowings = CurrentuserSnap.get('following');
+    if (allfollowings.contains(widget.userId)) {
+      followState = "Unfollow";
+    } else {
+      followState = "Follow";
+    }
+  }
+
+  final currId = FirebaseAuth.instance.currentUser!.uid;
+
   late TabController _ProfileController = TabController(length: 3, vsync: this);
-  String buttonChanger = "Follow";
+
   @override
   Widget build(BuildContext context) {
+
+    /*
     currentusercheck();
     var user = Provider.of<appUser?>(context);
     var _userid = user?.uid;
     if (user == null) {
       _userid = FirebaseAuth.instance.currentUser?.uid;
     }
+     */
     Appanalytics.setLogEventUtil(eventName: 'Profile_Page_Viewed');
     return FutureBuilder(
+
         future: Future.wait(
-          [getusername(_userid), getPosts(_userid), getuserInfo()],
+          [getusername(widget.userId), getPosts(widget.userId), getuserInfo(), isFollowCheck()],
         ),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -170,7 +240,7 @@ class _ProfileViewState extends State<ProfileView>
                               //mainAxisAlignment: MainAxisAlignment.start,
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                                const EdgeInsets.fromLTRB(15, 15, 15, 0),
                                 child: CircleAvatar(
                                   radius: 60,
                                   backgroundImage: pp,
@@ -196,7 +266,7 @@ class _ProfileViewState extends State<ProfileView>
                                       padding: const EdgeInsets.fromLTRB(
                                           15, 15, 15, 0),
                                       child: TextButton(
-                                        child:  Text(
+                                        child: Text(
                                           '$totalFollower',
                                           style: TextStyle(
                                             fontSize: 20,
@@ -208,18 +278,18 @@ class _ProfileViewState extends State<ProfileView>
                                             MaterialPageRoute(
                                                 builder: (context) => FFList(
                                                     pageName: "Followers",
-                                                    userId: _userid,
+                                                    userId: widget.userId
                                                 )
                                             )
                                         ),
                                       ),
                                     ),
-                                    Text(
-                                      'Followers',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
+                                     Text(
+                                       'Followers',
+                                       style: TextStyle(
+                                         fontWeight: FontWeight.bold,
+                                       ),
+                                     ),
                                   ],
                                 ),
                               ),
@@ -234,7 +304,7 @@ class _ProfileViewState extends State<ProfileView>
                                       padding: const EdgeInsets.fromLTRB(
                                           15, 15, 15, 0),
                                       child: TextButton(
-                                        child:  Text(
+                                        child: Text(
                                           '$totalFollowing',
                                           style: TextStyle(
                                             fontSize: 20,
@@ -246,7 +316,7 @@ class _ProfileViewState extends State<ProfileView>
                                             MaterialPageRoute(
                                                 builder: (context) => FFList(
                                                     pageName: "Follow",
-                                                    userId: _userid,
+                                                    userId: widget.userId
                                                 )
                                             )
                                         ),
@@ -265,6 +335,72 @@ class _ProfileViewState extends State<ProfileView>
                           ],
                         ),
                         SizedBox(width: 25),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const SizedBox(height: 30),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(15),
+                              splashColor: Colors.blueAccent,
+                              onTap: () {
+                                  if (followState == "Unfollow"){
+                                    followState = "Follow";
+                                    totalFollower = totalFollower-1;
+                                    negUpdateFollower();
+                                  }
+                                  else{
+                                    followState = "Unfollow";
+                                    totalFollower = totalFollower+1;
+                                    updateFollower();
+                                  }
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Container(
+                                  width: 150,
+                                  height: 40,
+                                  margin: const EdgeInsets.all(3.0),
+                                  padding: const EdgeInsets.all(3.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.lightBlue[100],
+                                    border: Border.all(
+                                        width: 2.5,
+                                        color: Colors.lightBlueAccent),
+                                    borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                                  ),
+                                  child: Center(child: Text(followState)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(15),
+                              splashColor: Colors.blueAccent,
+                              onTap: () {
+                                //Send Message page
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Container(
+                                  width: 150,
+                                  height: 40,
+                                  margin: const EdgeInsets.all(3.0),
+                                  padding: const EdgeInsets.all(3.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.lightBlue[100],
+                                    border: Border.all(
+                                        width: 2.5,
+                                        color: Colors.lightBlueAccent),
+                                    borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                                  ),
+                                  child: Center(child: Text("Send Message")),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -325,25 +461,22 @@ class _ProfileViewState extends State<ProfileView>
                             child: SingleChildScrollView(
                               child: Center(
                                 child: Container(
-                                  child: Container(
-                                    padding: EdgeInsets.only(bottom: 200),
-                                    child: Column(
-                                        children: myPosts
-                                            .map((mappingpost) => BaseDesingPost(
-                                                post: mappingpost,
-                                                delete: () {
-                                                  FirestoreService.userCollection
-                                                      .doc(_userid)
-                                                      .collection('posts')
-                                                      .doc(mappingpost.postId)
-                                                      .delete();
-                                                  setState(() {});
-                                                },
-                                                like: () {},
-                                                searched: false))
-                                            .toList()),
-                                  ),
-
+                                  padding: EdgeInsets.only(bottom: 200),
+                                  child: Column(
+                                      children: myPosts
+                                          .map((mappingpost) => BaseDesingPost(
+                                          post: mappingpost,
+                                          delete: () {
+                                            FirestoreService.userCollection
+                                                .doc(widget.userId)
+                                                .collection('posts')
+                                                .doc(mappingpost.postId)
+                                                .delete();
+                                            setState(() {});
+                                          },
+                                          like: () {},
+                                          searched: false))
+                                          .toList()),
                                 ),
                               ),
                             ),

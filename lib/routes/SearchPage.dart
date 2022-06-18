@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:exchangeit/routes/UserSearch.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -240,94 +241,108 @@ class _SearchPeopleState extends State<SearchPeople> {
         ),
         Container(
           color: Colors.white38,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-              StreamBuilder<QuerySnapshot>(
-                  stream: user != "" && user != null
-                      ? usersRef
-                          .where("userSearch", arrayContains: user)
-                          .snapshots()
-                      : usersRef.where("username", isNull: false).snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
-                    if (asyncSnapshot.hasError) {
-                      return Center(
-                          child: Text('Bir Hata Oluştu, Tekrar Deneyiniz'));
-                    } else {
-                      if (asyncSnapshot.hasData) {
-                        List<DocumentSnapshot> listOfDocumentSnap =
-                            asyncSnapshot.data!.docs;
-                        return SingleChildScrollView(
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: listOfDocumentSnap.length,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Divider(
+                  color: Color.fromARGB(255, 0, 170, 229),
+                  thickness: 5.0,
+                ),
+                StreamBuilder<QuerySnapshot>(
+                    stream: user != "" && user != null
+                        ? usersRef
+                            .where("userSearch", arrayContains: user)
+                            .snapshots()
+                        : usersRef.where("username", isNull: false).snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
+                      if (asyncSnapshot.hasError) {
+                        return Center(
+                            child: Text('Bir Hata Oluştu, Tekrar Deneyiniz'));
+                      } else {
+                        if (asyncSnapshot.hasData) {
+                          List<DocumentSnapshot> listOfDocumentSnap =
+                              asyncSnapshot.data!.docs;
+                          return SingleChildScrollView(
+                            child: ListView.separated(
+                              shrinkWrap: true,
+                              itemCount: listOfDocumentSnap.length,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
+                                        ),
+                                        radius: 25,
                                       ),
-                                      radius: 25,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  InkWell(
-                                    child: Container(
-                                      child: Text(
-                                        '@${listOfDocumentSnap[index].get('username')}',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 25.0,
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    InkWell(
+                                      child: Container(
+                                        child: Text(
+                                          '@${listOfDocumentSnap[index].get('username')}',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 25.0,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    onTap: () async {
-                                      await IsSearchProfilePrivate(
-                                          listOfDocumentSnap[index]
-                                              .get('userId'));
-                                      if (Private) {
+                                      onTap: () async {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  privateProfileView(
-                                                      uid: listOfDocumentSnap[
-                                                              index]
-                                                          .get('userId'))),
+                                              builder: (context) => UserSearch(
+                                                  SearchedId: listOfDocumentSnap[index].get('userId')
+                                              )
+                                          )
                                         );
-                                        print(
-                                            '@${listOfDocumentSnap[index].get('userId')}');
-                                      } else {}
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) => Divider(
-                              color: Color.fromARGB(255, 0, 170, 229),
-                              thickness: 5.0,
+
+                                        /*
+                                        await IsSearchProfilePrivate(
+                                            listOfDocumentSnap[index]
+                                                .get('userId'));
+                                        if (Private) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    privateProfileView(
+                                                        uid: listOfDocumentSnap[
+                                                                index]
+                                                            .get('userId'))),
+                                          );
+                                          print(
+                                              '@${listOfDocumentSnap[index].get('userId')}');
+                                        } else {}
+
+                                         */
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) => Divider(
+                                color: Color.fromARGB(255, 0, 170, 229),
+                                thickness: 5.0,
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
+                          );
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
                       }
-                    }
-                  }),
-            ],
+                    }),
+              ],
+            ),
           ),
         ),
       ],
@@ -581,7 +596,7 @@ class _SearchPostState extends State<SearchPost> {
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: () {
-                                  Navigator.pushNamed(context, 'PrivProfile');
+                                  //Navigator.pushNamed(context, 'PrivProfile');
                                 },
                                 child: Row(
                                   children: [

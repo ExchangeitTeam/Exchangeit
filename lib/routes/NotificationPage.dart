@@ -5,6 +5,7 @@ import 'package:exchangeit/Objects/NotificationClass.dart';
 import 'package:exchangeit/designs/NotificationUi.dart';
 
 import '../main.dart';
+import '../services/FirestoreServices.dart';
 
 class NotificationView extends StatefulWidget {
   const NotificationView({Key? key}) : super(key: key);
@@ -12,13 +13,13 @@ class NotificationView extends StatefulWidget {
   @override
   State<NotificationView> createState() => _NotificationViewState();
 }
-
+List<NotificationObj> notifications = [];
 class _NotificationViewState extends State<NotificationView> {
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
-  List<NotificationObj> notifications = [];
 
   Future getNotification() async {
+    notifications.clear();
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(uid)
@@ -44,8 +45,9 @@ class _NotificationViewState extends State<NotificationView> {
           .get();
       String senderName = senderShot.get('username');
       String picUrl = senderShot.get('profileIm');
-
+      print(notification.id);
       NotificationObj notObj = NotificationObj(
+        nID: notification.id,
         profilePic: picUrl,
         action: action,
         timestamp: date,
@@ -61,8 +63,14 @@ class _NotificationViewState extends State<NotificationView> {
   ////// DÜZELTİLECEK
 
   void deleteNotification(NotificationObj curr) {
+    print(curr.nID);
+    notifications.remove(curr);
+    FirestoreService.userCollection
+        .doc(uid)
+        .collection('notifications')
+        .doc(curr.nID)
+        .delete();
     setState(() {
-      notifications.remove(curr);
     });
   }
 

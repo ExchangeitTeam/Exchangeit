@@ -13,9 +13,8 @@ import '../services/Appanalytics.dart';
 import '../services/FirestoreServices.dart';
 
 class privateProfileView extends StatefulWidget {
-  privateProfileView({Key? key, this.uid}) : super(key: key);
-
-  String? uid;
+  privateProfileView({Key? key, required this.uid}) : super(key: key);
+  final dynamic uid;
 
   @override
   State<privateProfileView> createState() => _privateProfileViewState();
@@ -39,34 +38,49 @@ class _privateProfileViewState extends State<privateProfileView> {
     uni = await docSnap.get('university');
   }
 
-  Future updateFollower() async {
-    List allFollowers = [];
-    List allFollowings = [];
+  Future updateRequest() async {
     DocumentSnapshot docSnap =
-        await FirestoreService.userCollection.doc(widget.uid).get();
-
-    int currFollowers = docSnap.get('followerCount');
-    allFollowers = docSnap.get('followers');
-    allFollowers.add(currId);
-
+    await FirestoreService.userCollection.doc(widget.uid).get();
+    List requestList = [];
+    requestList = docSnap.get('followRequests');
+    requestList.add(currId);
     await FirestoreService.userCollection.doc(widget.uid).update(
-        {'followers': allFollowers, 'followerCount': currFollowers + 1});
+      {'followRequests': requestList});
 
-    int currFollowing = docSnap.get('followingCount');
-    allFollowings = docSnap.get('following');
-    allFollowings.add(widget.uid);
-
-    await FirestoreService.userCollection.doc(currId).update(
-        {'following': allFollowings, 'followingCount': currFollowing + 1});
+    setState(() {});
   }
 
+  Future negUpdateRequest() async {
+    DocumentSnapshot docSnap =
+    await FirestoreService.userCollection.doc(widget.uid).get();
+    List requestList = [];
+    requestList = docSnap.get('followRequests');
+    requestList.remove(currId);
+    await FirestoreService.userCollection.doc(widget.uid).update(
+        {'followRequests': requestList});
+
+    setState(() {});
+  }
+
+  String requestState = "Follow";
+
+  Future isRequestedCheck() async{
+    DocumentSnapshot CurrentuserSnap =
+    await FirestoreService.userCollection.doc(widget.uid).get();
+    List allfollowings = [];
+    allfollowings = CurrentuserSnap.get('followRequests');
+    if (allfollowings.contains(currId)) {
+      requestState = "Requested";
+    } else {
+      requestState = "Follow";
+    }
+  }
   final currId = FirebaseAuth.instance.currentUser!.uid;
-  String buttonChanger = "Follow";
   @override
   Widget build(BuildContext context) {
     Appanalytics.setCurrentScreenUtil(screenName: "Private_Profile_Page");
     return FutureBuilder(
-        future: Future.wait([getuserInfo()]),
+        future: Future.wait([getuserInfo(),isRequestedCheck()]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingScreen(message: "Loading Profile");
@@ -192,12 +206,16 @@ class _privateProfileViewState extends State<privateProfileView> {
                               borderRadius: BorderRadius.circular(15),
                               splashColor: Colors.blueAccent,
                               onTap: () {
-                                setState(() {
-                                  if (buttonChanger == "Requested")
-                                    buttonChanger = "Follow";
-                                  else
-                                    buttonChanger = "Requested";
-                                });
+                                  if (requestState == "Requested"){
+                                    requestState = "Follow";
+                                    // notification silmeyi unutma
+                                    negUpdateRequest();
+                                  }
+                                  else{
+                                    requestState = "Requested";
+                                    // notificationdan return gelince followrequesti guncellemeyi unutma
+                                    updateRequest();
+                                  }
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
@@ -214,7 +232,7 @@ class _privateProfileViewState extends State<privateProfileView> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
                                   ),
-                                  child: Center(child: Text(buttonChanger)),
+                                  child: Center(child: Text(requestState)),
                                 ),
                               ),
                             ),

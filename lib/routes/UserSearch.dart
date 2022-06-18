@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/routes/ZoomPhotoView.dart';
+import 'package:exchangeit/routes/private_profile_page.dart';
+import 'package:exchangeit/routes/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +9,7 @@ import '../Objects/NewPostClass.dart';
 import '../main.dart';
 import '../models/Colors.dart';
 import '../services/FirestoreServices.dart';
+import 'followeduser_profile_page.dart';
 
 class UserSearch extends StatefulWidget {
   UserSearch({Key? key, required this.SearchedId}) : super(key: key);
@@ -17,6 +20,7 @@ class UserSearch extends StatefulWidget {
 
 class _UserSearchState extends State<UserSearch> {
   bool Private = false;
+
   Future IsSearchProfilePrivate(var searchID) async {
     DocumentSnapshot docSnap =
         await FirestoreService.userCollection.doc(searchID).get();
@@ -44,6 +48,9 @@ class _UserSearchState extends State<UserSearch> {
     allFollowers.add(currId);
     await FirestoreService.userCollection.doc(widget.SearchedId).update(
         {'followers': allFollowers, 'followerCount': currFollowers + 1});
+
+    docSnap =
+    await FirestoreService.userCollection.doc(currId).get();
 
     //isteği atan kişinin following yaptıklarına ekleme
     int currFollowing = docSnap.get('followingCount');
@@ -108,6 +115,16 @@ class _UserSearchState extends State<UserSearch> {
     }
   }
 
+  currentusercheck() {
+    var _user = FirebaseAuth.instance.currentUser;
+    if (_user == null) {
+      print('user yok');
+    } else {
+      print('user var');
+      print('Firebase user:${_user.uid}');
+    }
+  }
+
   final currId = FirebaseAuth.instance.currentUser!.uid;
   @override
   Widget build(BuildContext context) {
@@ -118,186 +135,21 @@ class _UserSearchState extends State<UserSearch> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingScreen(message: "Loading Profile");
           }
-          return FutureBuilder(
-              future: getSearchedUserPosts(widget.SearchedId),
-              builder: (context, snapshot){
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return WaitingScreen(message: "Loading Profile");
-                }
-                final NetworkImage pp = NetworkImage(profilepp);
-                return Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: AppColors.appBarColor,
-                    elevation: 0.0,
-                    title: Text(
-                      searchedUserName
-                      ,
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    centerTitle: true,
-                  ),
-                  body: SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints:  BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height),
-                      child: Column(
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    flex: 5,
-                                    //mainAxisAlignment: MainAxisAlignment.start,
-                                    child: Padding(
-                                      padding:
-                                      const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                                      child: CircleAvatar(
-                                        radius: 60,
-                                        backgroundImage: pp,
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        photoViewPage(pht: pp)));
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                15, 15, 15, 0),
-                                            child: Text(
-                                              '$totalFollower',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ),
-                                          Text(
-                                            'Followers',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                15, 15, 15, 0),
-                                            child: Text(
-                                              '$totalFollowing',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ),
-                                          Text(
-                                            'Follow',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(width: 25),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const SizedBox(height: 30),
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(15),
-                                    splashColor: Colors.blueAccent,
-                                    onTap: () {
-                                      setState(() {
-                                        /*if (buttonChanger == "Requested")
-                                          buttonChanger = "Follow";
-                                        else
-                                          buttonChanger = "Requested";*/
-                                      });
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(15),
-                                      child: Container(
-                                        width: 150,
-                                        height: 40,
-                                        margin: const EdgeInsets.all(3.0),
-                                        padding: const EdgeInsets.all(3.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.lightBlue[100],
-                                          border: Border.all(
-                                              width: 2.5,
-                                              color: Colors.lightBlueAccent),
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(15.0)),
-                                        ),
-                                        child: Center(child: Text("Follow")),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(15),
-                                    splashColor: Colors.blueAccent,
-                                    onTap: () {
-                                      //Send Message page
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(15),
-                                      child: Container(
-                                        width: 150,
-                                        height: 40,
-                                        margin: const EdgeInsets.all(3.0),
-                                        padding: const EdgeInsets.all(3.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.lightBlue[100],
-                                          border: Border.all(
-                                              width: 2.5,
-                                              color: Colors.lightBlueAccent),
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(15.0)),
-                                        ),
-                                        child: Center(child: Text("Send Message")),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
+          else{
+            if(widget.SearchedId == currId){
+              return ProfileView(analytics: null);
+            }
+            else if(viewerFollow){
+              return followedProfilePage(userId: widget.SearchedId);
+            }
+            else if (Private){
+              return privateProfileView(uid: widget.SearchedId);
+            }
+            else{
+              return followedProfilePage(userId: widget.SearchedId);
+            }
+          }
+        }
     );
   }
-    );
 }
