@@ -264,74 +264,73 @@ class _SearchPeopleState extends State<SearchPeople> {
                         if (asyncSnapshot.hasData) {
                           List<DocumentSnapshot> listOfDocumentSnap =
                               asyncSnapshot.data!.docs;
-                          return SingleChildScrollView(
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: listOfDocumentSnap.length,
-                              itemBuilder: (context, index) {
-                                return Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
+                          return ListView.separated(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: listOfDocumentSnap.length,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
+                                      ),
+                                      radius: 25,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  InkWell(
+                                    child: Container(
+                                      child: Text(
+                                        '@${listOfDocumentSnap[index].get('username')}',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 25.0,
                                         ),
-                                        radius: 25,
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    InkWell(
-                                      child: Container(
-                                        child: Text(
-                                          '@${listOfDocumentSnap[index].get('username')}',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 25.0,
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () async {
-                                        Navigator.push(
+                                    onTap: () async {
+                                      Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => UserSearch(
-                                                  SearchedId: listOfDocumentSnap[index].get('userId')
-                                              )
-                                          )
+                                                  SearchedId:
+                                                      listOfDocumentSnap[index]
+                                                          .get('userId'))));
+
+                                      /*
+                                      await IsSearchProfilePrivate(
+                                          listOfDocumentSnap[index]
+                                              .get('userId'));
+                                      if (Private) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  privateProfileView(
+                                                      uid: listOfDocumentSnap[
+                                                              index]
+                                                          .get('userId'))),
                                         );
+                                        print(
+                                            '@${listOfDocumentSnap[index].get('userId')}');
+                                      } else {}
 
-                                        /*
-                                        await IsSearchProfilePrivate(
-                                            listOfDocumentSnap[index]
-                                                .get('userId'));
-                                        if (Private) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    privateProfileView(
-                                                        uid: listOfDocumentSnap[
-                                                                index]
-                                                            .get('userId'))),
-                                          );
-                                          print(
-                                              '@${listOfDocumentSnap[index].get('userId')}');
-                                        } else {}
-
-                                         */
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) => Divider(
-                                color: Color.fromARGB(255, 0, 170, 229),
-                                thickness: 5.0,
-                              ),
+                                       */
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) => Divider(
+                              color: Color.fromARGB(255, 0, 170, 229),
+                              thickness: 5.0,
                             ),
                           );
                         } else {
@@ -592,6 +591,7 @@ class _SearchPostState extends State<SearchPost> {
                         return SingleChildScrollView(
                           child: ListView.separated(
                             shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
                             itemCount: listOfDocumentSnap.length,
                             itemBuilder: (context, index) {
                               return InkWell(
