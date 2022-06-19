@@ -5,15 +5,15 @@ import '../main.dart';
 import '../services/FirestoreServices.dart';
 
 class FFList extends StatefulWidget {
-  const FFList({Key? key, required this.pageName, required this.userId}) : super(key: key);
+  const FFList({Key? key, required this.pageName, required this.userId})
+      : super(key: key);
   final String pageName;
   final dynamic userId;
   @override
   State<FFList> createState() => _FFListState();
 }
 
-class FFinfo extends StatelessWidget{
-
+class FFinfo extends StatelessWidget {
   final String avatar;
   final String username;
 
@@ -36,13 +36,8 @@ class FFinfo extends StatelessWidget{
             ),
           ),
           Expanded(
-              child: Text(
-                  this.username,
-                  style: TextStyle(
-                      color: Colors.black
-                  )
-              )
-          ),
+              child:
+                  Text(this.username, style: TextStyle(color: Colors.black))),
         ],
       ),
     );
@@ -52,51 +47,33 @@ class FFinfo extends StatelessWidget{
 List<FFinfo> _ffList = [];
 
 class _FFListState extends State<FFList> {
-
-  Future createFFlist() async{
+  Future createFFlist() async {
     DocumentSnapshot CurrentuserSnap =
-    await FirestoreService.userCollection.doc(widget.userId).get();
+        await FirestoreService.userCollection.doc(widget.userId).get();
     _ffList.clear();
     List allFF = [];
-    if(widget.pageName == "Follow"){
-        allFF = await CurrentuserSnap.get('following');
+    if (widget.pageName == "Follow") {
+      allFF = await CurrentuserSnap.get('following');
     }
-    if(widget.pageName == "Followers"){
-        allFF = await CurrentuserSnap.get('followers');
+    if (widget.pageName == "Followers") {
+      allFF = await CurrentuserSnap.get('followers');
     }
 
-    for(var i = 0; i < allFF.length; i++){
-      DocumentSnapshot tempSnapshot = await FirestoreService.userCollection.doc(allFF[i]).get();
-      dynamic username = tempSnapshot.get('username');
-      dynamic pp = tempSnapshot.get('profileIm');
-      FFinfo temp = FFinfo(
+    for (var i = 0; i < allFF.length; i++) {
+      if (allFF[i] != widget.userId) {
+        DocumentSnapshot tempSnapshot =
+            await FirestoreService.userCollection.doc(allFF[i]).get();
+        dynamic username = tempSnapshot.get('username');
+        dynamic pp = tempSnapshot.get('profileIm');
+        FFinfo temp = FFinfo(
           avatar: pp,
           username: username,
-      );
-      _ffList.add(temp);
+        );
+        _ffList.add(temp);
+      }
     }
   }
-  /*
-  List<FFinfo> _ffList = [
-    FFinfo(
-        avatar: "https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png",
-        username: "Emirhan Ozdemir"
-    ),
-    FFinfo(
-        avatar: "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        username: "Enis Mert Kuzu"
-    ),
-    FFinfo(
-        avatar: "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        username: "Mehmet Eren Karabulut"
-    ),
-    FFinfo(
-        avatar: "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        username: "Halil Ibrahim Deniz"
-    )
-  ];
 
-   */
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -133,7 +110,6 @@ class _FFListState extends State<FFList> {
               ),
             ),
           );
-        }
-    );
+        });
   }
 }
