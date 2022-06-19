@@ -4,16 +4,24 @@ import 'package:exchangeit/Objects/NotificationClass.dart';
 class NotificationTile extends StatelessWidget {
   final NotificationObj notificationObj;
   final VoidCallback remove;
+  final VoidCallback accept;
+  final VoidCallback reject;
 
-  NotificationTile({required this.notificationObj, required this.remove});
+  NotificationTile(
+      {required this.notificationObj,
+      required this.remove,
+      required this.accept,
+      required this.reject});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-        margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-        child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Row(
+      margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Column(
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
@@ -34,23 +42,24 @@ class NotificationTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                /*
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                  child: CircleAvatar(
-                    child: Image.network(
-                      "https://muze.gen.tr/img/maiden_tower_home.jpg",
-                      fit: BoxFit.cover,
-                    ),
-                    backgroundColor: Colors.white,
-                    radius: 30,
-                  ),
-                ),
-                */
                 IconButton(
                     onPressed: remove,
-                    icon: const Icon(Icons.delete, size: 28, color: Colors.red))
+                    icon:
+                        const Icon(Icons.delete, size: 28, color: Colors.red)),
               ],
-            )));
+            ),
+            notificationObj.type == 'yes'
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(onPressed: accept, child: Text("Accept")),
+                      TextButton(onPressed: reject, child: Text("Reject"))
+                    ],
+                  )
+                : SizedBox.shrink(),
+          ],
+        ),
+      ),
+    );
   }
 }

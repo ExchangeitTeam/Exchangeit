@@ -13,22 +13,25 @@ class NotificationView extends StatefulWidget {
   @override
   State<NotificationView> createState() => _NotificationViewState();
 }
-List<NotificationObj> notifications = [];
-class _NotificationViewState extends State<NotificationView> {
-  final uid = FirebaseAuth.instance.currentUser!.uid;
 
+List<NotificationObj> notifications = [];
+
+class _NotificationViewState extends State<NotificationView> {
+  final currentUserID = FirebaseAuth.instance.currentUser!.uid;
 
   Future getNotification() async {
     notifications.clear();
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
-        .doc(uid)
+        .doc(currentUserID)
         .collection('notifications')
         .orderBy('datetime', descending: true)
         .get();
 
-    DocumentSnapshot idSnapshot =
-        await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+    DocumentSnapshot idSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currentUserID)
+        .get();
 
     String userName = idSnapshot.get('username');
 
@@ -43,7 +46,6 @@ class _NotificationViewState extends State<NotificationView> {
           .collection('Users')
           .doc(senderId)
           .get();
-      String senderName = senderShot.get('username');
       String picUrl = senderShot.get('profileIm');
       print(notification.id);
       NotificationObj notObj = NotificationObj(
@@ -52,7 +54,7 @@ class _NotificationViewState extends State<NotificationView> {
         action: action,
         timestamp: date,
         user: userName,
-        sender: senderName,
+        sender: senderId,
         type: nType,
       );
 
@@ -60,18 +62,63 @@ class _NotificationViewState extends State<NotificationView> {
     }
   }
 
-  ////// DÜZELTİLECEK
+  Future acceptFollowReq(senderuserID, NotificationId) async {
+    DocumentSnapshot UserInfoSnap =
+        await FirestoreService.userCollection.doc(currentUserID).get();
+    List AllfollowerList = UserInfoSnap.get('followers');
+    int totalFollower = UserInfoSnap.get('followerCount');
+    List AllRequests = UserInfoSnap.get('followRequests');
+
+    AllRequests.remove(senderuserID);
+    AllfollowerList.add(senderuserID);
+    totalFollower = totalFollower + 1;
+    await FirestoreService.userCollection.doc(currentUserID).update({
+      'followers': AllfollowerList,
+      'followerCount': totalFollower,
+      'followRequests': AllRequests,
+    });
+
+    DocumentSnapshot SenderSnap =
+        await FirestoreService.userCollection.doc(senderuserID).get();
+
+    List SenderFollowing = SenderSnap.get('following');
+    String SenderName = SenderSnap.get("username");
+    int Sendertotalfollowing = SenderSnap.get('followingCount');
+    Sendertotalfollowing = Sendertotalfollowing + 1;
+    SenderFollowing.add(currentUserID);
+
+    await FirestoreService.userCollection.doc(senderuserID).update(
+        {'following': SenderFollowing, 'followingCount': Sendertotalfollowing});
+
+    await FirestoreService.userCollection
+        .doc(currentUserID)
+        .collection('notifications')
+        .add({
+      'datetime': DateTime.now(),
+      'notification':
+          'You accepted the follow request from $SenderName, you are now connected!',
+      'Posturl': "",
+      'uid': senderuserID,
+      'IsfollowReq': 'followaccept',
+      'postId': "",
+    });
+    await FirestoreService.userCollection
+        .doc(currentUserID)
+        .collection('notifications')
+        .doc(NotificationId)
+        .delete();
+    setState(() {});
+  }
 
   void deleteNotification(NotificationObj curr) {
     print(curr.nID);
     notifications.remove(curr);
     FirestoreService.userCollection
-        .doc(uid)
+        .doc(currentUserID)
         .collection('notifications')
         .doc(curr.nID)
         .delete();
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -100,10 +147,19 @@ class _NotificationViewState extends State<NotificationView> {
                 child: Column(
                   children: notifications
                       .map((notification) => NotificationTile(
-                          notificationObj: notification,
-                          remove: () {
-                            deleteNotification(notification);
-                          }))
+                            notificationObj: notification,
+                            remove: () {
+                              deleteNotification(notification);
+                            },
+                            accept: () {
+                              print("accept yaptım");
+                              acceptFollowReq(
+                                  notification.sender, notification.nID);
+                            },
+                            reject: () {
+                              print("reject yaptım");
+                            },
+                          ))
                       .toList(),
                 ),
               ),
