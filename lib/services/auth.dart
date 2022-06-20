@@ -27,14 +27,6 @@ class AuthService {
     return user;
   }
 
-  Future SignupProcess(String email, String pass, String username, String uni,
-      String age) async {
-    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email, password: pass);
-    User user = userCredential.user!;
-    FirestoreService.SignUpUseradd(user.uid, username, uni, age);
-  }
-
   Isfacebooklogin(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('facebooklogin', value);
@@ -70,7 +62,7 @@ class AuthService {
         final _user = _auth.currentUser;
 
         QuerySnapshot snapshot = await FirebaseFirestore.instance
-            .collection('users')
+            .collection('Users')
             .where("userId", isEqualTo: _user!.uid)
             .get();
 
@@ -169,7 +161,7 @@ class AuthService {
   }
 
   static Future<dynamic> registerUser(String email, String username, String uni,
-      String age, String pass) async {
+      String age, String pass, Imagepath) async {
     try {
       UserCredential uc =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -179,7 +171,8 @@ class AuthService {
       User? user = uc.user;
       print(user?.uid);
       print(user?.displayName);
-      await FirestoreService.SignUpUseradd(user!.uid, username, uni, age);
+      await FirestoreService.SignUpUseradd(
+          user!.uid, username, uni, age, Imagepath);
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {

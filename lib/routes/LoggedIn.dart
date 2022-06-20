@@ -51,34 +51,37 @@ class _LoggedInState extends State<LoggedIn> {
   @override
   Widget build(BuildContext context) {
     //setCurrentScreenUtil(screenName: "Logged In Screen");
-    return Scaffold(
-      body: PageView(
-        controller: _PageController,
-        children: [
-          FeedPage(analytics: widget.analytics),
-          SearchMain(),
-          SharePostScreen(analytics: widget.analytics),
-          NotificationView(),
-          ProfileView(analytics: widget.analytics),
-        ],
-        onPageChanged: _PageChanged,
-        physics: NeverScrollableScrollPhysics(),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline), label: 'Add'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.notifications), label: 'Notifications'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'Account'),
-        ],
-        selectedItemColor: Colors.blue.shade600,
-        unselectedItemColor: Colors.black,
-        onTap: _BarTapped,
-        currentIndex: _selectedIndex,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: PageView(
+          controller: _PageController,
+          children: [
+            FeedPage(analytics: widget.analytics),
+            SearchMain(),
+            SharePostScreen(analytics: widget.analytics),
+            NotificationView(),
+            ProfileView(analytics: widget.analytics),
+          ],
+          onPageChanged: _PageChanged,
+          physics: NeverScrollableScrollPhysics(),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.add_circle_outline), label: 'Add'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.notifications), label: 'Notifications'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle), label: 'Account'),
+          ],
+          selectedItemColor: Colors.blue.shade600,
+          unselectedItemColor: Colors.black,
+          onTap: _BarTapped,
+          currentIndex: _selectedIndex,
+        ),
       ),
     );
   }

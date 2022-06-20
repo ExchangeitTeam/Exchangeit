@@ -1,9 +1,23 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../services/Appanalytics.dart';
+
+Future Passvalidator(String email, String currentPass, String newPass) async {
+  AuthCredential cred =
+      EmailAuthProvider.credential(email: email, password: currentPass);
+
+  _curruser!.reauthenticateWithCredential(cred).then((value) {
+    _curruser!.updatePassword(newPass).then((_) {
+      passwordError = "Password successfully updated";
+    }).catchError((error) {
+      passwordError = "Password could not be updated";
+    });
+  });
+}
 
 class PassChange extends StatefulWidget {
   PassChange({Key? key, required this.analytics}) : super(key: key);
@@ -12,9 +26,11 @@ class PassChange extends StatefulWidget {
   State<PassChange> createState() => _PassChangeState();
 }
 
-String current_pass = '';
-String email = '';
-String new_pass = '';
+final _curruser = FirebaseAuth.instance.currentUser;
+String currentPass = "";
+String email = "";
+String newPass = "";
+String passwordError = "";
 
 class _PassChangeState extends State<PassChange> {
   final passkey = GlobalKey<FormState>();
@@ -123,7 +139,7 @@ class _PassChangeState extends State<PassChange> {
                                     } else if (value.length < 4) {
                                       return 'password too short';
                                     } else {
-                                      current_pass = value;
+                                      currentPass = value;
                                     }
                                   }
                                 },
@@ -159,7 +175,7 @@ class _PassChangeState extends State<PassChange> {
                                 } else if (value.length < 4) {
                                   return 'Password too short';
                                 } else {
-                                  new_pass = value;
+                                  newPass = value;
                                 }
                                 return null;
                               },
@@ -190,7 +206,7 @@ class _PassChangeState extends State<PassChange> {
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter some text';
-                                } else if (value != new_pass) {
+                                } else if (value != newPass) {
                                   return "Passwords don't match";
                                 }
                               },
@@ -200,7 +216,22 @@ class _PassChangeState extends State<PassChange> {
                             height: 10,
                           ),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (passkey.currentState!.validate()) {
+                                await Passvalidator(
+                                    email, currentPass, newPass);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    elevation: 10,
+                                    content: Text(passwordError),
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 12),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            },
                             child: Text(
                               "Update Password",
                             ),

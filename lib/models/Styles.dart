@@ -75,4 +75,7 @@ class AppStyles {
       fontSize: 35,
       color: Colors.green,
       fontStyle: FontStyle.italic);
+
+  static final LikeText = GoogleFonts.signika(
+      color: Colors.black, fontSize: 16, fontStyle: FontStyle.italic);
 }

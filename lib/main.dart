@@ -7,7 +7,6 @@ import 'package:exchangeit/routes/OpeningPage.dart';
 import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:exchangeit/routes/SignupPage.dart';
 import 'package:exchangeit/routes/WalkthroughPage.dart';
-import 'package:exchangeit/routes/post_photo.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
 import 'package:exchangeit/routes/profile_page.dart';
 import 'package:exchangeit/routes/share_post.dart';
@@ -73,13 +72,11 @@ class MainBase extends StatelessWidget {
           '/SignUp': (context) => SignUp(analytics: appanalytics),
           '/Login': (context) => LoginScreen(analytics: appanalytics),
           '/LoggedIn': (context) => LoggedIn(analytics: appanalytics),
-          'Settings': (context) => Settings(analytics: appanalytics),
+          'Settings': (context) => SettingsPage(analytics: appanalytics),
           'PassChange': (context) => PassChange(analytics: appanalytics),
           'SharePost': (context) => SharePostScreen(analytics: appanalytics),
-          'SharePhoto': (context) => SharePhoto(analytics: appanalytics),
           'DM': (context) => DMPage(analytics: appanalytics),
-          'PrivProfile': (context) =>
-              privateProfileView(analytics: appanalytics),
+          //'PrivProfile': (context) => privateProfileView(),
           'Profile': (context) => ProfileView(analytics: appanalytics),
           'ProviderMain': (context) => ProvideMain(analytics: appanalytics),
         },
@@ -153,34 +150,3 @@ class ProvideMain extends StatelessWidget {
     );
   }
 }
-
-/*
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Opening(),
-      routes: {
-        '/Welcome': (context) => const WelcomePage(),
-        '/Walkthrough': (context) => const Walkthrough(),
-        '/SignUp': (context) => SignUp(),
-        '/Login': (context) => LoginScreen(),
-        '/LoggedIn': (context) => LoggedIn(),
-        'Settings': (context) => Settings(),
-        'PassChange': (context) => PassChange(),
-        'SharePost': (context) => SharePostScreen(),
-        'SharePhoto': (context) => SharePhoto(),
-        'DM': (context) => DMPage(),
-        'PrivProfile': (context) => privateProfileView(),
-      },
-    );
-  }
-}
-*/
