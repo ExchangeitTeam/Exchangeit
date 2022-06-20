@@ -132,6 +132,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
   String Postusername = "";
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     if (widget.post.imageurl != "") {
       return FutureBuilder(
         future: PostalreadyLiked().then((changer) => Isliked = changer),
@@ -148,7 +149,8 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                         )),
               );
             },
-            child: Card(
+
+           child: Card(
               shadowColor: Colors.grey,
               elevation: 5,
               shape: RoundedRectangleBorder(
@@ -299,7 +301,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
           );
         },
       );
-    } else {
+    }  else {
       return FutureBuilder(
           future: PostalreadyLiked().then((result) => Isliked = result),
           builder: (context, snapshot) {

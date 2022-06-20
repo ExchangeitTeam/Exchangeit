@@ -1,14 +1,45 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/services/Appanalytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../Objects/NewPostClass.dart';
 
 import '../main.dart';
 import 'FeedProvider.dart';
+
+Future sendEmail({
+  required String postId,
+
+}) async {
+    final serviceId = 'service_1r3s9x2';
+    final templateId = 'template_j6t6ee4';
+    final userId = 'odfnXo5EG3Q-0NKW0';
+
+    final timeStamp = DateTime.now().toIso8601String();
+    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+    final response = await http.post(
+        url,
+        headers: {
+          'origin' : 'http://localhost',
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          'service_id' : serviceId,
+          'template_id' : templateId,
+          'user_id' : userId,
+          'template_params' : {
+            'post_id' : postId,
+            'time_stamp' : json.encode(timeStamp),
+          }
+        },)
+    );
+}
 
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key, required this.analytics}) : super(key: key);
@@ -102,8 +133,9 @@ class _FeedPageState extends State<FeedPage> {
                     Icons.send,
                     color: Colors.white,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.pushNamed(context, "DM");
+                    //sendEmail(postId: "444444");
                   },
                 ),
               ],

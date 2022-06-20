@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 
 class chatMsg {
   String msgContent;
-  int receiver;
+  String receiverId;
+  String senderId;
 
   chatMsg({
     required this.msgContent,
-    required this.receiver,
+    required this.receiverId,
+    required this.senderId,
   });
 }
 
+/*
 List<chatMsg> messages = [
   chatMsg(msgContent: "Hello, Will", receiver: 1),
   chatMsg(msgContent: "How have you been?", receiver: 1),
@@ -17,3 +20,4 @@ List<chatMsg> messages = [
   chatMsg(msgContent: "ehhhh, doing OK.", receiver: 1),
   chatMsg(msgContent: "Is there any thing wrong?", receiver: 0),
 ];
+*/
