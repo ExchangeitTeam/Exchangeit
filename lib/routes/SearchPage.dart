@@ -40,7 +40,6 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
             height: 10,
           ),
           Container(
-            width: sizeapp.width * 0.7,
             child: Align(
               alignment: Alignment.center,
               child: TabBar(
@@ -385,6 +384,67 @@ class SearchTopic extends StatefulWidget {
 }
 
 class _SearchTopicState extends State<SearchTopic> {
+  List Searchposts = [];
+  List checkher = [];
+  final _currentuser = FirebaseAuth.instance.currentUser;
+  int TotalLike = 0;
+  Future getPosts(var uid) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(uid)
+        .collection('posts')
+        .orderBy('datetime', descending: true)
+        .get();
+
+    for (var message in snapshot.docs) {
+      TotalLike = message.get('totalLike');
+      print(TotalLike);
+      List comment = message.get('comments');
+      Timestamp t = message.get('datetime');
+      DateTime d = t.toDate();
+      String date = d.toString().substring(0, 10);
+      String posttopic = message.get('topic');
+      String postLocation = message.get('location');
+      if (posttopic.toLowerCase().contains(topic.toLowerCase())) {
+        UserPost post = UserPost(
+            postId: message.id,
+            content: message.get('content').toString(),
+            imageurl: message.get('imageUrl').toString(),
+            date: date,
+            totalLike: TotalLike,
+            commentCount: comment.length,
+            comments: comment,
+            postownerID: uid,
+            topic: posttopic);
+        if (!checkher.contains(message.id)) {
+          Searchposts.add(post);
+          checkher.add(message.id);
+        }
+      }
+    }
+  }
+
+  Future getUsers() async {
+    Searchposts.clear();
+    Searchposts = [];
+    var DocumentUser =
+    await FirebaseFirestore.instance.collection('Users').get();
+    for (var doc in DocumentUser.docs) {
+      var userid = doc['userId'];
+      await getPosts(userid);
+    }
+  }
+  String topic = "";
+  void Starter(String val) {
+    setState(() {
+      topic = val.trim();
+      Searchposts.clear();
+      Searchposts = [];
+      checkher.clear();
+      print(topic);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -401,164 +461,38 @@ class _SearchTopicState extends State<SearchTopic> {
             ),
             enableSuggestions: true,
             cursorColor: Colors.green,
+            onChanged: (val) => Starter(val),
           ),
         ),
-        Container(
-          color: Colors.white38,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-              Row(
-                children: [
-                  Text(
-                    '#ErasmusInGermany',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
+        FutureBuilder(
+            future: getUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                Searchposts.clear();
+                return Container(
+                  width: 20,
+                  height: 20,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                     ),
                   ),
-                  Spacer(),
-                  Text(
-                    'Subscribe',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
+                );
+              }
+              return SingleChildScrollView(
+                child: Center(
+                  child: Container(
+                    child: Column(
+                      children: Searchposts.map((currentpost) => FeedProvider(
+                          post: currentpost,
+                          delete: () {},
+                          like: () {},
+                          searched: true)).toList(),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add_circle_outline_outlined),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '#SabanciUniLessons',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Subscribe',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add_circle_outline_outlined),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '#SabanciUniFoods',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Subscribe',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add_circle_outline_outlined),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '#ExperienceInPoland',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Subscribe',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add_circle_outline_outlined),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '#PlacesInTurkey',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Subscribe',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add_circle_outline_outlined),
-                    color: Colors.blue,
-                  ),
-                ],
-              ),
-              Divider(
-                color: Colors.blue,
-                thickness: 5.0,
-              ),
-            ],
-          ),
-        ),
+                ),
+              );
+            }),
       ],
     );
   }
@@ -576,7 +510,67 @@ class _SearchPostState extends State<SearchPost> {
   void buttonPressed() {
     print('Button Pressed in Function');
   }
+  List Searchposts = [];
+  List checkher = [];
+  final _currentuser = FirebaseAuth.instance.currentUser;
+  int TotalLike = 0;
+  Future getPosts(var uid) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(uid)
+        .collection('posts')
+        .orderBy('datetime', descending: true)
+        .get();
 
+    for (var message in snapshot.docs) {
+      TotalLike = message.get('totalLike');
+      print(TotalLike);
+      List comment = message.get('comments');
+      Timestamp t = message.get('datetime');
+      DateTime d = t.toDate();
+      String postcontent = message.get('content').toString();
+      String date = d.toString().substring(0, 10);
+      String posttopic = message.get('topic');
+      String postLocation = message.get('location');
+      if (postcontent.toLowerCase().contains(content.toLowerCase())) {
+        UserPost post = UserPost(
+            postId: message.id,
+            content: postcontent,
+            imageurl: message.get('imageUrl').toString(),
+            date: date,
+            totalLike: TotalLike,
+            commentCount: comment.length,
+            comments: comment,
+            postownerID: uid,
+            topic: posttopic);
+        if (!checkher.contains(message.id)) {
+          Searchposts.add(post);
+          checkher.add(message.id);
+        }
+      }
+    }
+  }
+
+  Future getUsers() async {
+    Searchposts.clear();
+    Searchposts = [];
+    var DocumentUser =
+    await FirebaseFirestore.instance.collection('Users').get();
+    for (var doc in DocumentUser.docs) {
+      var userid = doc['userId'];
+      await getPosts(userid);
+    }
+  }
+  String content = "";
+  void Starter(String val) {
+    setState(() {
+      content = val.trim();
+      Searchposts.clear();
+      Searchposts = [];
+      checkher.clear();
+      print(content);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     CollectionReference usersRef = _firestore.collection('Users');
@@ -594,84 +588,38 @@ class _SearchPostState extends State<SearchPost> {
             ),
             enableSuggestions: true,
             cursorColor: Colors.green,
+            onChanged: (val) => Starter(val),
           ),
         ),
-        Container(
-          color: Colors.white38,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-              StreamBuilder<QuerySnapshot>(
-                  stream: usersRef.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
-                    if (asyncSnapshot.hasError) {
-                      return Center(
-                          child: Text('Bir Hata Oluştu, Tekrar Deneynizi'));
-                    } else {
-                      if (asyncSnapshot.hasData) {
-                        List<DocumentSnapshot> listOfDocumentSnap =
-                            asyncSnapshot.data!.docs;
-                        return SingleChildScrollView(
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
-                            itemCount: listOfDocumentSnap.length,
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  //Navigator.pushNamed(context, 'PrivProfile');
-                                },
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          'https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg',
-                                        ),
-                                        radius: 25,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      '@${listOfDocumentSnap[index].get('username')}',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 25.0,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) => Divider(
-                              color: Color.fromARGB(255, 0, 170, 229),
-                              thickness: 5.0,
-                            ),
-                          ),
-                        );
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    }
-                  }),
-              Divider(
-                color: Color.fromARGB(255, 0, 170, 229),
-                thickness: 5.0,
-              ),
-            ],
-          ),
-        ),
+        FutureBuilder(
+            future: getUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                Searchposts.clear();
+                return Container(
+                  width: 20,
+                  height: 20,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ),
+                );
+              }
+              return SingleChildScrollView(
+                child: Center(
+                  child: Container(
+                    child: Column(
+                      children: Searchposts.map((currentpost) => FeedProvider(
+                          post: currentpost,
+                          delete: () {},
+                          like: () {},
+                          searched: true)).toList(),
+                    ),
+                  ),
+                ),
+              );
+            }),
       ],
     );
   }
