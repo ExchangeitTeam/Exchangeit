@@ -109,6 +109,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     Size sizeapp = MediaQuery.of(context).size;
+    print("Cuurentuser id: ${_currentuser!.uid}");
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Profile Settings"),

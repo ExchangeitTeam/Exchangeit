@@ -3,6 +3,7 @@ import 'package:exchangeit/Objects/PostBase.dart';
 import 'package:exchangeit/main.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/models/Styles.dart';
+import 'package:exchangeit/routes/FeedProvider.dart';
 import 'package:exchangeit/routes/ZoomPhotoView.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
 import 'package:exchangeit/services/Appanalytics.dart';
@@ -24,12 +25,11 @@ class followedProfilePage extends StatefulWidget {
   State<followedProfilePage> createState() => _followedProfilePageState();
 }
 
-
 String username = '';
 Future getusername(var uid) async {
   if (uid != null) {
     DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(uid).get();
+        await FirestoreService.userCollection.doc(uid).get();
     username = docSnap.get('username');
     totalFollower = docSnap.get('followerCount');
     totalFollowing = docSnap.get('followingCount');
@@ -83,17 +83,18 @@ Future getPosts(var uid) async {
     myPosts.add(post);
   }
 }
+
 int totalFollower = 0;
 int totalFollowing = 0;
 String profilepp = "";
 String Bio = "";
 String uni = "";
+
 class _followedProfilePageState extends State<followedProfilePage>
     with SingleTickerProviderStateMixin {
-
   Future getuserInfo() async {
     DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(widget.userId).get();
+        await FirestoreService.userCollection.doc(widget.userId).get();
     totalFollower = await docSnap.get('followerCount');
     totalFollowing = await docSnap.get('followingCount');
     profilepp = await docSnap.get('profileIm');
@@ -106,36 +107,35 @@ class _followedProfilePageState extends State<followedProfilePage>
   }
 
   Future updateFollower() async {
-      List allFollowers = [];
-      List allFollowings = [];
-      DocumentSnapshot docSnap =
-      await FirestoreService.userCollection.doc(widget.userId).get();
+    List allFollowers = [];
+    List allFollowings = [];
+    DocumentSnapshot docSnap =
+        await FirestoreService.userCollection.doc(widget.userId).get();
 
-      int currFollowers = docSnap.get('followerCount');
-      allFollowers = docSnap.get('followers');
-      allFollowers.add(currId);
+    int currFollowers = docSnap.get('followerCount');
+    allFollowers = docSnap.get('followers');
+    allFollowers.add(currId);
 
-      await FirestoreService.userCollection.doc(widget.userId).update(
-          {'followers': allFollowers, 'followerCount': currFollowers + 1});
+    await FirestoreService.userCollection.doc(widget.userId).update(
+        {'followers': allFollowers, 'followerCount': currFollowers + 1});
 
-      docSnap =
-      await FirestoreService.userCollection.doc(currId).get();
+    docSnap = await FirestoreService.userCollection.doc(currId).get();
 
-      int currFollowing = docSnap.get('followingCount');
-      allFollowings = docSnap.get('following');
-      allFollowings.add(widget.userId);
+    int currFollowing = docSnap.get('followingCount');
+    allFollowings = docSnap.get('following');
+    allFollowings.add(widget.userId);
 
-      await FirestoreService.userCollection.doc(currId).update(
-          {'following': allFollowings, 'followingCount': currFollowing + 1});
+    await FirestoreService.userCollection.doc(currId).update(
+        {'following': allFollowings, 'followingCount': currFollowing + 1});
 
-      setState(() {});
+    setState(() {});
   }
 
   Future negUpdateFollower() async {
     List nAllFollowers = [];
     List nAllFollowings = [];
     DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(widget.userId).get();
+        await FirestoreService.userCollection.doc(widget.userId).get();
 
     int currFollowers = docSnap.get('followerCount');
     nAllFollowers = docSnap.get('followers');
@@ -144,13 +144,11 @@ class _followedProfilePageState extends State<followedProfilePage>
     await FirestoreService.userCollection.doc(widget.userId).update(
         {'followers': nAllFollowers, 'followerCount': currFollowers - 1});
 
-    docSnap =
-    await FirestoreService.userCollection.doc(currId).get();
+    docSnap = await FirestoreService.userCollection.doc(currId).get();
 
     int currFollowing = docSnap.get('followingCount');
     nAllFollowings = docSnap.get('following');
     nAllFollowings.remove(widget.userId);
-
 
     await FirestoreService.userCollection.doc(currId).update(
         {'following': nAllFollowings, 'followingCount': currFollowing - 1});
@@ -160,9 +158,9 @@ class _followedProfilePageState extends State<followedProfilePage>
 
   String followState = "Follow";
 
-  Future isFollowCheck() async{
+  Future isFollowCheck() async {
     DocumentSnapshot CurrentuserSnap =
-    await FirestoreService.userCollection.doc(currId).get();
+        await FirestoreService.userCollection.doc(currId).get();
     List allfollowings = [];
     allfollowings = CurrentuserSnap.get('following');
     if (allfollowings.contains(widget.userId)) {
@@ -178,20 +176,15 @@ class _followedProfilePageState extends State<followedProfilePage>
 
   @override
   Widget build(BuildContext context) {
-
-    /*
-    currentusercheck();
-    var user = Provider.of<appUser?>(context);
-    var _userid = user?.uid;
-    if (user == null) {
-      _userid = FirebaseAuth.instance.currentUser?.uid;
-    }
-     */
     Appanalytics.setLogEventUtil(eventName: 'Profile_Page_Viewed');
     return FutureBuilder(
-
         future: Future.wait(
-          [getusername(widget.userId), getPosts(widget.userId), getuserInfo(), isFollowCheck()],
+          [
+            getusername(widget.userId),
+            getPosts(widget.userId),
+            getuserInfo(),
+            isFollowCheck()
+          ],
         ),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -214,11 +207,12 @@ class _followedProfilePageState extends State<followedProfilePage>
               actions: [
                 IconButton(
                   icon: Icon(
-                    Icons.settings,
+                    Icons.report_gmailerrorred_outlined,
+                    size: 30,
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, 'Settings');
+                    print("Reportladım useri");
                   },
                 ),
               ],
@@ -240,7 +234,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                               //mainAxisAlignment: MainAxisAlignment.start,
                               child: Padding(
                                 padding:
-                                const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                                    const EdgeInsets.fromLTRB(15, 15, 15, 0),
                                 child: CircleAvatar(
                                   radius: 60,
                                   backgroundImage: pp,
@@ -278,18 +272,15 @@ class _followedProfilePageState extends State<followedProfilePage>
                                             MaterialPageRoute(
                                                 builder: (context) => FFList(
                                                     pageName: "Followers",
-                                                    userId: widget.userId
-                                                )
-                                            )
-                                        ),
+                                                    userId: widget.userId))),
                                       ),
                                     ),
-                                     Text(
-                                       'Followers',
-                                       style: TextStyle(
-                                         fontWeight: FontWeight.bold,
-                                       ),
-                                     ),
+                                    Text(
+                                      'Followers',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -316,10 +307,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                                             MaterialPageRoute(
                                                 builder: (context) => FFList(
                                                     pageName: "Follow",
-                                                    userId: widget.userId
-                                                )
-                                            )
-                                        ),
+                                                    userId: widget.userId))),
                                       ),
                                     ),
                                     Text(
@@ -343,16 +331,15 @@ class _followedProfilePageState extends State<followedProfilePage>
                               borderRadius: BorderRadius.circular(15),
                               splashColor: Colors.blueAccent,
                               onTap: () {
-                                  if (followState == "Unfollow"){
-                                    followState = "Follow";
-                                    totalFollower = totalFollower-1;
-                                    negUpdateFollower();
-                                  }
-                                  else{
-                                    followState = "Unfollow";
-                                    totalFollower = totalFollower+1;
-                                    updateFollower();
-                                  }
+                                if (followState == "Unfollow") {
+                                  followState = "Follow";
+                                  totalFollower = totalFollower - 1;
+                                  negUpdateFollower();
+                                } else {
+                                  followState = "Unfollow";
+                                  totalFollower = totalFollower + 1;
+                                  updateFollower();
+                                }
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
@@ -367,7 +354,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                                         width: 2.5,
                                         color: Colors.lightBlueAccent),
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                   ),
                                   child: Center(child: Text(followState)),
                                 ),
@@ -393,7 +380,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                                         width: 2.5,
                                         color: Colors.lightBlueAccent),
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                   ),
                                   child: Center(child: Text("Send Message")),
                                 ),
@@ -464,18 +451,11 @@ class _followedProfilePageState extends State<followedProfilePage>
                                   padding: EdgeInsets.only(bottom: 200),
                                   child: Column(
                                       children: myPosts
-                                          .map((mappingpost) => BaseDesingPost(
-                                          post: mappingpost,
-                                          delete: () {
-                                            FirestoreService.userCollection
-                                                .doc(widget.userId)
-                                                .collection('posts')
-                                                .doc(mappingpost.postId)
-                                                .delete();
-                                            setState(() {});
-                                          },
-                                          like: () {},
-                                          searched: false))
+                                          .map((mappingpost) => FeedProvider(
+                                              post: mappingpost,
+                                              delete: () {},
+                                              like: () {},
+                                              searched: true))
                                           .toList()),
                                 ),
                               ),

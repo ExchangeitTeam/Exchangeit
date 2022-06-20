@@ -315,8 +315,13 @@ class _SignUpState extends State<SignUp> {
                                   username = username.toLowerCase().trim();
                                   showDialogueForWaiting(context);
                                   if (PicPath == null) {
-                                    await AuthService.registerUser(email,
-                                        username, uni, age, password, "");
+                                    await AuthService.registerUser(
+                                        email,
+                                        username,
+                                        uni,
+                                        age,
+                                        password,
+                                        "https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg");
                                   } else {
                                     await uploadPostwithImage(context);
                                     await AuthService.registerUser(email,

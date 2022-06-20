@@ -3,6 +3,7 @@ import 'package:exchangeit/Objects/PostBase.dart';
 import 'package:exchangeit/main.dart';
 import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/models/Styles.dart';
+import 'package:exchangeit/routes/SettingsPage.dart';
 import 'package:exchangeit/routes/ZoomPhotoView.dart';
 import 'package:exchangeit/routes/profile_page_gallery.dart';
 import 'package:exchangeit/services/Appanalytics.dart';
@@ -21,7 +22,7 @@ import 'FF_list.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({Key? key, required this.analytics}) : super(key: key);
-  final FirebaseAnalytics ? analytics;
+  final FirebaseAnalytics? analytics;
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -51,39 +52,6 @@ currentusercheck() {
 
 int totalLike = 0;
 
-List<UserPost> myPosts = [];
-Future getPosts(var uid) async {
-  myPosts.clear();
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('Users')
-      .doc(uid)
-      .collection('posts')
-      .orderBy('datetime', descending: true)
-      .get();
-
-  for (var message in snapshot.docs) {
-    totalLike = message.get('totalLike');
-    print(totalLike);
-    List comment = message.get('comments');
-    Timestamp t = message.get('datetime');
-    DateTime d = t.toDate();
-    String date = d.toString().substring(0, 10);
-    String posttopic = message.get("topic");
-    UserPost post = UserPost(
-      postId: message.id,
-      content: message.get('content').toString(),
-      imageurl: message.get('imageUrl').toString(),
-      date: date,
-      totalLike: totalLike,
-      commentCount: comment.length,
-      comments: comment,
-      postownerID: uid,
-      topic: posttopic,
-    );
-    myPosts.add(post);
-  }
-}
-
 class _ProfileViewState extends State<ProfileView>
     with SingleTickerProviderStateMixin {
   int totalFollower = 0;
@@ -91,15 +59,37 @@ class _ProfileViewState extends State<ProfileView>
   String profilepp = "";
   String Bio = "";
   String uni = "";
+  List<UserPost> myPosts = [];
+  Future getPosts(var uid) async {
+    myPosts = [];
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(uid)
+        .collection('posts')
+        .orderBy('datetime', descending: true)
+        .get();
 
-  Future getuserInfo() async {
-    DocumentSnapshot docSnap =
-        await FirestoreService.userCollection.doc(userID).get();
-    totalFollower = await docSnap.get('followerCount');
-    totalFollowing = await docSnap.get('followingCount');
-    profilepp = await docSnap.get('profileIm');
-    Bio = await docSnap.get('bio');
-    uni = await docSnap.get('university');
+    for (var message in snapshot.docs) {
+      totalLike = message.get('totalLike');
+      print(totalLike);
+      List comment = message.get('comments');
+      Timestamp t = message.get('datetime');
+      DateTime d = t.toDate();
+      String date = d.toString().substring(0, 10);
+      String posttopic = message.get("topic");
+      UserPost post = UserPost(
+        postId: message.id,
+        content: message.get('content').toString(),
+        imageurl: message.get('imageUrl').toString(),
+        date: date,
+        totalLike: totalLike,
+        commentCount: comment.length,
+        comments: comment,
+        postownerID: uid,
+        topic: posttopic,
+      );
+      myPosts.add(post);
+    }
   }
 
   void initState() {
@@ -108,14 +98,26 @@ class _ProfileViewState extends State<ProfileView>
     });
   }
 
+  Future getuserInfo() async {
+    DocumentSnapshot docSnap =
+        await FirestoreService.userCollection.doc(_userid).get();
+    totalFollower = await docSnap.get('followerCount');
+    totalFollowing = await docSnap.get('followingCount');
+    profilepp = await docSnap.get('profileIm');
+    Bio = await docSnap.get('bio');
+    uni = await docSnap.get('university');
+  }
+
+  var _userid;
   late TabController _ProfileController = TabController(length: 3, vsync: this);
   String buttonChanger = "Follow";
   @override
   Widget build(BuildContext context) {
     currentusercheck();
     var user = Provider.of<appUser?>(context);
-    var _userid = user?.uid;
-    if (user == null) {
+    _userid = user?.uid;
+    if (_userid != FirebaseAuth.instance.currentUser?.uid) {
+      print("user null döndü");
       _userid = FirebaseAuth.instance.currentUser?.uid;
     }
     Appanalytics.setLogEventUtil(eventName: 'Profile_Page_Viewed');
@@ -148,7 +150,12 @@ class _ProfileViewState extends State<ProfileView>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, 'Settings');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsPage(
+                                  CurrentuserID: _userid,
+                                ))).then((value) => setState(() {}));
                   },
                 ),
               ],
@@ -196,7 +203,7 @@ class _ProfileViewState extends State<ProfileView>
                                       padding: const EdgeInsets.fromLTRB(
                                           15, 15, 15, 0),
                                       child: TextButton(
-                                        child:  Text(
+                                        child: Text(
                                           '$totalFollower',
                                           style: TextStyle(
                                             fontSize: 20,
@@ -207,11 +214,9 @@ class _ProfileViewState extends State<ProfileView>
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => FFList(
-                                                    pageName: "Followers",
-                                                    userId: _userid,
-                                                )
-                                            )
-                                        ),
+                                                      pageName: "Followers",
+                                                      userId: _userid,
+                                                    ))),
                                       ),
                                     ),
                                     Text(
@@ -234,7 +239,7 @@ class _ProfileViewState extends State<ProfileView>
                                       padding: const EdgeInsets.fromLTRB(
                                           15, 15, 15, 0),
                                       child: TextButton(
-                                        child:  Text(
+                                        child: Text(
                                           '$totalFollowing',
                                           style: TextStyle(
                                             fontSize: 20,
@@ -245,11 +250,9 @@ class _ProfileViewState extends State<ProfileView>
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => FFList(
-                                                    pageName: "Follow",
-                                                    userId: _userid,
-                                                )
-                                            )
-                                        ),
+                                                      pageName: "Follow",
+                                                      userId: _userid,
+                                                    ))),
                                       ),
                                     ),
                                     Text(
@@ -329,21 +332,23 @@ class _ProfileViewState extends State<ProfileView>
                                     padding: EdgeInsets.only(bottom: 200),
                                     child: Column(
                                         children: myPosts
-                                            .map((mappingpost) => BaseDesingPost(
-                                                post: mappingpost,
-                                                delete: () {
-                                                  FirestoreService.userCollection
-                                                      .doc(_userid)
-                                                      .collection('posts')
-                                                      .doc(mappingpost.postId)
-                                                      .delete();
-                                                  setState(() {});
-                                                },
-                                                like: () {},
-                                                searched: false))
+                                            .map(
+                                                (mappingpost) => BaseDesingPost(
+                                                    post: mappingpost,
+                                                    delete: () {
+                                                      FirestoreService
+                                                          .userCollection
+                                                          .doc(_userid)
+                                                          .collection('posts')
+                                                          .doc(mappingpost
+                                                              .postId)
+                                                          .delete();
+                                                      setState(() {});
+                                                    },
+                                                    like: () {},
+                                                    searched: false))
                                             .toList()),
                                   ),
-
                                 ),
                               ),
                             ),

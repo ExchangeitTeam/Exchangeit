@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exchangeit/SettingsOptions/ProfileEdit.dart';
 import 'package:exchangeit/models/Colors.dart';
+import 'package:exchangeit/routes/LoginPage.dart';
+import 'package:exchangeit/services/FirestoreServices.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,49 +25,110 @@ hideProgressDialogue(BuildContext context) {
       message: "Your account visibility is changing, please wait..."));
 }
 
-Future makePrivate() async {
-  if (Privchecher == false) {
-    await FirebaseFirestore.instance.collection("Users").doc(FireId).update({
-      'checkPrivate': true,
-    });
-  }
-  if (Privchecher == true) {
-    await FirebaseFirestore.instance.collection("Users").doc(FireId).update({
-      'checkPrivate': false,
-    });
-  }
-}
-
-Future checkPrivate() async {
-  print("check girdi");
-  try {
-    DocumentSnapshot curruser =
-        await FirebaseFirestore.instance.collection("Users").doc(FireId).get();
-    Privchecher = curruser.get("checkPrivate");
-  } catch (e) {
-    print(e);
-  }
-}
-
-final _currentuser = FirebaseAuth.instance.currentUser;
-final FireId = _currentuser!.uid;
+//var _currentuser = FirebaseAuth.instance.currentUser;
+//var FireId = _currentuser!.uid;
 bool Privchecher = true;
 
-class Settings extends StatefulWidget {
-  const Settings({Key? key, required this.analytics}) : super(key: key);
-  final FirebaseAnalytics analytics;
+class SettingsPage extends StatefulWidget {
+  SettingsPage({Key? key, this.analytics, this.CurrentuserID})
+      : super(key: key);
+  final FirebaseAnalytics? analytics;
+  var CurrentuserID;
+
   @override
-  State<Settings> createState() => _SettingsState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsPageState extends State<SettingsPage> {
   final AuthService authService = AuthService();
+  Future checkPrivate() async {
+    print("check girdi");
+    print("idsi bu:${widget.CurrentuserID}");
+    try {
+      DocumentSnapshot curruser =
+          await FirestoreService.userCollection.doc(widget.CurrentuserID).get();
+      Privchecher = curruser.get("checkPrivate");
+    } catch (e) {
+      print("hata bu:$e");
+    }
+  }
+
+  Future makePrivate() async {
+    if (Privchecher == false) {
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(widget.CurrentuserID)
+          .update({
+        'checkPrivate': true,
+      });
+    }
+    if (Privchecher == true) {
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(widget.CurrentuserID)
+          .update({
+        'checkPrivate': false,
+      });
+    }
+  }
+
+  Future UserDelete() async {
+    final _user = FirebaseAuth.instance.currentUser;
+
+    DocumentSnapshot Deleted =
+        await FirestoreService.userCollection.doc(widget.CurrentuserID).get();
+    List followers = Deleted.get('followers');
+    List following = Deleted.get('following');
+    //kendini takip edenlerden following kısmından çıkarma
+    for (int i = 0; i < followers.length; i++) {
+      String followerId = followers[i];
+
+      DocumentSnapshot follower =
+          await FirestoreService.userCollection.doc(followerId).get();
+
+      List followingArray = [];
+
+      followingArray = follower.get('following');
+      int followingCount = follower.get('followingCount');
+
+      followingArray.remove(widget.CurrentuserID);
+
+      await FirestoreService.userCollection.doc(followerId).update({
+        'following': followingArray,
+        'followingCount': followingCount - 1,
+      });
+    }
+    //Takip ettiklerinin follower kısmından çıkmalı
+    for (int i = 0; i < following.length; i++) {
+      String followingId = following[i];
+
+      DocumentSnapshot follower =
+          await FirestoreService.userCollection.doc(followingId).get();
+
+      List followerArray = [];
+
+      followerArray = follower.get('followers');
+      int followerCount = follower.get('followerCount');
+
+      followerArray.remove(widget.CurrentuserID);
+
+      await FirestoreService.userCollection.doc(followingId).update({
+        'followers': followerArray,
+        'followerCount': followerCount - 1,
+      });
+    }
+
+    await FirestoreService.userCollection.doc(widget.CurrentuserID).delete();
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     Appanalytics.setCurrentScreenUtil(screenName: "Settings Page");
     Size size = MediaQuery.of(context).size;
     return FutureBuilder(
-        future: checkPrivate(),
+        future: Future.wait([checkPrivate()]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingScreen(message: "Loading Settings page");
@@ -152,7 +215,9 @@ class _SettingsState extends State<Settings> {
                         fixedSize: Size(size.width, size.height * 0.1)),
                   ),
                   TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      UserDelete();
+                    },
                     icon: Icon(
                       Icons.delete_rounded,
                       size: 30,
@@ -183,6 +248,7 @@ class _SettingsState extends State<Settings> {
                         await AuthService().googleLogout();
                       }
                       if (_facebooklogin == false && _googlelogin == false) {
+                        print("signout yaptım");
                         AuthService().signOut();
                       }
                       Navigator.of(context).pushNamedAndRemoveUntil(

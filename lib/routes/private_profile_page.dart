@@ -40,33 +40,35 @@ class _privateProfileViewState extends State<privateProfileView> {
 
   Future updateRequest() async {
     DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(widget.uid).get();
+        await FirestoreService.userCollection.doc(widget.uid).get();
     List requestList = [];
     requestList = docSnap.get('followRequests');
     requestList.add(currId);
-    await FirestoreService.userCollection.doc(widget.uid).update(
-      {'followRequests': requestList});
+    await FirestoreService.userCollection
+        .doc(widget.uid)
+        .update({'followRequests': requestList});
 
     setState(() {});
   }
 
   Future negUpdateRequest() async {
     DocumentSnapshot docSnap =
-    await FirestoreService.userCollection.doc(widget.uid).get();
+        await FirestoreService.userCollection.doc(widget.uid).get();
     List requestList = [];
     requestList = docSnap.get('followRequests');
     requestList.remove(currId);
-    await FirestoreService.userCollection.doc(widget.uid).update(
-        {'followRequests': requestList});
+    await FirestoreService.userCollection
+        .doc(widget.uid)
+        .update({'followRequests': requestList});
 
     setState(() {});
   }
 
   String requestState = "Follow";
 
-  Future isRequestedCheck() async{
+  Future isRequestedCheck() async {
     DocumentSnapshot CurrentuserSnap =
-    await FirestoreService.userCollection.doc(widget.uid).get();
+        await FirestoreService.userCollection.doc(widget.uid).get();
     List allfollowings = [];
     allfollowings = CurrentuserSnap.get('followRequests');
     if (allfollowings.contains(currId)) {
@@ -75,12 +77,31 @@ class _privateProfileViewState extends State<privateProfileView> {
       requestState = "Follow";
     }
   }
+
+  Future SendFollowNotif() async {
+    DocumentSnapshot Senderdocsnap =
+        await FirestoreService.userCollection.doc(currId).get();
+
+    String SenderUserName = Senderdocsnap.get("username");
+    await FirestoreService.userCollection
+        .doc(widget.uid)
+        .collection('notifications')
+        .add({
+      'datetime': DateTime.now(),
+      'notification': '$SenderUserName wants to follow you',
+      'Posturl': "",
+      'uid': currId,
+      'IsfollowReq': 'yes',
+      'postId': "",
+    });
+  }
+
   final currId = FirebaseAuth.instance.currentUser!.uid;
   @override
   Widget build(BuildContext context) {
     Appanalytics.setCurrentScreenUtil(screenName: "Private_Profile_Page");
     return FutureBuilder(
-        future: Future.wait([getuserInfo(),isRequestedCheck()]),
+        future: Future.wait([getuserInfo(), isRequestedCheck()]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingScreen(message: "Loading Profile");
@@ -101,11 +122,12 @@ class _privateProfileViewState extends State<privateProfileView> {
               actions: [
                 IconButton(
                   icon: Icon(
-                    Icons.settings,
+                    Icons.report_gmailerrorred_outlined,
+                    size: 30,
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, 'Settings');
+                    print("Reportladım useri");
                   },
                 ),
               ],
@@ -206,16 +228,16 @@ class _privateProfileViewState extends State<privateProfileView> {
                               borderRadius: BorderRadius.circular(15),
                               splashColor: Colors.blueAccent,
                               onTap: () {
-                                  if (requestState == "Requested"){
-                                    requestState = "Follow";
-                                    // notification silmeyi unutma
-                                    negUpdateRequest();
-                                  }
-                                  else{
-                                    requestState = "Requested";
-                                    // notificationdan return gelince followrequesti guncellemeyi unutma
-                                    updateRequest();
-                                  }
+                                if (requestState == "Requested") {
+                                  requestState = "Follow";
+                                  // notification silmeyi unutma
+                                  negUpdateRequest();
+                                } else {
+                                  requestState = "Requested";
+                                  // notificationdan return gelince followrequesti guncellemeyi unutma
+                                  updateRequest();
+                                  SendFollowNotif();
+                                }
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),

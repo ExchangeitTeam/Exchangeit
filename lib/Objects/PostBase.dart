@@ -143,156 +143,152 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             margin: EdgeInsets.all(10),
-            color: Colors.lightBlueAccent[100],
+            color: Colors.white30,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Container(
-                    child: Image.network(widget.post.imageurl),
-                  ),
-                  Center(
-                    child: Row(
-                      children: [
-                        Text(
-                          Postusername,
-                          style: AppStyles.profileTextName,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                Postusername,
+                                style: GoogleFonts.signika(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Text(
+                                widget.post.date,
+                                style: GoogleFonts.signika(
+                                  color: Colors.deepOrangeAccent,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                              onPressed: () {},
+                              iconSize: 30,
+                              icon: Icon(Icons.report_gmailerrorred_sharp)),
+                          _currentuser!.uid == widget.post.postownerID
+                              ? IconButton(
+                                  padding: EdgeInsets.all(0),
+                                  alignment: Alignment.center,
+                                  iconSize: 25,
+                                  splashRadius: 20,
+                                  color: Colors.black,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PostEditScreen(
+                                              ourPost: widget.post)),
+                                    );
+                                  },
+                                  icon: Icon(Icons.edit))
+                              : SizedBox.shrink(),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        image: DecorationImage(
+                          image: NetworkImage(widget.post.imageurl),
+                          fit: BoxFit.fill,
                         ),
-                        SizedBox(width: 100),
-                        Spacer(),
-                        _currentuser!.uid == widget.post.postownerID
-                            ? IconButton(
-                                padding: EdgeInsets.all(0),
-                                alignment: Alignment.center,
-                                visualDensity: VisualDensity.compact,
-                                iconSize: 15,
-                                splashRadius: 20,
-                                color: Colors.white,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            LikeButton(
+                              circleColor: CircleColor(
+                                  start: const Color(0xFFFF5722),
+                                  end: const Color(0xFFFFC107)),
+                              isLiked: Isliked,
+                              onTap: (isLiked) {
+                                return LikeButtonTapped(
+                                    context, Isliked, widget.post);
+                              },
+                            ),
+                            SizedBox(width: 5),
+                            Text('${widget.post.totalLike}',
+                                style: AppStyles.LikeText),
+                            Spacer(),
+                            IconButton(
+                                icon: Icon(Icons.insert_comment_outlined),
+                                iconSize: 30,
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => PostEditScreen(
-                                            ourPost: widget.post)),
+                                        builder: (context) => postPageView(
+                                              pf: widget.post,
+                                              isPhoto: false,
+                                            )),
                                   );
-                                },
-                                icon: Icon(Icons.edit))
-                            : SizedBox.shrink(),
-                      ],
+                                }),
+                            SizedBox(width: 5),
+                            Text('${widget.post.commentCount}',
+                                style: AppStyles.LikeText),
+                            Spacer(),
+                            widget.searched == false
+                                ? IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    alignment: Alignment.center,
+                                    onPressed: widget.delete,
+                                    iconSize: 25,
+                                    splashRadius: 20,
+                                    color: Colors.black,
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                          ]),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.post.date,
-                        style: GoogleFonts.signika(
-                          color: Colors.deepOrangeAccent,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Spacer(),
-                      LikeButton(
-                        circleColor: CircleColor(
-                            start: const Color(0xFFFF5722),
-                            end: const Color(0xFFFFC107)),
-                        isLiked: Isliked,
-                        onTap: (isLiked) {
-                          return LikeButtonTapped(
-                              context, Isliked, widget.post);
-                        },
-                      ),
-                      SizedBox(width: 5),
-                      Text('${widget.post.totalLike}',
-                          style: AppStyles.postText),
-                      Spacer(),
-                      IconButton(
-                        icon: Icon(Icons.insert_comment_outlined),
-                        color: Colors.white,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => postPageView(
-                                      pf: widget.post,
-                                      isPhoto: false,
-                                    )),
-                          );
-                        },
-                      ),
-                      SizedBox(width: 5),
-                      Text('${widget.post.commentCount}',
-                          style: AppStyles.postText),
-                      Spacer(),
-                      widget.searched == false
-                          ? IconButton(
-                              padding: EdgeInsets.all(0),
-                              alignment: Alignment.center,
-                              onPressed: widget.delete,
-                              iconSize: 20,
-                              splashRadius: 20,
-                              color: Colors.white,
-                              icon: Icon(
-                                Icons.delete_outline,
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(widget.post.content),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Chip(
+                                backgroundColor: Colors.greenAccent[200],
+                                shadowColor: Colors.black, //CircleAvatar
+                                label: Text("Location: $location",
+                                    style: AppStyles.postLocation), //Text
                               ),
-                            )
-                          : SizedBox.shrink(),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 5),
-                      Row(mainAxisSize: MainAxisSize.min, children: [
-                        Column(
-                          children: [
-                            Container(
-                              child: Text(
-                                widget.post.content,
-                                style: AppStyles.WalkTextStyle,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 3,
+                              Chip(
+                                backgroundColor: Colors.greenAccent[200],
+                                shadowColor: Colors.black, //CircleAvatar
+                                label: Text(
+                                  "Topic: ${widget.post.topic} ",
+                                  style: AppStyles.postLocation,
+                                ), //Text
                               ),
-                              color: Colors.white,
-                              padding: EdgeInsets.all(8),
-                            ),
-                          ],
-                        ),
-                      ]),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: Text("Location: $location",
-                            style: AppStyles.postOwnerText),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          border: Border.all(color: Colors.green, width: 2.0),
-                          borderRadius:
-                              BorderRadius.all(Radius.elliptical(50, 50)),
-                        ),
-                      ),
-                      Spacer(),
-                      Center(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text(widget.post.topic,
-                              style: AppStyles.buttonText),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            border: Border.all(color: Colors.green, width: 2.0),
-                            borderRadius:
-                                new BorderRadius.all(Radius.elliptical(50, 50)),
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
+                            ])),
+                  ],
+                ),
               ),
             ),
           );
@@ -302,67 +298,84 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
       return FutureBuilder(
           future: PostalreadyLiked().then((result) => Isliked = result),
           builder: (context, snapshot) {
-            return InkWell(
-              onTap: () {},
-              child: Card(
-                margin: EdgeInsets.all(10),
-                color: Colors.lightBlueAccent[100],
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            return Card(
+              shadowColor: Colors.grey,
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              margin: EdgeInsets.all(10),
+              color: Colors.white30,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(widget.post.date, style: AppStyles.postText),
-                              //SizedBox(width :5),
-                              widget.searched == false
-                                  ? IconButton(
-                                      alignment: Alignment.center,
-                                      onPressed: widget.delete,
-                                      iconSize: 20,
-                                      splashRadius: 24,
-                                      color: Colors.white,
-                                      icon: Icon(
-                                        Icons.delete_outline,
-                                      ),
-                                    )
-                                  : SizedBox.shrink(),
-                              _currentuser!.uid == widget.post.postownerID
-                                  ? IconButton(
-                                      padding: EdgeInsets.all(0),
-                                      alignment: Alignment.center,
-                                      visualDensity: VisualDensity.compact,
-                                      iconSize: 20,
-                                      splashRadius: 20,
-                                      color: Colors.white,
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PostEditScreen(
-                                                        ourPost: widget.post)));
-                                      },
-                                      icon: Icon(Icons.edit))
-                                  : SizedBox.shrink()
-                            ],
-                          ),
-                          Text(location, style: AppStyles.postLocation),
-                          SizedBox(height: 5),
-                          Text(
-                            widget.post.content,
-                            style: AppStyles.postText,
-                            overflow: TextOverflow.fade,
-                          ),
-                          SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  Postusername,
+                                  style: GoogleFonts.signika(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  widget.post.date,
+                                  style: GoogleFonts.signika(
+                                    color: Colors.deepOrangeAccent,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                                onPressed: () {},
+                                iconSize: 30,
+                                icon: Icon(Icons.report_gmailerrorred_sharp)),
+                            _currentuser!.uid == widget.post.postownerID
+                                ? IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    alignment: Alignment.center,
+                                    iconSize: 25,
+                                    splashRadius: 20,
+                                    color: Colors.black,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PostEditScreen(
+                                                    ourPost: widget.post)),
+                                      );
+                                    },
+                                    icon: Icon(Icons.edit))
+                                : SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(widget.post.content),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               LikeButton(
+                                circleColor: CircleColor(
+                                    start: const Color(0xFFFF5722),
+                                    end: const Color(0xFFFFC107)),
                                 isLiked: Isliked,
                                 onTap: (isLiked) {
                                   return LikeButtonTapped(
@@ -371,28 +384,60 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                               ),
                               SizedBox(width: 5),
                               Text('${widget.post.totalLike}',
-                                  style: AppStyles.postText),
-                              SizedBox(width: 15),
-                              Icon(Icons.chat_bubble_outline,
-                                  color: Colors.white),
+                                  style: AppStyles.LikeText),
+                              Spacer(),
+                              IconButton(
+                                  icon: Icon(Icons.insert_comment_outlined),
+                                  iconSize: 30,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => postPageView(
+                                                pf: widget.post,
+                                                isPhoto: false,
+                                              )),
+                                    );
+                                  }),
                               SizedBox(width: 5),
                               Text('${widget.post.commentCount}',
-                                  style: AppStyles.postText),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Container(
-                                  child: Text(widget.post.topic),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
+                                  style: AppStyles.LikeText),
+                              Spacer(),
+                              widget.searched == false
+                                  ? IconButton(
+                                      padding: EdgeInsets.all(0),
+                                      alignment: Alignment.center,
+                                      onPressed: widget.delete,
+                                      iconSize: 25,
+                                      splashRadius: 20,
+                                      color: Colors.black,
+                                      icon: Icon(
+                                        Icons.delete_outline,
+                                      ),
+                                    )
+                                  : SizedBox.shrink(),
+                            ]),
                       ),
+                      Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Chip(
+                                  backgroundColor: Colors.greenAccent[200],
+                                  shadowColor: Colors.black, //CircleAvatar
+                                  label: Text("Location: $location",
+                                      style: AppStyles.postLocation), //Text
+                                ),
+                                Chip(
+                                  backgroundColor: Colors.greenAccent[200],
+                                  shadowColor: Colors.black, //CircleAvatar
+                                  label: Text(
+                                    "Topic: ${widget.post.topic} ",
+                                    style: AppStyles.postLocation,
+                                  ), //Text
+                                ),
+                              ])),
                     ],
                   ),
                 ),

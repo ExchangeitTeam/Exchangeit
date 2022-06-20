@@ -22,11 +22,15 @@ List<UserPost> myPosts = [];
 class _FeedPageState extends State<FeedPage> {
   @override
   void initState() {
-    setState(() {});
+    setState(() {
+      super.initState();
+      posts.clear();
+    });
   }
 
-  final _currentuser = FirebaseAuth.instance.currentUser;
   List posts = [];
+  List checkher = [];
+  final _currentuser = FirebaseAuth.instance.currentUser;
   int TotalLike = 0;
   Future getPosts(var uid) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -54,20 +58,21 @@ class _FeedPageState extends State<FeedPage> {
           comments: comment,
           postownerID: uid,
           topic: posttopic);
-      posts.add(post);
-
-      String locat = message['location'];
-      print(locat);
+      if (!checkher.contains(message.id)) {
+        print(message.id);
+        posts.add(post);
+      }
     }
   }
 
   Future getFeedPosts() async {
+    posts = [];
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(_currentuser!.uid)
         .get();
     List allPostOwner = snapshot.get('following');
-
+    print(allPostOwner);
     for (var id in allPostOwner) {
       print("Following id:$id");
       await getPosts(id);
@@ -78,7 +83,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     Appanalytics.setCurrentScreenUtil(screenName: 'Post Page');
     return FutureBuilder(
-        future: Future.wait([getFeedPosts()]),
+        future: getFeedPosts(),
         builder: (context, snapshot) {
           print("Post len: ${posts.length}");
           posts.sort((a, b) {
