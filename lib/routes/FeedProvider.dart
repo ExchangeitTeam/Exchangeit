@@ -131,7 +131,6 @@ class _FeedProviderState extends State<FeedProvider> {
       return FutureBuilder(
         future: PostalreadyLiked().then((changer) => Isliked = changer),
         builder: (context, snapshot) {
-          print(widget.post.imageurl);
           return Card(
             shadowColor: Colors.grey,
             elevation: 5,

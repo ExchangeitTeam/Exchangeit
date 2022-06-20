@@ -90,9 +90,13 @@ class _SharePostScreenState extends State<SharePostScreen> {
     final firestoreInstance = FirebaseFirestore.instance;
 
     List<String> locationList = [];
+    List<String> TopicList = [];
 
     for (int i = 1; i <= location.length; i++) {
-      locationList.add(location.substring(0, i).toLowerCase());
+      locationList.add(topic.substring(0, i).toLowerCase());
+    }
+    for (int i = 1; i <= location.length; i++) {
+      TopicList.add(topic.substring(0, i).toLowerCase());
     }
     firestoreInstance
         .collection("Users")
@@ -109,6 +113,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
       'searchLoc': locationList,
       "userID": _currentuser!.uid,
       "topic": topic,
+      "searchTopic": TopicList,
     }).then((value) {});
   }
 

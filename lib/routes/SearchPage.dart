@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:exchangeit/main.dart';
 import 'package:exchangeit/routes/UserSearch.dart';
 import 'package:exchangeit/routes/private_profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
+import '../Objects/NewPostClass.dart';
 import '../services/FirestoreServices.dart';
+import 'FeedProvider.dart';
 
 class SearchMain extends StatefulWidget {
   const SearchMain({Key? key}) : super(key: key);
@@ -21,6 +25,7 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
   late TabController _controller = TabController(length: 4, vsync: this);
   @override
   Widget build(BuildContext context) {
+    Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 0, 170, 229),
@@ -35,7 +40,7 @@ class _SearchMainState extends State<SearchMain> with TickerProviderStateMixin {
             height: 10,
           ),
           Container(
-            width: double.maxFinite,
+            width: sizeapp.width * 0.7,
             child: Align(
               alignment: Alignment.center,
               child: TabBar(
@@ -94,6 +99,57 @@ class SearchLocation extends StatefulWidget {
 }
 
 class _SearchLocationState extends State<SearchLocation> {
+  List Searchposts = [];
+  List checkher = [];
+  final _currentuser = FirebaseAuth.instance.currentUser;
+  int TotalLike = 0;
+  Future getPosts(var uid) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(uid)
+        .collection('posts')
+        .orderBy('datetime', descending: true)
+        .get();
+
+    for (var message in snapshot.docs) {
+      TotalLike = message.get('totalLike');
+      print(TotalLike);
+      List comment = message.get('comments');
+      Timestamp t = message.get('datetime');
+      DateTime d = t.toDate();
+      String date = d.toString().substring(0, 10);
+      String posttopic = message.get('topic');
+      String postLocation = message.get('location');
+      if (postLocation.toLowerCase().contains(loc.toLowerCase())) {
+        UserPost post = UserPost(
+            postId: message.id,
+            content: message.get('content').toString(),
+            imageurl: message.get('imageUrl').toString(),
+            date: date,
+            totalLike: TotalLike,
+            commentCount: comment.length,
+            comments: comment,
+            postownerID: uid,
+            topic: posttopic);
+        if (!checkher.contains(message.id)) {
+          Searchposts.add(post);
+          checkher.add(message.id);
+        }
+      }
+    }
+  }
+
+  Future getUsers() async {
+    Searchposts.clear();
+    Searchposts = [];
+    var DocumentUser =
+        await FirebaseFirestore.instance.collection('Users').get();
+    for (var doc in DocumentUser.docs) {
+      var userid = doc['userId'];
+      await getPosts(userid);
+    }
+  }
+
   final _firestore = FirebaseFirestore.instance;
   final myController = TextEditingController();
   void buttonPressed() {
@@ -104,12 +160,16 @@ class _SearchLocationState extends State<SearchLocation> {
   void Starter(String val) {
     setState(() {
       loc = val.trim();
+      Searchposts.clear();
+      Searchposts = [];
+      checkher.clear();
+      print(loc);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference locationsRef = _firestore.collection('Locations');
+    Size app2size = MediaQuery.of(context).size;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -127,66 +187,34 @@ class _SearchLocationState extends State<SearchLocation> {
             onChanged: (val) => Starter(val),
           ),
         ),
-        StreamBuilder<QuerySnapshot>(
-            stream: loc != "" && loc != null
-                ? locationsRef
-                    .where('searchKey', arrayContains: loc)
-                    .snapshots()
-                : locationsRef.where("name", isNull: false).snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot> asyncSnapshot) {
-              if (asyncSnapshot.hasError) {
-                return Center(child: Text('Bir Hata Oluştu, Tekrar Deneyiniz'));
-              } else {
-                if (asyncSnapshot.hasData) {
-                  List<DocumentSnapshot> listOfDocumentSnap =
-                      asyncSnapshot.data!.docs;
-                  return SingleChildScrollView(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: listOfDocumentSnap.length,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          child: Row(
-                            children: [
-                              Text(
-                                '#${listOfDocumentSnap[index].get('name')}',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 30.0,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                'Subscribe',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: buttonPressed,
-                                icon: Icon(Icons.add_circle_outline_outlined),
-                                color: Colors.blue,
-                              ),
-                            ],
-                          ),
-                          onTap: () {},
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          Divider(
-                        color: Color.fromARGB(255, 0, 170, 229),
-                        thickness: 5.0,
-                      ),
+        FutureBuilder(
+            future: getUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                Searchposts.clear();
+                return Container(
+                  width: 20,
+                  height: 20,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                     ),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+                  ),
+                );
               }
+              return SingleChildScrollView(
+                child: Center(
+                  child: Container(
+                    child: Column(
+                      children: Searchposts.map((currentpost) => FeedProvider(
+                          post: currentpost,
+                          delete: () {},
+                          like: () {},
+                          searched: true)).toList(),
+                    ),
+                  ),
+                ),
+              );
             }),
       ],
     );
