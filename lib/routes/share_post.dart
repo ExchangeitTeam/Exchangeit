@@ -25,6 +25,9 @@ class _SharePostScreenState extends State<SharePostScreen> {
   String location = '';
   String Posttopic = '';
   final _PostKey = GlobalKey<FormState>();
+  final locationcontrol = TextEditingController();
+  final contentcontrol = TextEditingController();
+  final topiccontrol = TextEditingController();
 
   showDialogueForWaiting(BuildContext context) {
     showDialog(
@@ -133,15 +136,31 @@ class _SharePostScreenState extends State<SharePostScreen> {
               textStyle: const TextStyle(fontSize: 18),
             ),
             child: Text('Post'),
-            onPressed: () {
+            onPressed: () async {
               if (_PostKey.currentState!.validate()) {
                 if (_holdImage == null) {
-                  FirebasePostUpload(
+                  showDialogueForWaiting(context);
+                  await FirebasePostUpload(
                       _currentuser!.uid, 0, '', contentPost, Posttopic);
+                  hideProgressDialogue(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      elevation: 10,
+                      content: Text(
+                          "Your Post successfully uploaded,check feed page"),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
                 } else {
                   uploadPostwithImage(context, contentPost);
                 }
               }
+              locationcontrol.clear();
+              topiccontrol.clear();
+              contentcontrol.clear();
               setState(() {
                 _holdImage = null;
               });
@@ -189,6 +208,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Container(
                       child: TextFormField(
+                        controller: contentcontrol,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
                         textAlign: TextAlign.center,
@@ -229,6 +249,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Container(
                       child: TextFormField(
+                        controller: locationcontrol,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Location",
@@ -265,6 +286,7 @@ class _SharePostScreenState extends State<SharePostScreen> {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Container(
                       child: TextFormField(
+                        controller: topiccontrol,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                             fillColor: Colors.grey[200],
