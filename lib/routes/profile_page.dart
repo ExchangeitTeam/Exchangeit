@@ -60,8 +60,10 @@ class _ProfileViewState extends State<ProfileView>
   String Bio = "";
   String uni = "";
   List<UserPost> myPosts = [];
+  List checkher = [];
   Future getPosts(var uid) async {
     myPosts = [];
+    checkher = [];
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(uid)
@@ -88,13 +90,17 @@ class _ProfileViewState extends State<ProfileView>
         postownerID: uid,
         topic: posttopic,
       );
-      myPosts.add(post);
+      if (!checkher.contains(message.id)) {
+        myPosts.add(post);
+        checkher.add(message.id);
+      }
     }
   }
 
   void initState() {
     setState(() {
       myPosts.clear();
+      checkher.clear();
     });
   }
 

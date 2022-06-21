@@ -110,6 +110,38 @@ class _NotificationViewState extends State<NotificationView> {
     setState(() {});
   }
 
+  Future rejectFollowReq(senderuserID, NotificationId) async {
+    DocumentSnapshot CurrentInfoSnap =
+        await FirestoreService.userCollection.doc(currentUserID).get();
+    DocumentSnapshot SenderSnap =
+        await FirestoreService.userCollection.doc(senderuserID).get();
+    String SenderName = SenderSnap.get("username");
+    List AllRequests = CurrentInfoSnap.get('followRequests');
+
+    AllRequests.remove(senderuserID);
+    await FirestoreService.userCollection.doc(currentUserID).update({
+      'followRequests': AllRequests,
+    });
+    await FirestoreService.userCollection
+        .doc(currentUserID)
+        .collection('notifications')
+        .add({
+      'datetime': DateTime.now(),
+      'notification': 'You rejected the follow request from $SenderName!',
+      'Posturl': "",
+      'uid': senderuserID,
+      'IsfollowReq': 'followreject',
+      'postId': "",
+    });
+
+    await FirestoreService.userCollection
+        .doc(currentUserID)
+        .collection('notifications')
+        .doc(NotificationId)
+        .delete();
+    setState(() {});
+  }
+
   void deleteNotification(NotificationObj curr) {
     print(curr.nID);
     notifications.remove(curr);
@@ -158,6 +190,8 @@ class _NotificationViewState extends State<NotificationView> {
                             },
                             reject: () {
                               print("reject yaptım");
+                              rejectFollowReq(
+                                  notification.sender, notification.nID);
                             },
                           ))
                       .toList(),
