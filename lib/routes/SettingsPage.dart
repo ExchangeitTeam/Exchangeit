@@ -117,7 +117,8 @@ class _SettingsPageState extends State<SettingsPage> {
         'followerCount': followerCount - 1,
       });
     }
-
+    var user = await FirebaseAuth.instance.currentUser!;
+    user.delete();
     await FirestoreService.userCollection.doc(widget.CurrentuserID).delete();
 
     setState(() {});
@@ -215,8 +216,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         fixedSize: Size(size.width, size.height * 0.1)),
                   ),
                   TextButton.icon(
-                    onPressed: () {
-                      UserDelete();
+                    onPressed: () async {
+                      await UserDelete();
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/Login', (Route<dynamic> route) => false);
                     },
                     icon: Icon(
                       Icons.delete_rounded,
