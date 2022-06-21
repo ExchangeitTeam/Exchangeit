@@ -136,7 +136,7 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
       return FutureBuilder(
         future: PostalreadyLiked().then((changer) => Isliked = changer),
         builder: (context, snapshot) {
-          print(widget.post.imageurl);
+          //print(widget.post.imageurl);
           return Card(
             shadowColor: Colors.grey,
             elevation: 5,
