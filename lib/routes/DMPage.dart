@@ -27,8 +27,10 @@ class _DMPageState extends State<DMPage> {
     DocumentSnapshot docSnap =
         await FirestoreService.userCollection.doc(uid).get();
 
-    var contactList = await docSnap.get('following');
-    //var contactList2=await docSnap.get('following');
+    List contactList1 = await docSnap.get('followers');
+    List contactList2 = await docSnap.get('following');
+    contactList2.remove(uid);
+    var contactList = [...contactList1, ...contactList2].toSet().toList();
     //var contactList=[];
     //for() {}
 

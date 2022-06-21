@@ -44,7 +44,7 @@ class _FeedPageState extends State<FeedPage> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       //TotalDislike = message.get('totalDislike');
-      print(TotalLike);
+      //print(TotalLike);
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -76,9 +76,9 @@ class _FeedPageState extends State<FeedPage> {
         .doc(_currentuser!.uid)
         .get();
     List allPostOwner = snapshot.get('following');
-    print(allPostOwner);
+    //print(allPostOwner);
     for (var id in allPostOwner) {
-      print("Following id:$id");
+      //print("Following id:$id");
       await getPosts(id);
     }
   }
