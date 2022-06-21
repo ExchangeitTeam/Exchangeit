@@ -32,6 +32,7 @@ class _FeedPageState extends State<FeedPage> {
   List checkher = [];
   final _currentuser = FirebaseAuth.instance.currentUser;
   int TotalLike = 0;
+  int TotalDislike = 0;
   Future getPosts(var uid) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
@@ -42,6 +43,7 @@ class _FeedPageState extends State<FeedPage> {
 
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
+      //TotalDislike = message.get('totalDislike');
       print(TotalLike);
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
@@ -49,15 +51,17 @@ class _FeedPageState extends State<FeedPage> {
       String date = d.toString().substring(0, 10);
       String posttopic = message.get('topic');
       UserPost post = UserPost(
-          postId: message.id,
-          content: message.get('content').toString(),
-          imageurl: message.get('imageUrl').toString(),
-          date: date,
-          totalLike: TotalLike,
-          commentCount: comment.length,
-          comments: comment,
-          postownerID: uid,
-          topic: posttopic);
+        postId: message.id,
+        content: message.get('content').toString(),
+        imageurl: message.get('imageUrl').toString(),
+        date: date,
+        totalLike: TotalLike,
+        commentCount: comment.length,
+        comments: comment,
+        postownerID: uid,
+        topic: posttopic,
+        //totalDislike: TotalDislike,
+      );
       if (!checkher.contains(message.id)) {
         print(message.id);
         posts.add(post);

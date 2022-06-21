@@ -3,6 +3,7 @@ class UserPost {
   String imageurl;
   String date;
   int totalLike;
+  //int totalDislike;
   int commentCount;
   List<dynamic> comments;
   String postId;
@@ -17,6 +18,7 @@ class UserPost {
       required this.imageurl,
       required this.date,
       required this.totalLike,
+      //required this.totalDislike,
       required this.commentCount,
       required this.comments,
       this.postownerID = '',

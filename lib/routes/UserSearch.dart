@@ -32,8 +32,9 @@ class _UserSearchState extends State<UserSearch> {
   String profilepp = "";
   String bio = "";
   String uni = "";
-  String searchedUserName="";
+  String searchedUserName = "";
   int totalLike = 0;
+  int TotalDislike = 0;
   bool viewerFollow = false;
   List<UserPost> SearchedPosts = [];
   Future updateFollower() async {
@@ -49,8 +50,7 @@ class _UserSearchState extends State<UserSearch> {
     await FirestoreService.userCollection.doc(widget.SearchedId).update(
         {'followers': allFollowers, 'followerCount': currFollowers + 1});
 
-    docSnap =
-    await FirestoreService.userCollection.doc(currId).get();
+    docSnap = await FirestoreService.userCollection.doc(currId).get();
 
     //isteği atan kişinin following yaptıklarına ekleme
     int currFollowing = docSnap.get('followingCount');
@@ -72,6 +72,7 @@ class _UserSearchState extends State<UserSearch> {
 
     for (var message in snapshot.docs) {
       totalLike = message.get('totalLike');
+      //TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -87,6 +88,7 @@ class _UserSearchState extends State<UserSearch> {
         comments: comment,
         postownerID: uid,
         topic: posttopic,
+        //totalDislike: TotalDislike,
       );
       SearchedPosts.add(post);
     }
@@ -95,7 +97,7 @@ class _UserSearchState extends State<UserSearch> {
   Future getSearcheduserInfo() async {
     DocumentSnapshot docSnap =
         await FirestoreService.userCollection.doc(widget.SearchedId).get();
-    searchedUserName=await docSnap.get("username");
+    searchedUserName = await docSnap.get("username");
     totalFollower = await docSnap.get('followerCount');
     totalFollowing = await docSnap.get('followingCount');
     profilepp = await docSnap.get('profileIm');
@@ -134,22 +136,17 @@ class _UserSearchState extends State<UserSearch> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return WaitingScreen(message: "Loading Profile");
-          }
-          else{
-            if(widget.SearchedId == currId){
+          } else {
+            if (widget.SearchedId == currId) {
               return ProfileView(analytics: null);
-            }
-            else if(viewerFollow){
+            } else if (viewerFollow) {
               return followedProfilePage(userId: widget.SearchedId);
-            }
-            else if (Private){
+            } else if (Private) {
               return privateProfileView(uid: widget.SearchedId);
-            }
-            else{
+            } else {
               return followedProfilePage(userId: widget.SearchedId);
             }
           }
-        }
-    );
+        });
   }
 }

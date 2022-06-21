@@ -51,6 +51,7 @@ currentusercheck() {
 }
 
 int totalLike = 0;
+int TotalDislike = 0;
 
 class _ProfileViewState extends State<ProfileView>
     with SingleTickerProviderStateMixin {
@@ -74,6 +75,7 @@ class _ProfileViewState extends State<ProfileView>
     for (var message in snapshot.docs) {
       totalLike = message.get('totalLike');
       print(totalLike);
+      //TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -89,6 +91,7 @@ class _ProfileViewState extends State<ProfileView>
         comments: comment,
         postownerID: uid,
         topic: posttopic,
+        //totalDislike: TotalDislike,
       );
       if (!checkher.contains(message.id)) {
         myPosts.add(post);
@@ -159,9 +162,10 @@ class _ProfileViewState extends State<ProfileView>
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SettingsPage(
-                                  CurrentuserID: _userid,
-                                ))).then((value) => setState(() {}));
+                          builder: (context) => SettingsPage(
+                            CurrentuserID: _userid,
+                          ),
+                        )).then((value) => setState(() {}));
                   },
                 ),
               ],

@@ -46,14 +46,15 @@ class _GalleryState extends State<Gallery> {
               ),
               itemCount: NewList.length,
               itemBuilder: (context, index) {
-                return new GestureDetector(
+                return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => postPageView(
                                 pf: widget.GmyPosts[index],
-                                isPhoto: false,
+                                pID: widget.GmyPosts[index].postId,
+                                ownerID: widget.GmyPosts[index].postownerID,
                               )),
                     );
                   },

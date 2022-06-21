@@ -70,9 +70,8 @@ class _DialogPageState extends State<DialogPage> {
   Future sendMessage(String msg) async {
     if (msg == "") return;
     await chats.doc(widget.chatDocId).collection('messages').add({
-      'createdOn': DateFormat('yyyy-MM-dd hh:mm:ss')
-          .format(DateTime.now())
-          .toString(), //DateTime.now().formattoString(),
+      'createdOn':
+          "Deneme", //DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(), //DateTime.now().formattoString(),
       'msg': msg,
       'friendName': widget.senderName,
       'uid': widget.currUser,

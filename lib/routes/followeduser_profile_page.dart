@@ -16,17 +16,24 @@ import 'package:provider/provider.dart';
 
 import '../Objects/NewPostClass.dart';
 import '../Objects/UserClass.dart';
+import '../designs/reportSystem.dart';
 import 'FF_list.dart';
 
 class followedProfilePage extends StatefulWidget {
-  const followedProfilePage({Key? key, required this.userId}) : super(key: key);
+  followedProfilePage({Key? key, required this.userId}) : super(key: key);
   final dynamic userId;
   @override
   State<followedProfilePage> createState() => _followedProfilePageState();
 }
 
+final currUser = FirebaseAuth.instance.currentUser!.uid;
 String username = '';
+String uname = "";
 Future getusername(var uid) async {
+  DocumentSnapshot idSnapshot =
+      await FirebaseFirestore.instance.collection('Users').doc(currUser).get();
+
+  uname = await idSnapshot.get('username');
   if (uid != null) {
     DocumentSnapshot docSnap =
         await FirestoreService.userCollection.doc(uid).get();
@@ -50,7 +57,7 @@ currentusercheck() {
 }
  */
 int totalLike = 0;
-
+int TotalDislike = 0;
 List<UserPost> myPosts = [];
 Future getPosts(var uid) async {
   myPosts = [];
@@ -64,6 +71,7 @@ Future getPosts(var uid) async {
   for (var message in snapshot.docs) {
     totalLike = message.get('totalLike');
     print(totalLike);
+    //TotalDislike = message.get('totalDislike');
     List comment = message.get('comments');
     Timestamp t = message.get('datetime');
     DateTime d = t.toDate();
@@ -79,6 +87,7 @@ Future getPosts(var uid) async {
       comments: comment,
       postownerID: uid,
       topic: posttopic,
+      //totalDislike: TotalDislike,
     );
     myPosts.add(post);
   }
@@ -213,6 +222,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                   ),
                   onPressed: () {
                     print("Reportladım useri");
+                    showAlertDialog(context, widget.userId, uname);
                   },
                 ),
               ],
@@ -473,4 +483,41 @@ class _followedProfilePageState extends State<followedProfilePage>
           );
         });
   }
+}
+
+@override
+showAlertDialog(BuildContext context, String uid, String uname) {
+  // set up the buttons
+  Widget cancelButton = OutlinedButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = OutlinedButton(
+    child: Text("Continue"),
+    onPressed: () {
+      userReport(
+        userId: uid,
+        reporterName: uname,
+      );
+      Navigator.of(context).pop();
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("AlertDialog"),
+    content: Text("Are you sure you want to report this user?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

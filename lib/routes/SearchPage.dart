@@ -102,6 +102,7 @@ class _SearchLocationState extends State<SearchLocation> {
   List checkher = [];
   final _currentuser = FirebaseAuth.instance.currentUser;
   int TotalLike = 0;
+  int TotalDislike = 0;
   Future getPosts(var uid) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
@@ -113,6 +114,7 @@ class _SearchLocationState extends State<SearchLocation> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       print(TotalLike);
+      //TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -130,6 +132,7 @@ class _SearchLocationState extends State<SearchLocation> {
             comments: comment,
             postownerID: uid,
             topic: posttopic);
+        //totalDislike: TotalDislike);
         if (!checkher.contains(message.id)) {
           Searchposts.add(post);
           checkher.add(message.id);
@@ -388,6 +391,7 @@ class _SearchTopicState extends State<SearchTopic> {
   List checkher = [];
   final _currentuser = FirebaseAuth.instance.currentUser;
   int TotalLike = 0;
+  int TotalDislike = 0;
   Future getPosts(var uid) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
@@ -399,6 +403,7 @@ class _SearchTopicState extends State<SearchTopic> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       print(TotalLike);
+      //TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -407,15 +412,17 @@ class _SearchTopicState extends State<SearchTopic> {
       String postLocation = message.get('location');
       if (posttopic.toLowerCase().contains(topic.toLowerCase())) {
         UserPost post = UserPost(
-            postId: message.id,
-            content: message.get('content').toString(),
-            imageurl: message.get('imageUrl').toString(),
-            date: date,
-            totalLike: TotalLike,
-            commentCount: comment.length,
-            comments: comment,
-            postownerID: uid,
-            topic: posttopic);
+          postId: message.id,
+          content: message.get('content').toString(),
+          imageurl: message.get('imageUrl').toString(),
+          date: date,
+          totalLike: TotalLike,
+          commentCount: comment.length,
+          comments: comment,
+          postownerID: uid,
+          topic: posttopic,
+          //totalDislike:
+        );
         if (!checkher.contains(message.id)) {
           Searchposts.add(post);
           checkher.add(message.id);
@@ -428,12 +435,13 @@ class _SearchTopicState extends State<SearchTopic> {
     Searchposts.clear();
     Searchposts = [];
     var DocumentUser =
-    await FirebaseFirestore.instance.collection('Users').get();
+        await FirebaseFirestore.instance.collection('Users').get();
     for (var doc in DocumentUser.docs) {
       var userid = doc['userId'];
       await getPosts(userid);
     }
   }
+
   String topic = "";
   void Starter(String val) {
     setState(() {
@@ -510,10 +518,12 @@ class _SearchPostState extends State<SearchPost> {
   void buttonPressed() {
     print('Button Pressed in Function');
   }
+
   List Searchposts = [];
   List checkher = [];
   final _currentuser = FirebaseAuth.instance.currentUser;
   int TotalLike = 0;
+  int TotalDislike = 0;
   Future getPosts(var uid) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
@@ -525,6 +535,7 @@ class _SearchPostState extends State<SearchPost> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       print(TotalLike);
+      //TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -534,15 +545,17 @@ class _SearchPostState extends State<SearchPost> {
       String postLocation = message.get('location');
       if (postcontent.toLowerCase().contains(content.toLowerCase())) {
         UserPost post = UserPost(
-            postId: message.id,
-            content: postcontent,
-            imageurl: message.get('imageUrl').toString(),
-            date: date,
-            totalLike: TotalLike,
-            commentCount: comment.length,
-            comments: comment,
-            postownerID: uid,
-            topic: posttopic);
+          postId: message.id,
+          content: postcontent,
+          imageurl: message.get('imageUrl').toString(),
+          date: date,
+          totalLike: TotalLike,
+          commentCount: comment.length,
+          comments: comment,
+          postownerID: uid,
+          topic: posttopic,
+          //totalDislike: TotalDislike
+        );
         if (!checkher.contains(message.id)) {
           Searchposts.add(post);
           checkher.add(message.id);
@@ -555,12 +568,13 @@ class _SearchPostState extends State<SearchPost> {
     Searchposts.clear();
     Searchposts = [];
     var DocumentUser =
-    await FirebaseFirestore.instance.collection('Users').get();
+        await FirebaseFirestore.instance.collection('Users').get();
     for (var doc in DocumentUser.docs) {
       var userid = doc['userId'];
       await getPosts(userid);
     }
   }
+
   String content = "";
   void Starter(String val) {
     setState(() {
@@ -571,6 +585,7 @@ class _SearchPostState extends State<SearchPost> {
       print(content);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     CollectionReference usersRef = _firestore.collection('Users');

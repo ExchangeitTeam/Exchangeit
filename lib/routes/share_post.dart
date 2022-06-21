@@ -139,10 +139,8 @@ class _SharePostScreenState extends State<SharePostScreen> {
             onPressed: () async {
               if (_PostKey.currentState!.validate()) {
                 if (_holdImage == null) {
-                  showDialogueForWaiting(context);
                   await FirebasePostUpload(
                       _currentuser!.uid, 0, '', contentPost, Posttopic);
-                  hideProgressDialogue(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       backgroundColor: Colors.green,
