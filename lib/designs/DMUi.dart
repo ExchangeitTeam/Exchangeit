@@ -4,17 +4,15 @@ import 'package:exchangeit/routes/DialogHistPage.dart';
 
 class contact extends StatefulWidget {
   String name;
-  String msgTxt;
   NetworkImage profileImg;
-  String time;
-  bool isRead;
+  String senderId;
 
-  contact(
-      {required this.name,
-      required this.msgTxt,
-      required this.profileImg,
-      required this.time,
-      required this.isRead});
+  contact({
+    Key? key,
+    required this.name,
+    required this.profileImg,
+    required this.senderId,
+  }) : super(key: key);
 
   @override
   State<contact> createState() => _contactState();
@@ -28,7 +26,8 @@ class _contactState extends State<contact> {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return DialogPage(
               profileImg: widget.profileImg,
-              userName: widget.name,
+              senderName: widget.name,
+              senderId: widget.senderId,
             );
           }));
         },
@@ -54,29 +53,9 @@ class _contactState extends State<contact> {
                       widget.name,
                       style: TextStyle(fontSize: 16),
                     ),
-                    SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      widget.msgTxt,
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
-                          fontWeight: widget.isRead
-                              ? FontWeight.bold
-                              : FontWeight.normal),
-                    )
                   ],
                 ),
               )),
-              Text(
-                widget.time,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight:
-                      widget.isRead ? FontWeight.bold : FontWeight.normal,
-                ),
-              )
             ],
           ),
         ));
