@@ -235,13 +235,14 @@ class _FeedProviderState extends State<FeedProvider> {
                                     MaterialPageRoute(
                                         builder: (context) => postPageView(
                                               pf: widget.post,
-                                              isPhoto: false,
+                                              pID: widget.post.postId,
+                                              ownerID: widget.post.postownerID,
                                             )),
-                                  );
+                                  ).then((value) => setState(() {}));
                                 }),
                             SizedBox(width: 5),
-                            Text('${widget.post.commentCount}',
-                                style: AppStyles.LikeText),
+                            //Text('${widget.post.commentCount}',
+                              //  style: AppStyles.LikeText),
                           ]),
                     ),
                     Padding(
@@ -376,13 +377,14 @@ class _FeedProviderState extends State<FeedProvider> {
                                     MaterialPageRoute(
                                         builder: (context) => postPageView(
                                               pf: widget.post,
-                                              isPhoto: false,
+                                              pID: widget.post.postId,
+                                              ownerID: widget.post.postownerID,
                                             )),
-                                  );
+                                  ).then((value) => setState(() {}));
                                 }),
                             SizedBox(width: 5),
-                            Text('${widget.post.commentCount}',
-                                style: AppStyles.LikeText),
+                            //Text('${widget.post.commentCount}',
+                              //  style: AppStyles.LikeText),
                           ],
                         ),
                       ),

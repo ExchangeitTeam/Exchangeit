@@ -240,13 +240,14 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                                     MaterialPageRoute(
                                         builder: (context) => postPageView(
                                               pf: widget.post,
-                                              isPhoto: false,
+                                              pID: widget.post.postId,
+                                              ownerID: widget.post.postownerID,
                                             )),
-                                  );
+                                  ).then((value) => setState(() {}));
                                 }),
                             SizedBox(width: 5),
-                            Text('${widget.post.commentCount}',
-                                style: AppStyles.LikeText),
+                            //Text('${widget.post.commentCount}',
+                              //  style: AppStyles.LikeText),
                             Spacer(),
                             widget.searched == false
                                 ? IconButton(
@@ -395,9 +396,10 @@ class _BaseDesingPostState extends State<BaseDesingPost> {
                                       MaterialPageRoute(
                                           builder: (context) => postPageView(
                                                 pf: widget.post,
-                                                isPhoto: false,
+                                                pID: widget.post.postId,
+                                                ownerID: widget.post.postownerID,
                                               )),
-                                    );
+                                    ).then((value) => setState(() {}));
                                   }),
                               SizedBox(width: 5),
                               Text('${widget.post.commentCount}',

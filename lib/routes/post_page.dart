@@ -1,15 +1,17 @@
-import 'package:exchangeit/Objects/NewPostClass.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
+import 'package:intl/intl.dart';
 
 import '../Objects/PostBase.dart';
 import '../models/Colors.dart';
 
 class postPageView extends StatefulWidget {
-  const postPageView({Key? key, required this.pf, required this.isPhoto})
+   postPageView({Key? key, required this.pf, required this.pID, required this.ownerID})
       : super(key: key);
   final dynamic pf;
-  final bool isPhoto;
+  dynamic pID;
+  dynamic ownerID;
   @override
   State<postPageView> createState() => _postPageViewState();
 }
@@ -19,7 +21,6 @@ class commentInfo extends StatelessWidget {
   final String name;
   final String timeAgo;
   final String text;
-  final String likes;
 
   commentInfo({
     Key? key,
@@ -27,7 +28,6 @@ class commentInfo extends StatelessWidget {
     required this.name,
     required this.timeAgo,
     required this.text,
-    required this.likes,
   }) : super(key: key);
 
   @override
@@ -71,31 +71,6 @@ class commentInfo extends StatelessWidget {
                   this.text,
                   overflow: TextOverflow.clip,
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10.0, right: 20.0),
-                  child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          LikeButton(
-                            size: 20,
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(6.0),
-                            child: Text(
-                              this.likes,
-                              style: TextStyle(
-                                color: Colors.black45,
-                                fontSize: 14.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
               ],
             ),
           ),
@@ -106,46 +81,53 @@ class commentInfo extends StatelessWidget {
 }
 
 class _postPageViewState extends State<postPageView> {
-  final List<commentInfo> _items = [
-    commentInfo(
-        avatar:
-            'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-        name: 'Ayse Aydemir',
-        timeAgo: '5m',
-        text: 'Amazing',
-        likes: '0'),
-    commentInfo(
-        avatar:
-            'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-        name: 'Mehmet Sürünen',
-        timeAgo: '1h',
-        text: 'Fascinating',
-        likes: '3'),
-    commentInfo(
-        avatar:
-            'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-        name: 'Ayse Aydemir',
-        timeAgo: '5m',
-        text: 'Amazing',
-        likes: '0'),
-    commentInfo(
-        avatar:
-            'https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png',
-        name: 'Mehmet Sürünen',
-        timeAgo: '1h',
-        text: 'Fascinating',
-        likes: '3'),
-  ];
+  var _textController = TextEditingController();
 
-  final userPost = UserPost(
-      postId: "1",
-      content: "London is amazing",
-      imageurl:
-          "https://images.pexels.com/photos/1772973/pexels-photo-1772973.png?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-      date: "09-06-2022",
-      totalLike: 12,
-      commentCount: 0,
-      comments: []);
+  var currID = FirebaseAuth.instance.currentUser!.uid;
+  Future sendComment(String str) async{
+    if (str == "") return;
+    DocumentSnapshot docSnapshot = await FirebaseFirestore.instance.collection("Users").doc(currID).get();
+    String avatarUrl = docSnapshot.get("profileIm");
+    String name = docSnapshot.get("username");
+    FirebaseFirestore.instance.collection("Users").doc(widget.ownerID).collection("posts").doc(widget.pID).collection("comments").add(
+        {
+          "avatar": avatarUrl,
+          "name": name,
+          "date": DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
+          "comment": str,
+        }).then((value) => _textController.text = "");
+
+    DocumentSnapshot commentListSnap = await FirebaseFirestore.instance.collection("Users").doc(widget.ownerID).collection("posts").doc(widget.pID).get();
+    List currList = commentListSnap.get('comments');
+    currList.add(1);
+    await FirebaseFirestore.instance.collection("Users").doc(widget.ownerID).collection("posts").doc(widget.pID).update(
+        {
+          'comments': currList
+        });
+
+    setState(() {});
+  }
+
+
+  List commentList = [];
+  List checker = [];
+  Future getComments() async{
+    QuerySnapshot commentSnap = await FirebaseFirestore.instance.collection("Users").doc(widget.ownerID).collection("posts").doc(widget.pID).collection("comments").orderBy("date", descending: false).get();
+    for(var comments in commentSnap.docs){
+        commentInfo temp  = commentInfo(
+            avatar: comments.get('avatar'),
+            name: comments.get('name'),
+            timeAgo: comments.get('date'),
+            text: comments.get('comment'),
+        );
+        if(!checker.contains(comments.id)){
+          commentList.add(temp);
+          checker.add(comments.id);
+        }
+    }
+  }
+
+  var input;
 
   @override
   Widget build(BuildContext context) {
@@ -169,33 +151,72 @@ class _postPageViewState extends State<postPageView> {
                   },
                   like: () {},
                   searched: false),
-              Container(
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Share your comment...',
-                    labelStyle: TextStyle(fontSize: 12, color: Colors.grey),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(width: 1, color: Colors.black),
-                      //borderRadius: BorderRadius.circular(15),
+              Row(
+                children:[
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      onChanged: (text) {
+                        input = text;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Share your comment...',
+                        labelStyle: TextStyle(fontSize: 12, color: Colors.grey),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(width: 1, color: Colors.black),
+                          //borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      obscureText: false,
+                      maxLines: 1,
                     ),
                   ),
-                  obscureText: false,
-                  maxLines: 1,
-                ),
+                  SizedBox(width: 15),
+                  FloatingActionButton(
+                    onPressed: () async {
+                      await sendComment(input);
+                    },
+                    child: Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    backgroundColor: Colors.blue,
+                    elevation: 0,
+                  )
+                ],
               ),
-              Container(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: widget.pf.comments.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return widget.pf.comments[index];
-                  },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      Divider(
-                    height: 1,
-                  ),
-                ),
+              FutureBuilder(
+                future: getComments(),
+                builder: (context, snapshot) {
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    //commentList.clear();
+                    return Container(
+                      width: 20,
+                      height: 20,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    );
+                  }
+                  return Container(
+                    child: ListView.separated(
+                      controller: ScrollController(),
+                      shrinkWrap: true,
+                      itemCount: commentList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return commentList[index];
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Divider(
+                        height: 1,
+                      ),
+                    ),
+                  );
+                }
               ),
             ],
           ),
