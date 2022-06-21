@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:exchangeit/routes/private_profile_page_base_screen.dart';
 import 'package:flutter/rendering.dart';
+import 'package:exchangeit/designs/reportSystem.dart';
 
 import '../main.dart';
 import '../models/Styles.dart';
@@ -15,12 +16,25 @@ import '../services/FirestoreServices.dart';
 class privateProfileView extends StatefulWidget {
   privateProfileView({Key? key, required this.uid}) : super(key: key);
   final dynamic uid;
+  String unameE = "";
+
+  final currUser = FirebaseAuth.instance.currentUser!.uid;
+
 
   @override
   State<privateProfileView> createState() => _privateProfileViewState();
 }
 
 class _privateProfileViewState extends State<privateProfileView> {
+  void getName() async {
+    DocumentSnapshot idSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.currUser)
+        .get();
+
+    widget.unameE = await idSnapshot.get('username');
+  }
+
   String uname = "";
   int totalFollower = 0;
   int totalFollowing = 0;
@@ -99,6 +113,7 @@ class _privateProfileViewState extends State<privateProfileView> {
   final currId = FirebaseAuth.instance.currentUser!.uid;
   @override
   Widget build(BuildContext context) {
+    getName();
     Appanalytics.setCurrentScreenUtil(screenName: "Private_Profile_Page");
     return FutureBuilder(
         future: Future.wait([getuserInfo(), isRequestedCheck()]),
@@ -127,8 +142,9 @@ class _privateProfileViewState extends State<privateProfileView> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    print("Reportladım useri");
-                  },
+                      showAlertDialog(context, widget.uid, widget.unameE);
+                    }
+
                 ),
               ],
             ),
@@ -335,4 +351,41 @@ class _privateProfileViewState extends State<privateProfileView> {
           );
         });
   }
+}
+
+@override
+showAlertDialog(BuildContext context, String uid, String uname) {
+  // set up the buttons
+  Widget cancelButton = OutlinedButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = OutlinedButton(
+    child: Text("Continue"),
+    onPressed: () {
+      userReport(
+        userId: uid,
+        reporterName: uname,
+      );
+      Navigator.of(context).pop();
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("AlertDialog"),
+    content: Text("Are you sure you want to report this user?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

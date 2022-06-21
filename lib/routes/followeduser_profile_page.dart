@@ -17,16 +17,27 @@ import 'package:provider/provider.dart';
 import '../Objects/NewPostClass.dart';
 import '../Objects/UserClass.dart';
 import 'FF_list.dart';
+import 'package:exchangeit/designs/reportSystem.dart';
 
 class followedProfilePage extends StatefulWidget {
-  const followedProfilePage({Key? key, required this.userId}) : super(key: key);
+  followedProfilePage({Key? key, required this.userId}) : super(key: key);
   final dynamic userId;
+  final currUser = FirebaseAuth.instance.currentUser!.uid;
   @override
   State<followedProfilePage> createState() => _followedProfilePageState();
 }
 
 String username = '';
-Future getusername(var uid) async {
+String uname = "";
+
+Future getusername(var uid, var currUser) async {
+  DocumentSnapshot idSnapshot = await FirebaseFirestore.instance
+      .collection('Users')
+      .doc(currUser)
+      .get();
+
+  uname = await idSnapshot.get('username');
+
   if (uid != null) {
     DocumentSnapshot docSnap =
         await FirestoreService.userCollection.doc(uid).get();
@@ -37,6 +48,7 @@ Future getusername(var uid) async {
   print('Provider uid:$uid');
   print('Provider usernama: $username');
 }
+
 
 /*
 currentusercheck() {
@@ -180,7 +192,7 @@ class _followedProfilePageState extends State<followedProfilePage>
     return FutureBuilder(
         future: Future.wait(
           [
-            getusername(widget.userId),
+            getusername(widget.userId, widget.currUser),
             getPosts(widget.userId),
             getuserInfo(),
             isFollowCheck()
@@ -212,7 +224,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    print("Reportladım useri");
+                    showAlertDialog(context, widget.userId, uname);
                   },
                 ),
               ],
@@ -473,4 +485,41 @@ class _followedProfilePageState extends State<followedProfilePage>
           );
         });
   }
+}
+
+@override
+showAlertDialog(BuildContext context, String uid, String uname) {
+  // set up the buttons
+  Widget cancelButton = OutlinedButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = OutlinedButton(
+    child: Text("Continue"),
+    onPressed: () {
+      userReport(
+        userId: uid,
+        reporterName: uname,
+      );
+      Navigator.of(context).pop();
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("AlertDialog"),
+    content: Text("Are you sure you want to report this user?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

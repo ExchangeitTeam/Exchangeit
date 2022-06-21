@@ -6,11 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
+import 'package:exchangeit/designs/reportSystem.dart';
 
 import '../Objects/NewPostClass.dart';
 import '../SettingsOptions/PostEdit.dart';
 
 class FeedProvider extends StatefulWidget {
+  var name;
   final UserPost post;
   final VoidCallback delete;
   final VoidCallback like;
@@ -25,6 +27,18 @@ class FeedProvider extends StatefulWidget {
 }
 
 class _FeedProviderState extends State<FeedProvider> {
+
+  Future getName() async {
+    final currUser = FirebaseAuth.instance.currentUser!.uid;
+    print(currUser);
+    DocumentSnapshot idSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currUser)
+        .get();
+
+    widget.name = idSnapshot.get('username');
+  }
+
   final _currentuser = FirebaseAuth.instance.currentUser;
   bool Isliked = false;
   Future<bool> PostalreadyLiked() async {
@@ -120,7 +134,8 @@ class _FeedProviderState extends State<FeedProvider> {
 
   @override
   void initState() {
-    setState(() {});
+    setState(() {}
+    );
   }
 
   String location = '';
@@ -129,7 +144,12 @@ class _FeedProviderState extends State<FeedProvider> {
   Widget build(BuildContext context) {
     if (widget.post.imageurl != "") {
       return FutureBuilder(
-        future: PostalreadyLiked().then((changer) => Isliked = changer),
+        future: Future.wait(
+          [
+          PostalreadyLiked().then((changer) => Isliked = changer),
+            getName(),
+          ],
+        ),
         builder: (context, snapshot) {
           return Card(
             shadowColor: Colors.grey,
@@ -277,7 +297,12 @@ class _FeedProviderState extends State<FeedProvider> {
       );
     } else {
       return FutureBuilder(
-          future: PostalreadyLiked().then((result) => Isliked = result),
+          future: Future.wait(
+            [
+              PostalreadyLiked().then((changer) => Isliked = changer),
+              getName(),
+            ],
+          ),
           builder: (context, snapshot) {
             return Card(
               shadowColor: Colors.grey,
@@ -337,7 +362,9 @@ class _FeedProviderState extends State<FeedProvider> {
                                     },
                                     icon: Icon(Icons.edit))
                                 : IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showAlertDialog(context, widget.post.postId, widget.name);
+                                    },
                                     iconSize: 30,
                                     icon:
                                         Icon(Icons.report_gmailerrorred_sharp)),
@@ -414,4 +441,41 @@ class _FeedProviderState extends State<FeedProvider> {
           });
     }
   }
+}
+
+@override
+showAlertDialog(BuildContext context, String pid, String uname) {
+  // set up the buttons
+  Widget cancelButton = OutlinedButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = OutlinedButton(
+    child: Text("Continue"),
+    onPressed: () {
+      postReport(
+        postId: pid,
+        reporterName: uname,
+      );
+      Navigator.of(context).pop();
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("AlertDialog"),
+    content: Text("Are you sure you want to report this post?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }
