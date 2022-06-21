@@ -273,29 +273,6 @@ class _privateProfileViewState extends State<privateProfileView> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            InkWell(
-                              borderRadius: BorderRadius.circular(15),
-                              splashColor: Colors.blueAccent,
-                              onTap: () {},
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Container(
-                                  width: 150,
-                                  height: 40,
-                                  margin: const EdgeInsets.all(3.0),
-                                  padding: const EdgeInsets.all(3.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.lightBlue[100],
-                                    border: Border.all(
-                                        width: 2.5,
-                                        color: Colors.lightBlueAccent),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                  ),
-                                  child: Center(child: Text("Send Message")),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                         Row(

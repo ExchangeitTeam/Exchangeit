@@ -376,6 +376,7 @@ class _followedProfilePageState extends State<followedProfilePage>
                               splashColor: Colors.blueAccent,
                               onTap: () {
                                 //Send Message page
+                                Navigator.pushNamed(context, "DM");
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
