@@ -11,6 +11,8 @@ import '../main.dart';
 import '../services/Appanalytics.dart';
 import 'package:path/path.dart';
 
+String? aaaa;
+
 class SharePostScreen extends StatefulWidget {
   const SharePostScreen({Key? key, required this.analytics}) : super(key: key);
   final FirebaseAnalytics analytics;
