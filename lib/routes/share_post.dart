@@ -11,7 +11,7 @@ import '../main.dart';
 import '../services/Appanalytics.dart';
 import 'package:path/path.dart';
 
-String? aaaa;
+import '../services/FirestoreServices.dart';
 
 class SharePostScreen extends StatefulWidget {
   const SharePostScreen({Key? key, required this.analytics}) : super(key: key);
@@ -98,9 +98,9 @@ class _SharePostScreenState extends State<SharePostScreen> {
     List<String> TopicList = [];
 
     for (int i = 1; i <= location.length; i++) {
-      locationList.add(topic.substring(0, i).toLowerCase());
+      locationList.add(location.substring(0, i).toLowerCase());
     }
-    for (int i = 1; i <= location.length; i++) {
+    for (int i = 1; i <= topic.length; i++) {
       TopicList.add(topic.substring(0, i).toLowerCase());
     }
     firestoreInstance
@@ -119,7 +119,16 @@ class _SharePostScreenState extends State<SharePostScreen> {
       "userID": _currentuser!.uid,
       "topic": topic,
       "searchTopic": TopicList,
+      'totalDislike': 0,
+      "dislikedBy": [],
     }).then((value) {});
+    DocumentSnapshot docSnap =
+        await FirestoreService.userCollection.doc(uid).get();
+    List AllLoc = docSnap.get('locations');
+    AllLoc.add(location);
+    firestoreInstance.collection("Users").doc(_currentuser!.uid).update({
+      'locations': AllLoc,
+    });
   }
 
   @override

@@ -88,7 +88,7 @@ class _UserSearchState extends State<UserSearch> {
         comments: comment,
         postownerID: uid,
         topic: posttopic,
-        //totalDislike: TotalDislike,
+        totalDislike: TotalDislike,
       );
       SearchedPosts.add(post);
     }

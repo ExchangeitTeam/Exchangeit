@@ -117,7 +117,8 @@ class _SettingsPageState extends State<SettingsPage> {
         'followerCount': followerCount - 1,
       });
     }
-    var user = await FirebaseAuth.instance.currentUser!;
+    var user = FirebaseAuth.instance.currentUser!;
+    print('Silirken gereken uid: ${user.uid}');
     user.delete();
     await FirestoreService.userCollection.doc(widget.CurrentuserID).delete();
 

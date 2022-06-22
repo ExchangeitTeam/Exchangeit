@@ -41,9 +41,8 @@ class _SignUpState extends State<SignUp> {
   String age = "";
   String uni = "";
   File? PicPath;
-  String ppUrl = "";
+  var ppUrl;
   Future pickImage() async {
-    // ignore: deprecated_member_use
     final Image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
@@ -55,16 +54,16 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
-  Future uploadPostwithImage(BuildContext context) async {
+  Future uploadPostwithImage() async {
     String fileName = basename(PicPath!.path);
     final storageRef = FirebaseStorage.instance.ref();
-    storageRef.child('All_PP').child('/$fileName');
+    final Firebaseref = storageRef.child('All_PP').child('/$fileName');
     final metadata = SettableMetadata(
         contentType: 'image/jpeg',
         customMetadata: {'picked-file-path': fileName});
     UploadTask FirebaseuploadTask;
 
-    FirebaseuploadTask = storageRef.putFile(File(PicPath!.path), metadata);
+    FirebaseuploadTask = Firebaseref.putFile(File(PicPath!.path), metadata);
     await Future.value(FirebaseuploadTask)
         .then((value) async => {
               ppUrl = await value.ref.getDownloadURL(),
@@ -321,9 +320,9 @@ class _SignUpState extends State<SignUp> {
                                         uni,
                                         age,
                                         password,
-                                        "https://i.pinimg.com/originals/e6/98/29/e69829a5ae26c1724f59eb3834b471d3.jpg");
+                                        'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png');
                                   } else {
-                                    await uploadPostwithImage(context);
+                                    await uploadPostwithImage();
                                     await AuthService.registerUser(email,
                                         username, uni, age, password, ppUrl);
                                   }
