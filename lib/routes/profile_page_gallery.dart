@@ -52,9 +52,9 @@ class _GalleryState extends State<Gallery> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => postPageView(
-                                pf: widget.GmyPosts[index],
-                                pID: widget.GmyPosts[index].postId,
-                                ownerID: widget.GmyPosts[index].postownerID,
+                                pf: NewList[index],
+                                pID: NewList[index].postId,
+                                ownerID: NewList[index].postownerID,
                               )),
                     );
                   },
@@ -62,7 +62,7 @@ class _GalleryState extends State<Gallery> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(widget.GmyPosts[index].imageurl),
+                        image: NetworkImage(NewList[index].imageurl),
                       ),
                     ),
                   ),

@@ -23,7 +23,7 @@ class FirestoreService {
       'username': name,
       "age": "",
       "bio": '',
-      "profileIm": '',
+      "profileIm": 'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
       'userSearch': allpop,
       'userId': uid,
       'checkPrivate': false,
