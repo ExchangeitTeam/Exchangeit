@@ -42,7 +42,7 @@ class _PostEditScreenState extends State<PostEditScreen> {
   Future uploadPostwithImage(BuildContext context, content) async {
     String fileName = basename(newImageFile!.path);
     final storageRef = FirebaseStorage.instance.ref();
-    storageRef
+    final Firebaseref = storageRef
         .child('All_App_Posts')
         .child(currentuser!.uid)
         .child('/$fileName');
@@ -53,7 +53,7 @@ class _PostEditScreenState extends State<PostEditScreen> {
     UploadTask storageuploader;
 
     storageuploader =
-        storageRef.putFile(File(newImageFile!.path), FirebaseData);
+        Firebaseref.putFile(File(newImageFile!.path), FirebaseData);
     await Future.value(storageuploader)
         .then((value) async => {
               EditedUrl = await value.ref.getDownloadURL(),
@@ -105,6 +105,9 @@ class _PostEditScreenState extends State<PostEditScreen> {
   String EditedUrl = '';
   String newTopic = '';
   final _EditPostKey = GlobalKey<FormState>();
+  final editlocationcontrol = TextEditingController();
+  final editcontentcontrol = TextEditingController();
+  final edittopiccontrol = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size sizeapp = MediaQuery.of(context).size;
@@ -122,11 +125,22 @@ class _PostEditScreenState extends State<PostEditScreen> {
               textStyle: const TextStyle(fontSize: 18),
             ),
             child: Text('Post'),
-            onPressed: () {
+            onPressed: () async {
               if (_EditPostKey.currentState!.validate()) {
                 if (newImageFile == null) {
-                  FirebasePostUpdate(widget.ourPost, currentuser!.uid,
+                  await FirebasePostUpdate(widget.ourPost, currentuser!.uid,
                       EditedUrl, newContent, newTopic, newLocation);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      elevation: 10,
+                      content:
+                          Text("Your Post successfully edited,check feed page"),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
                 } else {
                   uploadPostwithImage(context, newContent);
                 }
@@ -134,6 +148,9 @@ class _PostEditScreenState extends State<PostEditScreen> {
               setState(() {
                 newImageFile = null;
               });
+              editcontentcontrol.clear();
+              editlocationcontrol.clear();
+              edittopiccontrol.clear();
             },
           ),
         ],
@@ -178,12 +195,13 @@ class _PostEditScreenState extends State<PostEditScreen> {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Container(
                       child: TextFormField(
+                        controller: editcontentcontrol,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
                         textAlign: TextAlign.center,
                         maxLines: null,
                         decoration: new InputDecoration(
-                          hintText: "Write your content",
+                          hintText: "Write your new content",
                           fillColor: Colors.black,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.blue),
@@ -216,6 +234,7 @@ class _PostEditScreenState extends State<PostEditScreen> {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Container(
                       child: TextFormField(
+                        controller: editlocationcontrol,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter New Location",
@@ -251,6 +270,7 @@ class _PostEditScreenState extends State<PostEditScreen> {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Container(
                       child: TextFormField(
+                        controller: edittopiccontrol,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter New Topic",
