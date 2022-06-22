@@ -33,6 +33,7 @@ class FirestoreService {
       'followingCount': 0,
       'university': "",
       'followRequests': [],
+      'locations': [],
     });
   }
 
@@ -56,6 +57,7 @@ class FirestoreService {
       'followingCount': 0,
       'university': uni,
       'followRequests': [],
+      'locations': [],
     });
   }
 }

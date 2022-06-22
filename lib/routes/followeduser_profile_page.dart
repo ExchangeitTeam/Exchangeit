@@ -87,7 +87,7 @@ Future getPosts(var uid) async {
       comments: comment,
       postownerID: uid,
       topic: posttopic,
-      //totalDislike: TotalDislike,
+      totalDislike: TotalDislike,
     );
     myPosts.add(post);
   }
