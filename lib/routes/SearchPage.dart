@@ -145,6 +145,7 @@ class _SearchLocationState extends State<SearchLocation> {
   Future getUsers() async {
     Searchposts.clear();
     Searchposts = [];
+    checkher=[];
     var DocumentUser =
         await FirebaseFirestore.instance.collection('Users').get();
     for (var doc in DocumentUser.docs) {
@@ -163,7 +164,6 @@ class _SearchLocationState extends State<SearchLocation> {
   void Starter(String val) {
     setState(() {
       loc = val.trim();
-      Searchposts.clear();
       Searchposts = [];
       checkher.clear();
       print(loc);
@@ -194,7 +194,6 @@ class _SearchLocationState extends State<SearchLocation> {
             future: getUsers(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                Searchposts.clear();
                 return Container(
                   width: 20,
                   height: 20,
@@ -435,6 +434,7 @@ class _SearchTopicState extends State<SearchTopic> {
   Future getUsers() async {
     Searchposts.clear();
     Searchposts = [];
+    checkher=[];
     var DocumentUser =
         await FirebaseFirestore.instance.collection('Users').get();
     for (var doc in DocumentUser.docs) {
@@ -447,7 +447,6 @@ class _SearchTopicState extends State<SearchTopic> {
   void Starter(String val) {
     setState(() {
       topic = val.trim();
-      Searchposts.clear();
       Searchposts = [];
       checkher.clear();
       print(topic);
@@ -567,6 +566,7 @@ class _SearchPostState extends State<SearchPost> {
   Future getUsers() async {
     Searchposts.clear();
     Searchposts = [];
+    checkher=[];
     var DocumentUser =
         await FirebaseFirestore.instance.collection('Users').get();
     for (var doc in DocumentUser.docs) {
@@ -579,7 +579,6 @@ class _SearchPostState extends State<SearchPost> {
   void Starter(String val) {
     setState(() {
       content = val.trim();
-      Searchposts.clear();
       Searchposts = [];
       checkher.clear();
       print(content);
