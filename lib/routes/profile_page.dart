@@ -75,7 +75,7 @@ class _ProfileViewState extends State<ProfileView>
     for (var message in snapshot.docs) {
       totalLike = message.get('totalLike');
       print(totalLike);
-      //TotalDislike = message.get('totalDislike');
+      TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -91,7 +91,7 @@ class _ProfileViewState extends State<ProfileView>
         comments: comment,
         postownerID: uid,
         topic: posttopic,
-        //totalDislike: TotalDislike,
+        totalDislike: TotalDislike,
       );
       if (!checkher.contains(message.id)) {
         myPosts.add(post);
@@ -139,7 +139,7 @@ class _ProfileViewState extends State<ProfileView>
             return WaitingScreen(message: "Loading profile page");
           }
           print("mypost array lenght: ${myPosts.length}");
-          final NetworkImage pp = NetworkImage(profilepp);
+          NetworkImage pp = NetworkImage(profilepp);
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(

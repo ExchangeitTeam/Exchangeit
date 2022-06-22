@@ -114,7 +114,7 @@ class _SearchLocationState extends State<SearchLocation> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       print(TotalLike);
-      //TotalDislike = message.get('totalDislike');
+      TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -123,16 +123,17 @@ class _SearchLocationState extends State<SearchLocation> {
       String postLocation = message.get('location');
       if (postLocation.toLowerCase().contains(loc.toLowerCase())) {
         UserPost post = UserPost(
-            postId: message.id,
-            content: message.get('content').toString(),
-            imageurl: message.get('imageUrl').toString(),
-            date: date,
-            totalLike: TotalLike,
-            commentCount: comment.length,
-            comments: comment,
-            postownerID: uid,
-            topic: posttopic);
-        //totalDislike: TotalDislike);
+          postId: message.id,
+          content: message.get('content').toString(),
+          imageurl: message.get('imageUrl').toString(),
+          date: date,
+          totalLike: TotalLike,
+          commentCount: comment.length,
+          comments: comment,
+          postownerID: uid,
+          topic: posttopic,
+          totalDislike: TotalDislike,
+        );
         if (!checkher.contains(message.id)) {
           Searchposts.add(post);
           checkher.add(message.id);
@@ -306,7 +307,7 @@ class _SearchPeopleState extends State<SearchPeople> {
                                     padding: const EdgeInsets.all(3.0),
                                     child: CircleAvatar(
                                       backgroundImage: NetworkImage(
-                                        'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png',
+                                        '${listOfDocumentSnap[index].get('profileIm')}',
                                       ),
                                       radius: 25,
                                     ),
@@ -403,7 +404,7 @@ class _SearchTopicState extends State<SearchTopic> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       print(TotalLike);
-      //TotalDislike = message.get('totalDislike');
+      TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -412,17 +413,17 @@ class _SearchTopicState extends State<SearchTopic> {
       String postLocation = message.get('location');
       if (posttopic.toLowerCase().contains(topic.toLowerCase())) {
         UserPost post = UserPost(
-          postId: message.id,
-          content: message.get('content').toString(),
-          imageurl: message.get('imageUrl').toString(),
-          date: date,
-          totalLike: TotalLike,
-          commentCount: comment.length,
-          comments: comment,
-          postownerID: uid,
-          topic: posttopic,
-          //totalDislike:
-        );
+            postId: message.id,
+            content: message.get('content').toString(),
+            imageurl: message.get('imageUrl').toString(),
+            date: date,
+            totalLike: TotalLike,
+            commentCount: comment.length,
+            comments: comment,
+            postownerID: uid,
+            topic: posttopic,
+            location: postLocation,
+            totalDislike: TotalDislike);
         if (!checkher.contains(message.id)) {
           Searchposts.add(post);
           checkher.add(message.id);
@@ -535,7 +536,7 @@ class _SearchPostState extends State<SearchPost> {
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
       print(TotalLike);
-      //TotalDislike = message.get('totalDislike');
+      TotalDislike = message.get('totalDislike');
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -545,17 +546,16 @@ class _SearchPostState extends State<SearchPost> {
       String postLocation = message.get('location');
       if (postcontent.toLowerCase().contains(content.toLowerCase())) {
         UserPost post = UserPost(
-          postId: message.id,
-          content: postcontent,
-          imageurl: message.get('imageUrl').toString(),
-          date: date,
-          totalLike: TotalLike,
-          commentCount: comment.length,
-          comments: comment,
-          postownerID: uid,
-          topic: posttopic,
-          //totalDislike: TotalDislike
-        );
+            postId: message.id,
+            content: postcontent,
+            imageurl: message.get('imageUrl').toString(),
+            date: date,
+            totalLike: TotalLike,
+            commentCount: comment.length,
+            comments: comment,
+            postownerID: uid,
+            topic: posttopic,
+            totalDislike: TotalDislike);
         if (!checkher.contains(message.id)) {
           Searchposts.add(post);
           checkher.add(message.id);
