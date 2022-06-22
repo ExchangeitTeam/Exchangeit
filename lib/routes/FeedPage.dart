@@ -32,8 +32,8 @@ class _FeedPageState extends State<FeedPage> {
   List checkher = [];
   final _currentuser = FirebaseAuth.instance.currentUser;
   int TotalLike = 0;
-  int TotalDislike = 0;
   Future getPosts(var uid) async {
+    int TotalDislike = 0;
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Users')
         .doc(uid)
@@ -43,7 +43,7 @@ class _FeedPageState extends State<FeedPage> {
 
     for (var message in snapshot.docs) {
       TotalLike = message.get('totalLike');
-      //TotalDislike = message.get('totalDislike');
+      TotalDislike = message.get('totalDislike');
       //print(TotalLike);
       List comment = message.get('comments');
       Timestamp t = message.get('datetime');
@@ -60,7 +60,7 @@ class _FeedPageState extends State<FeedPage> {
         comments: comment,
         postownerID: uid,
         topic: posttopic,
-        //totalDislike: TotalDislike,
+        totalDislike: TotalDislike,
       );
       if (!checkher.contains(message.id)) {
         print(message.id);

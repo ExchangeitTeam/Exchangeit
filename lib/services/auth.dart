@@ -169,7 +169,7 @@ class AuthService {
         password: pass,
       );
       User? user = uc.user;
-      print(user?.uid);
+      print("kaydedilen ıd: ${user?.uid}");
       print(user?.displayName);
       await FirestoreService.SignUpUseradd(
           user!.uid, username, uni, age, Imagepath);

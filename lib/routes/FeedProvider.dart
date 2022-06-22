@@ -29,6 +29,7 @@ class FeedProvider extends StatefulWidget {
 class _FeedProviderState extends State<FeedProvider> {
   final _currentuser = FirebaseAuth.instance.currentUser;
   bool Isliked = false;
+  bool IsDisliked = false;
   Future getName() async {
     final currUser = FirebaseAuth.instance.currentUser!.uid;
     print(currUser);
@@ -38,6 +39,97 @@ class _FeedProviderState extends State<FeedProvider> {
         .get();
 
     widget.name = idSnapshot.get('username');
+  }
+
+  Future<bool> PostalreadyDisliked() async {
+    DocumentSnapshot liked = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.post.postownerID)
+        .collection('posts')
+        .doc(widget.post.postId)
+        .get();
+    DocumentSnapshot userinfos = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.post.postownerID)
+        .get();
+    Postusername = userinfos['username'];
+    location = liked.get('location');
+    List<dynamic> listOfDislikes = [];
+    listOfDislikes = liked.get('dislikedBy');
+    if (listOfDislikes.contains(_currentuser!.uid)) {
+      return true;
+    }
+    return false;
+  }
+
+  Future DislikeButtonTapped(context, bool isDisLiked, post) async {
+    bool getDisliked = false;
+
+    DocumentSnapshot disliked = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.post.postownerID)
+        .collection('posts')
+        .doc(widget.post.postId)
+        .get();
+
+    List<dynamic> allDislike = [];
+
+    allDislike = disliked.get('dislikedBy');
+
+    if (isDisLiked == false) {
+      allDislike.add(_currentuser!.uid);
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(widget.post.postownerID)
+          .collection('posts')
+          .doc(widget.post.postId)
+          .update({
+        'totalDislike': widget.post.totalDislike + 1,
+        'dislikedBy': allDislike,
+      }).then((value) => getDisliked = true);
+
+      setState(() {
+        post.totalDislike = post.totalDislike + 1;
+      });
+
+      DocumentSnapshot Sender = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(_currentuser!.uid)
+          .get();
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(widget.post.postownerID)
+          .collection('notifications')
+          .add({
+        'datetime': DateTime.now(),
+        'notification': 'You get a dislike from ${Sender['username']}!',
+        'Posturl': widget.post.imageurl,
+        'uid': _currentuser!.uid,
+        'IsfollowReq': 'no',
+        'postId': widget.post.postId,
+      });
+
+      IsDisliked = getDisliked;
+    } else {
+      allDislike.remove(_currentuser!.uid);
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(widget.post.postownerID)
+          .collection('posts')
+          .doc(widget.post.postId)
+          .update({
+        'totalDislike': widget.post.totalDislike - 1,
+        'dislikedBy': allDislike,
+      }).then((value) => getDisliked = false);
+
+      setState(() {
+        post.totalDislike = post.totalDislike - 1;
+      });
+
+      IsDisliked = getDisliked;
+    }
   }
 
   Future<bool> PostalreadyLiked() async {
@@ -145,6 +237,7 @@ class _FeedProviderState extends State<FeedProvider> {
         future: Future.wait(
           [
             PostalreadyLiked().then((changer) => Isliked = changer),
+            PostalreadyDisliked().then((value) => IsDisliked = value),
             getName(),
           ],
         ),
@@ -244,6 +337,15 @@ class _FeedProviderState extends State<FeedProvider> {
                             SizedBox(width: 5),
                             Text('${widget.post.totalLike}',
                                 style: AppStyles.LikeText),
+                            IconButton(
+                                onPressed: () {
+                                  DislikeButtonTapped(
+                                      context, IsDisliked, widget.post);
+                                },
+                                icon: Icon(Icons.thumb_down_alt_outlined)),
+                            SizedBox(width: 5),
+                            Text('${widget.post.totalDislike}',
+                                style: AppStyles.LikeText),
                             SizedBox(
                               width: 70,
                             ),
@@ -302,6 +404,7 @@ class _FeedProviderState extends State<FeedProvider> {
           future: Future.wait(
             [
               PostalreadyLiked().then((changer) => Isliked = changer),
+              PostalreadyDisliked().then((value) => IsDisliked = value),
               getName(),
             ],
           ),
@@ -395,6 +498,15 @@ class _FeedProviderState extends State<FeedProvider> {
                             ),
                             SizedBox(width: 5),
                             Text('${widget.post.totalLike}',
+                                style: AppStyles.LikeText),
+                            IconButton(
+                                onPressed: () {
+                                  DislikeButtonTapped(
+                                      context, IsDisliked, widget.post);
+                                },
+                                icon: Icon(Icons.thumb_down_alt_outlined)),
+                            SizedBox(width: 5),
+                            Text('${widget.post.totalDislike}',
                                 style: AppStyles.LikeText),
                             SizedBox(width: 40),
                             IconButton(
