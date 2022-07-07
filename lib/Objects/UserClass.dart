@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class SettingUser {
   String university = '';
   String username = '';
@@ -10,20 +8,29 @@ class SettingUser {
       this.username, this.university, this.age, this.bio, this.profile_image);
 }
 
-class Post {
-  String? postID;
-  String? text;
-  var date;
-  List<String?>? comments;
-  int? likeCount;
-  int? commentCount;
+class appUser {
+  String uid;
+  String? university;
+  String? username;
+  String? age;
+  String? bio;
+  String? profile_image_URL;
+  /*List<appUser> followers = [];
+  List<appUser> following = [];
+  List<PostBase> Posts = [];
+  */
 
-  Post({
-    this.postID,
-    this.text,
-    this.comments,
-    this.date,
-    this.likeCount,
-    this.commentCount,
-  });
+  appUser(
+      {required this.uid,
+      this.username,
+      this.university,
+      this.age,
+      this.bio,
+      this.profile_image_URL}
+      /*
+    this.followers,
+    this.following,
+    this.Posts,
+  */
+      );
 }

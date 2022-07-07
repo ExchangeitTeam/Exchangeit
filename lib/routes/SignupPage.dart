@@ -1,22 +1,82 @@
+import 'dart:io';
 import 'package:email_validator/email_validator.dart';
-import 'package:exchangeit/routes/SettingsPage.dart';
+import 'package:exchangeit/models/Styles.dart';
+import 'package:exchangeit/services/FirestoreServices.dart';
+import 'package:exchangeit/services/auth.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-
+import 'package:path/path.dart';
+import '../main.dart';
+import '../services/Appanalytics.dart';
 import 'LoginPage.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
-
+  const SignUp({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
+showDialogueForWaiting(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => WaitingScreen(
+          message: "Your account is being created, please wait..."));
+}
+
+hideProgressDialogue(BuildContext context) {
+  Navigator.of(context).pop(
+      WaitingScreen(message: "Your account is being created, please wait..."));
+}
+
 class _SignUpState extends State<SignUp> {
   final formKeySign = GlobalKey<FormState>();
+  String email = "";
+  String password = "";
+  String username = "";
+  String age = "";
+  String uni = "";
+  File? PicPath;
+  var ppUrl;
+  Future pickImage() async {
+    final Image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (Image == null) {
+        PicPath = null;
+      } else {
+        PicPath = File(Image.path);
+      }
+    });
+  }
+
+  Future uploadPostwithImage() async {
+    String fileName = basename(PicPath!.path);
+    final storageRef = FirebaseStorage.instance.ref();
+    final Firebaseref = storageRef.child('All_PP').child('/$fileName');
+    final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+        customMetadata: {'picked-file-path': fileName});
+    UploadTask FirebaseuploadTask;
+
+    FirebaseuploadTask = Firebaseref.putFile(File(PicPath!.path), metadata);
+    await Future.value(FirebaseuploadTask)
+        .then((value) async => {
+              ppUrl = await value.ref.getDownloadURL(),
+              print(url),
+              print("Upload file path ${value.ref.fullPath}"),
+            })
+        .onError((error, stackTrace) =>
+            {print("Upload file path error ${error.toString()} ")});
+  }
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignUp Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -24,9 +84,9 @@ class _SignUpState extends State<SignUp> {
       body: SafeArea(
         child: Container(
           //margin: EdgeInsets.fromLTRB(0, 10, 0, 25),
-          padding: EdgeInsets.fromLTRB(0, 75, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 45, 0, 0),
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 110),
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 30),
             child: SingleChildScrollView(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -55,11 +115,21 @@ class _SignUpState extends State<SignUp> {
                           InkWell(
                             hoverColor: Colors.red,
                             onTap: () {
+                              pickImage();
                               print("Pressed add profile page");
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.blueGrey,
                               radius: 50,
+                              child: ClipOval(
+                                // !!change later
+                                child: PicPath == null
+                                    ? Image.asset(
+                                        'images/addphoto.png',
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.file(PicPath!),
+                              ),
                             ),
                           ),
                         ],
@@ -78,30 +148,22 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Username",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave username empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 4) {
                                   return 'username too short';
+                                } else {
+                                  username = value;
                                 }
                               }
+                              return null;
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -112,37 +174,28 @@ class _SignUpState extends State<SignUp> {
                           width: sizeapp.width * 0.8,
                           child: TextFormField(
                             keyboardType: TextInputType.text,
-                            obscureText: false,
+                            obscureText: true,
                             enableSuggestions: true,
                             autocorrect: false,
                             decoration: InputDecoration(
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Password",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave password empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 8) {
                                   return 'password too short';
+                                } else {
+                                  password = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -157,30 +210,21 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Email",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave e-mail empty';
-                                }
-                                if (!EmailValidator.validate(value)) {
+                                } else if (!EmailValidator.validate(value)) {
                                   return 'Please enter a valid e-mail address';
+                                } else {
+                                  email = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -195,31 +239,22 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Age",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave age empty';
-                                }
-                                if (int.parse(value) < 0 ||
+                                } else if (int.parse(value) < 0 ||
                                     int.parse(value) > 100) {
                                   return 'Please enter a valid age';
+                                } else {
+                                  age = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -237,30 +272,21 @@ class _SignUpState extends State<SignUp> {
                               fillColor: Colors.grey[200],
                               filled: true,
                               hintText: "Exchange University",
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
+                              enabledBorder: AppStyles.enableInputBorder,
+                              focusedBorder: AppStyles.focusedInputBorder,
+                              border: AppStyles.borderInput,
                             ),
                             validator: (value) {
                               if (value != null) {
                                 if (value.isEmpty) {
                                   return 'Cannot leave University empty';
-                                }
-                                if (value.length < 4) {
+                                } else if (value.length < 3) {
                                   return 'University name too short';
+                                } else {
+                                  uni = value;
                                 }
                               }
                             },
-                            onSaved: (value) {},
                           ),
                         ),
                       ),
@@ -268,11 +294,58 @@ class _SignUpState extends State<SignUp> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(25),
                         child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Settings()));
+                          onPressed: () async {
+                            if (formKeySign.currentState!.validate()) {
+                              print('Sign up pressed');
+                              await FirestoreService.IsUsernameTaken(username)
+                                  .then((value) async {
+                                if (value) {
+                                  return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title:
+                                              Text('Username already taken!'),
+                                          content: Text(
+                                              'Please select another username!'),
+                                        );
+                                      });
+                                } else {
+                                  username = username.toLowerCase().trim();
+                                  showDialogueForWaiting(context);
+                                  if (PicPath == null) {
+                                    await AuthService.registerUser(
+                                        email,
+                                        username,
+                                        uni,
+                                        age,
+                                        password,
+                                        'https://png.pngitem.com/pimgs/s/64-646593_thamali-k-i-s-user-default-image-jpg.png');
+                                  } else {
+                                    await uploadPostwithImage();
+                                    await AuthService.registerUser(email,
+                                        username, uni, age, password, ppUrl);
+                                  }
+                                  hideProgressDialogue(context);
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        elevation: 10,
+                                        content: Text(
+                                            'Registration Successful! You are redirecting to the home page'),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 12),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  });
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      "/LoggedIn",
+                                      (Route<dynamic> route) => false);
+                                }
+                              });
+                            }
                           },
                           child: Padding(
                             padding: EdgeInsets.all(20),
@@ -295,10 +368,10 @@ class _SignUpState extends State<SignUp> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Already a user? "),
+                          Text("Already a user?"),
                           TextButton(
                               onPressed: () {
-                                Navigator.popAndPushNamed(context, "Login");
+                                Navigator.popAndPushNamed(context, "/Login");
                               },
                               child: Text(
                                 "Login",

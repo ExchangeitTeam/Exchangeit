@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../services/FirestoreServices.dart';
 
 class Location extends StatefulWidget {
   const Location({Key? key}) : super(key: key);
@@ -61,26 +65,46 @@ class locationInfo extends StatelessWidget {
 }
 
 class _LocationState extends State<Location> {
-  final List<locationInfo> locationInfos = [
-    locationInfo(locationText: 'Istanbul'),
-    locationInfo(locationText: 'London'),
-    locationInfo(locationText: 'Lisbon'),
-    locationInfo(locationText: 'Brussels'),
-  ];
+  final _currentuser = FirebaseAuth.instance.currentUser;
+  final List<locationInfo> locationInfos = [];
+  Future getLocations() async {
+    DocumentSnapshot LocdocSnap =
+        await FirestoreService.userCollection.doc(_currentuser!.uid).get();
+    List AllLoc = LocdocSnap.get('locations');
+    for (var loc in AllLoc) {
+      locationInfos.add(locationInfo(locationText: loc));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: ListView.separated(
-        itemBuilder: (BuildContext context, int index) {
-          return locationInfos[index];
-        },
-        separatorBuilder: (BuildContext context, int index) => Divider(
-          height: 3,
-        ),
-        itemCount: locationInfos.length,
-      ),
-    );
+    return FutureBuilder(
+        future: getLocations(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              width: 20,
+              height: 20,
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+            );
+          }
+          return Container(
+            color: Colors.white,
+            child: ListView.separated(
+              controller: ScrollController(),
+              itemBuilder: (BuildContext context, int index) {
+                return locationInfos[index];
+              },
+              separatorBuilder: (BuildContext context, int index) => Divider(
+                height: 3,
+              ),
+              itemCount: locationInfos.length,
+            ),
+          );
+        });
   }
 }

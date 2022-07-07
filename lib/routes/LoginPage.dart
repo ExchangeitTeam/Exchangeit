@@ -1,17 +1,25 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:exchangeit/main.dart';
+import 'package:exchangeit/models/Colors.dart';
 import 'package:exchangeit/routes/ForgotPassPage.dart';
 import 'package:exchangeit/routes/LoggedIn.dart';
-import 'package:exchangeit/routes/home.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_button/sign_button.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'SignupPage.dart';
+import '../services/Appanalytics.dart';
+import '../services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-
+  const LoginScreen({Key? key, required this.analytics}) : super(key: key);
+  final FirebaseAnalytics analytics;
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -21,12 +29,106 @@ class _LoginScreenState extends State<LoginScreen> {
   int loginCounter = 0;
   String email = '';
   String pass = '';
+
+  final AuthService _auth = AuthService();
+  Future loginUser() async {
+    showDialogueForWaiting(context);
+    dynamic result = await AuthService.signInWithEmailPass(email, pass);
+    if (result is String) {
+      hideProgressDialogue(context);
+      _showDialog('Login Error', result);
+    } else if (result is User) {
+      //User signed in
+      hideProgressDialogue(context);
+      FirebaseAnalytics.instance.logEvent(name: 'Logged_In_Succesfully');
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          "/LoggedIn", (Route<dynamic> route) => false);
+    } else {
+      hideProgressDialogue(context);
+      FirebaseAnalytics.instance.logEvent(name: 'Login_Error');
+      _showDialog('Login Error', result.toString());
+    }
+  }
+
+  Future<void> _showDialog(String title, String message) async {
+    bool isAndroid = Platform.isAndroid;
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          if (isAndroid) {
+            return AlertDialog(
+              title: Text(title),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Text(message),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          } else {
+            return CupertinoAlertDialog(
+              title: Text(title),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Text(message),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          }
+        });
+  }
+
+  void initState() {
+    super.initState();
+
+    _auth.getCurrentUser.listen((user) {
+      if (user == null) {
+        print('No user is currently signed in.');
+      } else {
+        print('${user.uid} is the current user uid');
+      }
+    });
+  }
+
+  showDialogueForWaiting(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => WaitingScreen(
+            message: "Your account is being verified, please wait..."));
+  }
+
+  hideProgressDialogue(BuildContext context) {
+    Navigator.of(context).pop(WaitingScreen(
+        message: "Your account is being verified, please wait..."));
+  }
+
   @override
   Widget build(BuildContext context) {
+    Appanalytics.setCurrentScreenUtil(screenName: "App Login Page");
     Size sizeapp = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xF3F3F3F3),
+      backgroundColor: AppColors.appBackColor,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -65,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          fillColor: Colors.grey[200],
+                          fillColor: AppColors.textFormColor,
                           filled: true,
                           hintText: "Email",
                           enabledBorder: OutlineInputBorder(
@@ -108,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          fillColor: Colors.grey[200],
+                          fillColor: AppColors.textFormColor,
                           filled: true,
                           hintText: "Password",
                           enabledBorder: OutlineInputBorder(
@@ -151,28 +253,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ForgetPass()));
+                                builder: (context) =>
+                                    ForgetPass(analytics: widget.analytics)));
                       },
                     ),
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(25),
                     child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            "/LoggedIn", (Route<dynamic> route) => false);
-                        /* if (_formKey.currentState!.validate()) {
-                          print('Email: $email');
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          print('Email: $email');
-                          setState(() {
-                            loginCounter++;
-                          });
-
-                        } */
-                        /*else {
+                          await loginUser();
+                        } else {
                           _showDialog('Form Error', 'Your form is invalid');
-                        }*/
+                        }
                       },
                       child: Padding(
                         padding:
@@ -187,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColors.buttonColor,
                           fixedSize: Size(sizeapp.width * 0.75, 50)),
                     ),
                   ),
@@ -209,16 +304,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   ]),
                   SizedBox(height: 20),
                   Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      child: SignInButton(
-                          imagePosition: ImagePosition.left, // left or right
-                          buttonType: ButtonType.google,
-                          buttonSize: ButtonSize.large,
-                          btnText: "Login with Google",
-                          elevation: 10,
-                          onPressed: () {
-                            print('Google Pressed');
-                          })),
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    child: SignInButton(
+                      imagePosition: ImagePosition.left, // left or right
+                      buttonType: ButtonType.google,
+                      buttonSize: ButtonSize.large,
+                      btnText: "Login with Google",
+                      elevation: 10,
+                      onPressed: () async {
+                        showDialogueForWaiting(context);
+                        await _auth.googleSignIn();
+                        print('Google Pressed');
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        bool _googlelogged =
+                            await prefs.getBool('googlelogin') ?? false;
+                        if (_googlelogged == true) {
+                          hideProgressDialogue(context);
+                          Appanalytics.setLogEventUtil(
+                              eventName: 'Google_Logged_In_Successfully');
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              "/LoggedIn", (Route<dynamic> route) => false);
+                        }
+                      },
+                    ),
+                  ),
                   SizedBox(height: 20),
                   Container(
                       width: MediaQuery.of(context).size.width * 0.75,
@@ -228,8 +338,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           buttonSize: ButtonSize.large,
                           btnText: "Login with Facebook",
                           elevation: 10,
-                          onPressed: () {
+                          onPressed: () async {
                             print('Facebook Pressed');
+                            await _auth.FacebookSignIn();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            bool _facebooklogin =
+                                await prefs.getBool('facebooklogin') ?? false;
+                            if (_facebooklogin == true) {
+                              Appanalytics.setLogEventUtil(
+                                  eventName: 'Facebook_Logged_In_Successfully');
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  "/LoggedIn", (Route<dynamic> route) => false);
+                            } else {
+                              print('giremedim');
+                            }
                           })),
                   SizedBox(height: 40),
                   Row(
@@ -238,7 +361,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text("Need an Account? "),
                       TextButton(
                           onPressed: () {
-                            Navigator.popAndPushNamed(context, "SignUp");
+                            Navigator.popAndPushNamed(context, "/SignUp");
                           },
                           child: Text(
                             "Sign Up",

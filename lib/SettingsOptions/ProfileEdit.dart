@@ -1,11 +1,14 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:exchangeit/models/Colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import '../Objects/UserClass.dart';
+import 'package:path/path.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -15,32 +18,98 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  final _currentuser = FirebaseAuth.instance.currentUser;
   final _formKey = GlobalKey<FormState>();
   String university = '';
   String username = '';
   String age = '';
   String bio = '';
   String profile_image = '';
-  final _impicker = ImagePicker();
-  File? _imageFile = null;
+  File? newImage = null;
   SettingUser curruser_profile = SettingUser('', '', '', '', '');
   //TO DO:image picker backend
   Future pickImage() async {
-    // ignore: deprecated_member_use
-    final pickedFile = await _impicker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
-      pickedFile != null
-          ? _imageFile = File(pickedFile.path)
-          : _imageFile = null;
+      pickedFile != null ? newImage = File(pickedFile.path) : newImage = null;
     });
   }
-  //TO DO:image upload backend
-  //TO D0:profile update
+
+  Future<bool> UsernameTaken(String username) async {
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('username', isEqualTo: username)
+        .get();
+
+    if (snap.docs.isNotEmpty) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future uploadPostwithImage(BuildContext context) async {
+    String fileName = basename(newImage!.path);
+    final storageRef = FirebaseStorage.instance.ref();
+    final FireRef = storageRef
+        .child('All_App_Posts')
+        .child(_currentuser!.uid)
+        .child('/$fileName');
+
+    var Imageurl;
+
+    final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+        customMetadata: {'picked-file-path': fileName});
+    UploadTask FirebaseuploadTask;
+
+    FirebaseuploadTask = FireRef.putFile(File(newImage!.path), metadata);
+    await Future.value(FirebaseuploadTask)
+        .then((value) async => {
+              Imageurl = await value.ref.getDownloadURL(),
+              print(url),
+              UpdateProfile(username, university, age, bio, Imageurl),
+              print("Upload file path ${value.ref.fullPath}"),
+            })
+        .onError((error, stackTrace) =>
+            {print("Upload file path error ${error.toString()} ")});
+  }
+
+  Future UpdateProfile(String username, String university, String age,
+      String bio, String profile_pic) async {
+    final firestoreInst = FirebaseFirestore.instance;
+    DocumentSnapshot docsnap =
+        await firestoreInst.collection('Users').doc(_currentuser!.uid).get();
+    String oldname = docsnap.get('username');
+    List oldSearch = docsnap.get('userSearch');
+    String olduni = docsnap.get('university');
+    String oldage = docsnap.get('age');
+    String oldbio = docsnap.get('bio');
+    String oldprofileIm = docsnap.get('profileIm');
+    List<String> newusernameList = [];
+    for (int i = 1; i <= username.length; i++) {
+      newusernameList.add(username.substring(0, i).toLowerCase());
+    }
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(_currentuser!.uid)
+        .update({
+      'username': username == "" ? oldname : username,
+      'userSearch': newusernameList.isEmpty ? oldSearch : newusernameList,
+      'userId': _currentuser!.uid,
+      'university': (university == '') ? olduni : university,
+      'age': (age == '') ? oldage : age,
+      'bio': (bio == '') ? oldbio : bio,
+      'profileIm': (profile_pic == '') ? oldprofileIm : profile_pic,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     Size sizeapp = MediaQuery.of(context).size;
+    print("Cuurentuser id: ${_currentuser!.uid}");
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Profile Settings"),
@@ -65,14 +134,15 @@ class _EditProfileState extends State<EditProfile> {
                         pickImage();
                       },
                       child: CircleAvatar(
-                        backgroundColor: Colors.blueGrey, // !!change later
+                        backgroundColor: AppColors.appBackColor,
                         child: ClipOval(
-                          child: _imageFile == null
+                          // !!change later
+                          child: newImage == null
                               ? Image.asset(
                                   'images/addphoto.png',
                                   fit: BoxFit.fitHeight,
-                                ) //değişecek
-                              : Image.file(_imageFile!),
+                                )
+                              : Image.file(newImage!),
                         ),
                         radius: 50,
                       ),
@@ -217,10 +287,11 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
                         ),
-                        onSaved: (String? value) {
+                        validator: (String? value) {
                           if (value == null || value == "") {
                             bio = "";
                           } else {
+                            print(bio);
                             bio = value;
                           }
                         },
@@ -234,32 +305,44 @@ class _EditProfileState extends State<EditProfile> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(30),
                         child: OutlinedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              if (false) {
-                              } //To Do: username already exist check
-                              else {
-                                if (_imageFile == null) {
-                                  //TO DO:profile update function
-                                  Navigator.pop(context);
+                              UsernameTaken(username).then((ourvalue) async {
+                                if (ourvalue) {
+                                  return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title:
+                                              Text('Username already taken!'),
+                                          content: Text(
+                                              'Please select another one!'),
+                                        );
+                                      });
                                 } else {
-                                  //TO DO:update profile  image function
-                                  Navigator.pop(context);
+                                  if (newImage == null) {
+                                    UpdateProfile(
+                                        username, university, age, bio, "");
+                                    Navigator.pop(context);
+                                  } else {
+                                    uploadPostwithImage(context);
+                                    //TO DO:update profile  image function
+                                    Navigator.pop(context);
+                                  }
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        elevation: 10,
+                                        content: Text('Profile Updated'),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 12),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  });
                                 }
-                                setState(() {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.green,
-                                      elevation: 10,
-                                      content: Text('Profile Updated'),
-                                      margin: EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 12),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                });
-                              }
+                              });
                             }
                           },
                           child: Padding(
